@@ -95,6 +95,12 @@ public class Blue_Short extends LinearOpMode {
             driver.drive(40, 0, 0, 1000);
             driver.turn(45, 1000);
             SHOOT();
+            driver.drive(-24, 1000);
+            driver.drive(24, 1000);
+            SHOOT();
+            driver.drive(-48, 1000);
+            driver.drive(48, 1000);
+            SHOOT();
         }
     }
 
