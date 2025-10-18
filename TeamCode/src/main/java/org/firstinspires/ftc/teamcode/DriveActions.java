@@ -32,7 +32,7 @@ public class DriveActions {
 
     //conversion factor from inches to encoder ticks
     static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * GEAR_REDUCTION) / (Math.PI * WHEEL_DIAMETER);
-    //distance between left and right wheel centesr
+    //distance between left and right wheel centers
     static final double TRACK_WIDTH = 16.0;
 
     //object reference for apriltag
@@ -58,7 +58,8 @@ public class DriveActions {
     //hardware mapping
     public DcMotor frontRightWheel, frontLeftWheel, backRightWheel, backLeftWheel;
     public DcMotor leftLauncher, rightLauncher;
-    public CRServo intakeStage1, intakeStage2, intakeStage3;
+    public DcMotor intakeStage1, intakeStage3;
+    public CRServo intakeStage2;
     public WebcamName camera;
 
     //variables for apriltag pose data
@@ -98,7 +99,7 @@ public class DriveActions {
     //DRIVING
     //assign hardware
     public DriveActions(DcMotor frontLeftWheel, DcMotor frontRightWheel, DcMotor backLeftWheel, DcMotor backRightWheel,
-                        CRServo intakeStage1, CRServo intakeStage2, CRServo intakeStage3,
+                        DcMotor intakeStage1, CRServo intakeStage2, DcMotor intakeStage3,
                         DcMotor leftLauncher, DcMotor rightLauncher, WebcamName camera) {
 
         this.frontLeftWheel = frontLeftWheel;
@@ -225,16 +226,10 @@ public class DriveActions {
                 telemetry.addData("Tag ID", tag.id);
 
                 if (tag.ftcPose != null) {
-                    //extract all positional and rotational values
+                    //extract important positional and rotational values
                     double x = tag.ftcPose.x;
                     double y = tag.ftcPose.y;
-                    double z = tag.ftcPose.z;
-                    double roll = tag.ftcPose.roll;
-                    double pitch = tag.ftcPose.pitch;
                     double yaw = tag.ftcPose.yaw;
-                    double bearing = tag.ftcPose.bearing;
-                    double elevation = tag.ftcPose.elevation;
-                    double range = tag.ftcPose.range;
 
                     //log them to telemetry
                     telemetry.addData("XYZ", String.format(Locale.US, "%.2f %.2f %.2f", x, y, z));
@@ -263,7 +258,12 @@ public class DriveActions {
         intakeStage1.setPower(1);
         intakeStage2.setPower(1);
         intakeStage3.setPower(1);
-        //missing stage4
+    }
+
+    public void reverseIntake() {
+        intakeStage1.setPower(-1);
+        intakeStage2.setPower(-1);
+        intakeStage3.setPower(-1);
     }
 
     //stop drive motors
@@ -279,7 +279,6 @@ public class DriveActions {
         intakeStage1.setPower(0);
         intakeStage2.setPower(0);
         intakeStage3.setPower(0);
-        //missing stage4
     }
 
     //reset encoders to 0
@@ -324,7 +323,7 @@ public class DriveActions {
     }
 
     //check if any motors are still moving toward target
-    private boolean AreMotorsBusy() {
+    public boolean AreMotorsBusy() {
         return frontLeftWheel.isBusy() | frontRightWheel.isBusy() | backLeftWheel.isBusy() | backRightWheel.isBusy();
     }
 }

@@ -10,19 +10,19 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 
-@TeleOp(name = "TeleOp Version 1.0")
+@TeleOp(name = "TeleOp Version 1.2")
 
 public class TeleOpV1 extends LinearOpMode {
     private DcMotor frontRightWheel, frontLeftWheel, backRightWheel, backLeftWheel;
 
     private DcMotor leftLauncher, rightLauncher;
-    private CRServo intakeStage1, intakeStage2, intakeStage3;
+    private DcMotor intakeStage1, intakeStage3;
+    private CRServo intakeStage2;
 
     private WebcamName camera;
     private AprilTagProcessor tagProcessor;
@@ -31,7 +31,7 @@ public class TeleOpV1 extends LinearOpMode {
     private double inside_shot = 80;
     private double long_shot = 120;
 
-    private double INSIDE_SHOT_PWR = 0.3;
+    private double INSIDE_SHOT_PWR = 0.35;
     private double LONG_SHOT_PWR = 0.75;
 
     boolean endgame = false;
@@ -60,24 +60,22 @@ public class TeleOpV1 extends LinearOpMode {
 
         leftLauncher = hardwareMap.get(DcMotor.class, "leftLauncher");
         rightLauncher = hardwareMap.get(DcMotor.class, "rightLauncher");
-        intakeStage1 = hardwareMap.get(CRServo.class, "stage1");
+        intakeStage1 = hardwareMap.get(DcMotor.class, "stage1");
         intakeStage2 = hardwareMap.get(CRServo.class, "stage2");
-        intakeStage3 = hardwareMap.get(CRServo.class, "stage3");
+        intakeStage3 = hardwareMap.get(DcMotor.class, "stage3");
 
         leftLauncher.setDirection(DcMotor.Direction.FORWARD);
         rightLauncher.setDirection(DcMotor.Direction.REVERSE);
-        intakeStage1.setDirection(CRServo.Direction.REVERSE);
-        intakeStage2.setDirection(CRServo.Direction.REVERSE);
-        intakeStage3.setDirection(CRServo.Direction.REVERSE);
+        intakeStage1.setDirection(DcMotor.Direction.REVERSE);
+        intakeStage2.setDirection(CRServo.Direction.FORWARD);
+        intakeStage3.setDirection(DcMotor.Direction.REVERSE);
 
         leftLauncher.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightLauncher.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         camera = hardwareMap.get(WebcamName.class, "Webcam 1");
 
-        runtime.reset();
-
-        AprilTagProcessor tagProcessor = new AprilTagProcessor.Builder()
+        /*AprilTagProcessor tagProcessor = new AprilTagProcessor.Builder()
                 .setDrawAxes(true)
                 .setDrawCubeProjection(true)
                 .setDrawTagID(true)
@@ -91,12 +89,12 @@ public class TeleOpV1 extends LinearOpMode {
                 .setCamera(hardwareMap.get(WebcamName.class,"Webcam 1"))
                 .setCameraResolution(new Size(640,480))
                 .enableLiveView(true)
-                .build();
+                .build();*/
 
         waitForStart();
 
         if (opModeIsActive()) {
-            runtime.startTime();
+            // runtime.startTime();
             while (opModeIsActive()) {
                 telemetry.addData("Intake Power", intakeStage1.getPower() + " " + intakeStage2.getPower() + " " + intakeStage3.getPower());
                 telemetry.addData("Shooter Power", leftLauncher.getPower() + " " + rightLauncher.getPower());
@@ -132,9 +130,24 @@ public class TeleOpV1 extends LinearOpMode {
     }
 
     private void shoot() {
-        double distance = getDistance();
+        // double distance = getDistance();
 
-        if (gamepad2.left_trigger >= 0.1 || gamepad2.right_trigger >= 0.1) {
+        if (gamepad2.left_trigger <= 0.1 && gamepad2.right_trigger <= 0.1) {
+            leftLauncher.setPower(0);
+            rightLauncher.setPower(0);
+        }
+
+        if (gamepad2.left_trigger >= 0.1) {
+            leftLauncher.setPower(INSIDE_SHOT_PWR);
+            rightLauncher.setPower(INSIDE_SHOT_PWR);
+        }
+
+        else if (gamepad2.right_trigger >= 0.1) {
+            leftLauncher.setPower(LONG_SHOT_PWR);
+            rightLauncher.setPower(LONG_SHOT_PWR);
+        }
+
+        /*if (gamepad2.left_trigger >= 0.1 || gamepad2.right_trigger >= 0.1) {
             if (distance > long_shot || shot_override) {
                 //for shooting in far launch zone
                 leftLauncher.setPower(LONG_SHOT_PWR);
@@ -146,7 +159,7 @@ public class TeleOpV1 extends LinearOpMode {
                 leftLauncher.setPower(INSIDE_SHOT_PWR);
                 rightLauncher.setPower(INSIDE_SHOT_PWR);
             }
-        }
+        }*/
     }
 
     private double getDistance() {
@@ -166,6 +179,12 @@ public class TeleOpV1 extends LinearOpMode {
     }
 
     private void intake() {
+        if (!gamepad2.dpad_up && !gamepad2.dpad_down) {
+            intakeStage1.setPower(0);
+            intakeStage2.setPower(0);
+            intakeStage3.setPower(0);
+        }
+
         if (gamepad2.dpad_up) {
             intakeStage1.setPower(1);
             intakeStage2.setPower(1);
@@ -192,7 +211,7 @@ public class TeleOpV1 extends LinearOpMode {
 
         if (shot_override) shooting_mode = "CAMERA_ENABLED"; else shooting_mode = "CAMERA_DISABLED";
 
-        if (gamepad1.y || runtime.seconds() >= 100) {
+        if (gamepad1.y /*|| runtime.seconds() >= 100*/) {
             endgame = !endgame;
             // allow expansion during endgame
         }
