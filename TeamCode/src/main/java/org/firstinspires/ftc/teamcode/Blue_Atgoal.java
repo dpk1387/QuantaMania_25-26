@@ -13,7 +13,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
-@TeleOp(name = "Blue_Short Auto")
+@TeleOp(name = "Blue_Atgoal Auto")
 
 public class Blue_Atgoal extends Blue_Short {
 
