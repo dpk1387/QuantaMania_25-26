@@ -103,19 +103,19 @@ public class Blue_Oppositegoal extends Blue_Short {
             sleep(100);
             driver.adjust(0, 48, 0, 1000);
             SHOOT();
-            driver.adjust(6, 78, -45, 1000);
+            driver.adjust(4, 78, -45, 1000);
           
             driver.intake(2000); //second set of balls
             driver.drive(24, 0, 0, 1000); 
             sleep(100);
             driver.adjust(0, 40, 0, 1000);
             SHOOT();
-            driver.adjust(6, 54, -45, 1000);
+            driver.adjust(4, 54, -45, 1000);
 
             driver.intake(2000); //third set of balls
             driver.drive(12, 0, 0, 1000); 
             sleep(100);
-            driver.adjust(0, 32, 0, 1000);
+            driver.adjust(4, 32, 0, 1000);
             SHOOT();
         }
     }
