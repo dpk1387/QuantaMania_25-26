@@ -3,20 +3,25 @@ package org.firstinspires.ftc.teamcode;
 import android.util.Size;
 
 //ftc sdk imports
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 //telemetry and camera imports
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
-//ftc vision imports for ftc apriltag processing
 import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagLibrary;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+
+//ftc vision imports for ftc apriltag processing
+/*import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagLibrary;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;*/
 
 import java.util.List;
 import java.util.Locale;
@@ -57,18 +62,18 @@ public class DriveActions {
 
     //hardware mapping
     public DcMotor frontRightWheel, frontLeftWheel, backRightWheel, backLeftWheel;
-    public DcMotor leftLauncher, rightLauncher;
-    public DcMotor intakeStage1, intakeStage3;
-    public CRServo intakeStage2;
+    public DcMotor shooter;
+    public DcMotor intakeStage1, intakeStage2, intakeStage3;
     public WebcamName camera;
+    public Servo blockShooter;
 
     //variables for apriltag pose data
     public double x, y, z, roll, pitch, yaw, range, bearing, elevation;
 
-    //APRIL TAGS
+    /*APRIL TAGS
 
-    //define tag size and create library of field tags
-    //more info in AprilTag class
+    define tag size and create library of field tags
+    more info in AprilTag class
     double tagSize = 6.4375;
     AprilTagLibrary tagLibrary = new AprilTagLibrary.Builder()
             .addTag(20, "Tag20", tagSize, DistanceUnit.INCH)
@@ -94,13 +99,13 @@ public class DriveActions {
             .setCamera(camera)
             .setCameraResolution(new Size(640,480))
             .enableLiveView(true)
-            .build();
+            .build();*/
 
     //DRIVING
     //assign hardware
     public DriveActions(DcMotor frontLeftWheel, DcMotor frontRightWheel, DcMotor backLeftWheel, DcMotor backRightWheel,
-                        DcMotor intakeStage1, CRServo intakeStage2, DcMotor intakeStage3,
-                        DcMotor leftLauncher, DcMotor rightLauncher, WebcamName camera) {
+                        DcMotor intakeStage1, DcMotor intakeStage2, DcMotor intakeStage3,
+                        DcMotor shooter, Servo blockShooter) {
 
         this.frontLeftWheel = frontLeftWheel;
         this.frontRightWheel = frontRightWheel;
@@ -109,8 +114,8 @@ public class DriveActions {
         this.intakeStage1 = intakeStage1;
         this.intakeStage2 = intakeStage2;
         this.intakeStage3 = intakeStage3;
-        this.leftLauncher = leftLauncher;
-        this.rightLauncher = rightLauncher;
+        this.shooter = shooter;
+        this.blockShooter = blockShooter;
 
     }
 
@@ -143,15 +148,13 @@ public class DriveActions {
         setTarget(flTarget, frTarget, blTarget, brTarget);
         runToPosition(); //make motors move to that position
 
-        //stop if time limit exceeded
-        if (timeouts_ms > 0) {
-            while (runtime.milliseconds() > 0) {
-                if (runtime.milliseconds() >= timeouts_ms) {
-                    stopWheel();
-                    break;
-                }
+        /*stop if time limit exceeded
+        while (runtime.milliseconds() > 0) {
+            if (runtime.milliseconds() >= timeouts_ms) {
+                stopWheel();
+                break;
             }
-        }
+        }*/
     }
 
     //turning in place only
@@ -175,20 +178,15 @@ public class DriveActions {
     //SHOOTING CONTROL
     public void shoot (double location) {
         //select power level based on pre-defined shot type
-        if (location == SHORT_SHOT) {
-            leftLauncher.setPower(SHORT_SHOT);
-            rightLauncher.setPower(SHORT_SHOT);
-        }
-        else if (location == LONG_SHOT) {
-            leftLauncher.setPower(LONG_SHOT);
-            rightLauncher.setPower(LONG_SHOT);
-        }
+
+        intakeStage3.setPower(1);
+
     }
 
     //POSITION ADJUSTMENT USING APRILTAG
-    public void adjust (double targetX, double targetY, double targetH) {
+    /*public void adjust (double targetX, double targetY, double targetH) {
 
-        //get current tag pose (x, y, heading)
+        get current tag pose (x, y, heading)
         double currentX = getTagPose() [0];
         double currentY = getTagPose() [1];
         double currentH = getTagPose() [2];
@@ -210,10 +208,10 @@ public class DriveActions {
 
             drive(forward, strafe, turn, 0);
         }
-    }
+    }*/
 
     //APRILTAG POSE RETRIEVAL
-    public double[] getTagPose() {
+    /*public double[] getTagPose() {
         List<AprilTagDetection> detections = tagProcessor.getDetections();
 
         //return null if there's no tags detected
@@ -243,7 +241,7 @@ public class DriveActions {
             }
             return null;
         }
-    }
+    }*/
 
     //start driving motors with given power
     public void startWheel(double power) {

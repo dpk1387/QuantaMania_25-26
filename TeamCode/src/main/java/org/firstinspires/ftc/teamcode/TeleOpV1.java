@@ -1,15 +1,18 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.util.Size;
+// import android.util.Size;
 
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
@@ -20,24 +23,25 @@ import java.util.List;
 public class TeleOpV1 extends LinearOpMode {
     private DcMotor frontRightWheel, frontLeftWheel, backRightWheel, backLeftWheel;
 
-    private DcMotor leftLauncher, rightLauncher;
-    private DcMotor intakeStage1, intakeStage3;
-    private CRServo intakeStage2;
+    private DcMotor shooter;
+    private DcMotor intakeStage1, intakeStage2, intakeStage3;
+    private Servo blockShooter;
+    private Rev2mDistanceSensor distanceSensor;
 
-    private WebcamName camera;
     private AprilTagProcessor tagProcessor;
 
     //prevents shooting if too close to goal for shooting
-    private double inside_shot = 80;
-    private double long_shot = 120;
+    // private double inside_shot = 80;
+    // private double long_shot = 120;
 
-    private double INSIDE_SHOT_PWR = 0.35;
-    private double LONG_SHOT_PWR = 0.75;
+    private double shot_power = 1;
 
     boolean endgame = false;
     boolean shot_override = false;
 
     String shooting_mode;
+
+    boolean shooter_active = false;
 
     ElapsedTime runtime;
 
@@ -45,10 +49,10 @@ public class TeleOpV1 extends LinearOpMode {
 
     public void runOpMode() {
 
-        frontRightWheel = hardwareMap.get(DcMotorEx.class, "backLeftWheel");
-        frontLeftWheel = hardwareMap.get(DcMotorEx.class, "frontLeftWheel");
-        backRightWheel = hardwareMap.get(DcMotorEx.class, "frontRightWheel");
-        backLeftWheel = hardwareMap.get(DcMotorEx.class, "backLeftWheel");
+        frontRightWheel = hardwareMap.get(DcMotor.class, "frontRightWheel");
+        frontLeftWheel = hardwareMap.get(DcMotor.class, "frontLeftWheel");
+        backRightWheel = hardwareMap.get(DcMotor.class, "backRightWheel");
+        backLeftWheel = hardwareMap.get(DcMotor.class, "backLeftWheel");
 
         frontLeftWheel.setDirection(DcMotor.Direction.REVERSE);
         backLeftWheel.setDirection(DcMotor.Direction.REVERSE);
@@ -58,22 +62,20 @@ public class TeleOpV1 extends LinearOpMode {
         backRightWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeftWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        leftLauncher = hardwareMap.get(DcMotor.class, "leftLauncher");
-        rightLauncher = hardwareMap.get(DcMotor.class, "rightLauncher");
+        shooter = hardwareMap.get(DcMotor.class, "shooter");
         intakeStage1 = hardwareMap.get(DcMotor.class, "stage1");
-        intakeStage2 = hardwareMap.get(CRServo.class, "stage2");
+        intakeStage2 = hardwareMap.get(DcMotor.class, "stage2");
         intakeStage3 = hardwareMap.get(DcMotor.class, "stage3");
 
-        leftLauncher.setDirection(DcMotor.Direction.FORWARD);
-        rightLauncher.setDirection(DcMotor.Direction.REVERSE);
+        distanceSensor = hardwareMap.get(Rev2mDistanceSensor.class, "distanceSensor");
+
         intakeStage1.setDirection(DcMotor.Direction.REVERSE);
-        intakeStage2.setDirection(CRServo.Direction.FORWARD);
+        intakeStage2.setDirection(DcMotor.Direction.REVERSE);
         intakeStage3.setDirection(DcMotor.Direction.REVERSE);
 
-        leftLauncher.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightLauncher.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        camera = hardwareMap.get(WebcamName.class, "Webcam 1");
+        WebcamName camera = hardwareMap.get(WebcamName.class, "Webcam 1");
 
         /*AprilTagProcessor tagProcessor = new AprilTagProcessor.Builder()
                 .setDrawAxes(true)
@@ -96,15 +98,23 @@ public class TeleOpV1 extends LinearOpMode {
         if (opModeIsActive()) {
             // runtime.startTime();
             while (opModeIsActive()) {
-                telemetry.addData("Intake Power", intakeStage1.getPower() + " " + intakeStage2.getPower() + " " + intakeStage3.getPower());
-                telemetry.addData("Shooter Power", leftLauncher.getPower() + " " + rightLauncher.getPower());
-                telemetry.addData("Shooting Mode", shooting_mode);
-                telemetry.addData("Endgame", endgame);
-                telemetry.update();
-
                 double forward = gamepad1.left_stick_y;
                 double right = gamepad1.left_stick_x;
                 double rotate = gamepad1.right_stick_x;
+
+                telemetry.addData("Intake Power", intakeStage1.getPower() + " " + intakeStage2.getPower() + " " + intakeStage3.getPower());
+                telemetry.addData("Shooter Power", shooter.getPower());
+                telemetry.addData("Shooting Mode", shooting_mode);
+                telemetry.addData("Endgame", endgame);
+                telemetry.addData("Forward", forward);
+                telemetry.addData("Right", right);
+                telemetry.addData("Rotate", rotate);
+                telemetry.addData("fl fr bl br power",
+                        JavaUtil.formatNumber(frontLeftWheel.getPower(), 2) + " " +
+                        JavaUtil.formatNumber(frontRightWheel.getPower(), 2) + " " +
+                        JavaUtil.formatNumber(backLeftWheel.getPower(), 2) + " " +
+                        JavaUtil.formatNumber(backRightWheel.getPower(), 2));
+                telemetry.update();
 
                 drive(forward, right, rotate);
 
@@ -118,51 +128,46 @@ public class TeleOpV1 extends LinearOpMode {
     }
 
     private void drive(double forward, double right, double rotate) {
-        telemetry.addData("Forward", forward);
-        telemetry.addData("Right", right);
-        telemetry.addData("Rotate", rotate);
-        telemetry.update();
-
-        frontRightWheel.setPower(forward - right - rotate);
-        frontLeftWheel.setPower(forward + right + rotate);
-        backRightWheel.setPower(forward + right - rotate);
-        backLeftWheel.setPower(forward - right + rotate);
+        double MAX_DRIVE_PWR = 0.6;
+        frontRightWheel.setPower(Range.clip(forward - right - rotate, -MAX_DRIVE_PWR, MAX_DRIVE_PWR));
+        frontLeftWheel.setPower(Range.clip(forward + right + rotate, -MAX_DRIVE_PWR, MAX_DRIVE_PWR));
+        backRightWheel.setPower(Range.clip(forward + right - rotate, -MAX_DRIVE_PWR, MAX_DRIVE_PWR));
+        backLeftWheel.setPower(Range.clip(forward - right + rotate, -MAX_DRIVE_PWR, MAX_DRIVE_PWR));
     }
 
     private void shoot() {
+        double open = 0;
+        double closed = 0.6;
         // double distance = getDistance();
-
-        if (gamepad2.left_trigger <= 0.1 && gamepad2.right_trigger <= 0.1) {
-            leftLauncher.setPower(0);
-            rightLauncher.setPower(0);
+        if (gamepad1.dpad_left) {
+            shooter.setPower(shooter.getPower() - 0.05);
+        } else if (gamepad1.dpad_right) {
+            shooter.setPower(shooter.getPower() + 0.05);
         }
 
-        if (gamepad2.left_trigger >= 0.1) {
-            leftLauncher.setPower(INSIDE_SHOT_PWR);
-            rightLauncher.setPower(INSIDE_SHOT_PWR);
+        if (gamepad1.a && !shooter_active) {
+            shooter_active = true;
+            getDistance();
+            shooter.setPower(0.95);
+            sleep(500);
+            blockShooter.setPosition(open);
         }
 
-        else if (gamepad2.right_trigger >= 0.1) {
-            leftLauncher.setPower(LONG_SHOT_PWR);
-            rightLauncher.setPower(LONG_SHOT_PWR);
+        if (gamepad1.b && shooter_active) {
+            shooter.setPower(0);
+            blockShooter.setPosition(closed);
         }
 
-        /*if (gamepad2.left_trigger >= 0.1 || gamepad2.right_trigger >= 0.1) {
-            if (distance > long_shot || shot_override) {
-                //for shooting in far launch zone
-                leftLauncher.setPower(LONG_SHOT_PWR);
-                rightLauncher.setPower(LONG_SHOT_PWR);
-            }
+        if (gamepad1.dpad_up) {
+            blockShooter.setPosition(open);
+        }
 
-            else if (distance < inside_shot || shot_override) {
-                //for shooting in closer launch zone
-                leftLauncher.setPower(INSIDE_SHOT_PWR);
-                rightLauncher.setPower(INSIDE_SHOT_PWR);
-            }
-        }*/
+        if (gamepad1.dpad_down) {
+            blockShooter.setPosition(closed);
+        }
     }
 
-    private double getDistance() {
+    private double getCameraDistance() {
         double distance = -1; // backup distance if goal tags not found
         if (tagProcessor.getDetections() != null) {
             List<AprilTagDetection> detections = tagProcessor.getDetections();
@@ -178,23 +183,28 @@ public class TeleOpV1 extends LinearOpMode {
         return distance;
     }
 
+    private double getDistance() {
+        double r1 = distanceSensor.getDistance(DistanceUnit.INCH);
+        double r2 = distanceSensor.getDistance(DistanceUnit.INCH);
+        double r3 = distanceSensor.getDistance(DistanceUnit.INCH);
+        double r4 = distanceSensor.getDistance(DistanceUnit.INCH);
+        double r5 = distanceSensor.getDistance(DistanceUnit.INCH);
+        return (r1 + r2 + r3 + r4 + r5) / 5.0;
+    }
+
     private void intake() {
-        if (!gamepad2.dpad_up && !gamepad2.dpad_down) {
-            intakeStage1.setPower(0);
-            intakeStage2.setPower(0);
+        if (gamepad2.left_trigger >= 0.1) { //stage 3
+            intakeStage3.setPower(1);
+        } else {
             intakeStage3.setPower(0);
         }
 
-        if (gamepad2.dpad_up) {
+        if (gamepad2.right_trigger >= 0.1) { //stages 1 and 2
             intakeStage1.setPower(1);
             intakeStage2.setPower(1);
-            intakeStage3.setPower(1);
-        }
-
-        if (gamepad2.dpad_down) {
-            intakeStage1.setPower(-1);
-            intakeStage2.setPower(-1);
-            intakeStage3.setPower(-1);
+        } else {
+            intakeStage1.setPower(0);
+            intakeStage2.setPower(0);
         }
     }
 
@@ -202,6 +212,7 @@ public class TeleOpV1 extends LinearOpMode {
         if (gamepad2.x) {
             // extend up to height limit to fit both robots in base
             // for later
+            sleep(100);
         }
     }
 
@@ -215,6 +226,5 @@ public class TeleOpV1 extends LinearOpMode {
             endgame = !endgame;
             // allow expansion during endgame
         }
-
     }
 }

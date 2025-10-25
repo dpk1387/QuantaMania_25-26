@@ -2,15 +2,17 @@ package org.firstinspires.ftc.teamcode;
 
 import android.util.Size;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+
+@Autonomous(name = "Blue Long Auto")
 
 public class Blue_Long extends LinearOpMode {
 
@@ -18,9 +20,9 @@ public class Blue_Long extends LinearOpMode {
 
     private DcMotor frontRightWheel, frontLeftWheel, backRightWheel, backLeftWheel;
 
-    private DcMotor leftLauncher, rightLauncher;
-    private DcMotor intakeStage1, intakeStage3;
-    private CRServo intakeStage2;
+    private DcMotor shooter;
+    private DcMotor intakeStage1, intakeStage2, intakeStage3;
+    private Servo blockShooter;
 
     boolean endgame = false;
 
@@ -28,16 +30,16 @@ public class Blue_Long extends LinearOpMode {
     double LONG_SHOT = 0.75;
 
     DriveActions driver = new DriveActions(frontLeftWheel, frontRightWheel, backLeftWheel, backRightWheel,
-            intakeStage1, intakeStage2, intakeStage3, leftLauncher, rightLauncher, camera);
+            intakeStage1, intakeStage2, intakeStage3, shooter, blockShooter);
 
     @Override
 
     public void runOpMode() {
 
-        frontRightWheel = hardwareMap.get(DcMotorEx.class, "backLeftWheel");
-        frontLeftWheel = hardwareMap.get(DcMotorEx.class, "frontLeftWheel");
-        backRightWheel = hardwareMap.get(DcMotorEx.class, "frontRightWheel");
-        backLeftWheel = hardwareMap.get(DcMotorEx.class, "backLeftWheel");
+        frontRightWheel = hardwareMap.get(DcMotor.class, "backLeftWheel");
+        frontLeftWheel = hardwareMap.get(DcMotor.class, "frontLeftWheel");
+        backRightWheel = hardwareMap.get(DcMotor.class, "frontRightWheel");
+        backLeftWheel = hardwareMap.get(DcMotor.class, "backLeftWheel");
 
         frontLeftWheel.setDirection(DcMotor.Direction.REVERSE);
         backLeftWheel.setDirection(DcMotor.Direction.REVERSE);
@@ -47,22 +49,19 @@ public class Blue_Long extends LinearOpMode {
         backRightWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeftWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        leftLauncher = hardwareMap.get(DcMotor.class, "leftLauncher");
-        rightLauncher = hardwareMap.get(DcMotor.class, "rightLauncher");
+        shooter = hardwareMap.get(DcMotor.class, "shooter");
         intakeStage1 = hardwareMap.get(DcMotor.class, "stage1");
-        intakeStage2 = hardwareMap.get(CRServo.class, "stage2");
+        intakeStage2 = hardwareMap.get(DcMotor.class, "stage2");
         intakeStage3 = hardwareMap.get(DcMotor.class, "stage3");
 
-        leftLauncher.setDirection(DcMotor.Direction.FORWARD);
-        rightLauncher.setDirection(DcMotor.Direction.REVERSE);
+        shooter.setDirection(DcMotor.Direction.REVERSE);
         intakeStage1.setDirection(CRServo.Direction.REVERSE);
         intakeStage2.setDirection(CRServo.Direction.FORWARD);
         intakeStage3.setDirection(CRServo.Direction.REVERSE);
 
-        leftLauncher.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightLauncher.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        camera = hardwareMap.get(WebcamName.class, "Webcam 1");
+        /*camera = hardwareMap.get(WebcamName.class, "Webcam 1");
 
         AprilTagProcessor tagProcessor = new AprilTagProcessor.Builder()
                 .setDrawAxes(true)
@@ -78,7 +77,7 @@ public class Blue_Long extends LinearOpMode {
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                 .setCameraResolution(new Size(640, 480))
                 .enableLiveView(true)
-                .build();
+                .build();*/
 
         waitForStart();
 
