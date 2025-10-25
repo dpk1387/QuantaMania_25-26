@@ -88,10 +88,10 @@ public class Blue_Atgoal extends Blue_Short {
         if (opModeIsActive()) {
             driver.drive(6, 0, 45, 1000); //positive rotation is clockwise, go to ball pickup location
             driver.intake(2000);
-            driver.drive(36, 0, 0, 1000);
+            driver.drive(34, 0, 0, 1000);
             sleep(100);
             driver.drive(0, 0, 100, 1000); //let camera see apriltag for positioning
-            driver.adjust(0, -24, -45); //adjust to shooting position
+            driver.adjust(0, 27, 0); //adjust to shooting position
             SHOOT();
             driver.adjust(-4, 36, -45, 1000); //realign with balls
           
@@ -100,16 +100,16 @@ public class Blue_Atgoal extends Blue_Short {
             driver.drive(30, 0, 0, 1000); 
             sleep(100);
             driver.drive(0, 0, 110, 1000);
-            driver.adjust(0, -24, -45);
+            driver.adjust(0, 42, 0);
             SHOOT();
-            driver.adjust(-4, 36, -45, 1000);
+            driver.adjust(-4, 60, -45, 1000);
           
             driver.drive(0, 0, 180, 0); //third set of balls
             driver.intake(2000);
-            driver.drive(54, 0, 0, 1000); 
+            driver.drive(16, 0, 0, 1000); 
             sleep(100);
             driver.drive(0, 0, 120, 1000);
-            driver.adjust(0, -24, -45);
+            driver.adjust(0, 48, 0);
             SHOOT();
         }
     }
