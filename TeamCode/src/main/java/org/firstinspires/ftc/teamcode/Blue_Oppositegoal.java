@@ -86,36 +86,36 @@ public class Blue_Oppositegoal extends Blue_Short {
         waitForStart();
 
         if (opModeIsActive()) {
-            driver.drive(0, -33, 0, 1000); //go to loading zone
-            driver.intake(2000);
-            driver.drive(6, 0, 0, 1000);
-            sleep(100);
-            driver.drive(0, 18, 0, 1000); //move out of the way of other balls to shoot
-            driver.drive(72, 0, 0, 1000);
-            driver.adjust(0, 18, -45); //adjust to shooting position
-            SHOOT();
-            driver.adjust(-30, 36, -45, 1000); //realign with balls
+            // driver.drive(0, -33, 0, 1000); //go to loading zone
+            // driver.intake(2000);
+            // driver.drive(6, 0, 0, 1000);
+            // sleep(100);
+            // driver.drive(0, 18, 0, 1000); //move out of the way of other balls to shoot
+            // driver.drive(72, 0, 0, 1000);
+            // driver.adjust(0, 18, -45); //adjust to shooting position
+            // SHOOT();
+            // driver.adjust(-30, 36, -45, 1000); //realign with balls
 
-            driver.drive(-72, 0, 0, 1000); //first set of balls
-            driver.drive(0, -18, 0, 0); 
+            driver.drive(12, -12, 0, 1000); //first set of balls
+            // driver.drive(0, -18, 0, 0); 
             driver.intake(2000);
             driver.drive(30, 0, 0, 1000); 
             sleep(100);
-            driver.adjust(-6, 78, -45, 1000);
+            driver.adjust(0, 48, 0, 1000);
             SHOOT();
             driver.adjust(6, 78, -45, 1000);
           
             driver.intake(2000); //second set of balls
             driver.drive(24, 0, 0, 1000); 
             sleep(100);
-            driver.adjust(-6, 54, -45, 1000);
+            driver.adjust(0, 40, 0, 1000);
             SHOOT();
             driver.adjust(6, 54, -45, 1000);
 
             driver.intake(2000); //third set of balls
             driver.drive(12, 0, 0, 1000); 
             sleep(100);
-            driver.adjust(-6, 42, -45, 1000);
+            driver.adjust(0, 32, 0, 1000);
             SHOOT();
         }
     }
