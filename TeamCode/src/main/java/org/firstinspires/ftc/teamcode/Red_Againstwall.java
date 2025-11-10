@@ -83,27 +83,27 @@ public class Blue_Long extends LinearOpMode {
 
         if (opModeIsActive()) {
             driver.drive(-36, 0, 0, 2000);
-            driver.drive(-2, 0, 0, 2000); //get against wall
+            driver.drive(0, -2, 0, 2000); //get against wall
             SHOOT(); //shoot three preloads
-            driver.drive(27, 24, 0, 2000); //go to first three artifacts
+            driver.drive(24, 51, 0, 2000); //go to first three artifacts
             driver.intake(2000);
             driver.drive(24, 0, 0, 2000); //collect artifacts
             sleep(100);
-            driver.drive(-51, -48, 0, 2000); //get back into shooting position
+            driver.drive(-48, -51, 0, 2000); //get back into shooting position
             SHOOT(); //shoot three
           
-            driver.drive(51, 24, 0, 2000); //go to second three artifacts
+            driver.drive(24, 75, 0, 2000); //go to second three artifacts
             driver.intake(2000);
             driver.drive(24, 0, 0, 2000); //collect artifacts
             sleep(100);
-            driver.drive(-75, -48, 0, 2000); //get back into shooting position
+            driver.drive(-48, -75, 0, 2000); //get back into shooting position
             SHOOT(); //shoot three
 
-            driver.drive(75, 24, 0, 2000); //go to last three artifacts
+            driver.drive(24, 99, 0, 2000); //go to last three artifacts
             driver.intake(2000);
             driver.drive(24, 0, 0, 2000); //collect artifacts
             sleep(100);
-            driver.drive(-99, -48, 0, 2000); //get back into shooting position
+            driver.drive(-48, -99, 0, 2000); //get back into shooting position
             SHOOT(); //shoot three
         }
 
