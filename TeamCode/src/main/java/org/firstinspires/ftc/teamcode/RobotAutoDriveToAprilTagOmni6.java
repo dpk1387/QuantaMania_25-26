@@ -120,9 +120,9 @@ public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
     final double STRAFE_GAIN =  0.015 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
     final double TURN_GAIN   =  0.02  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
-    final double MAX_AUTO_SPEED = 0.7;   //  Clip the approach speed to this max value (adjust for your robot)
-    final double MAX_AUTO_STRAFE= 0.7;   //  Clip the strafing speed to this max value (adjust for your robot)
-    final double MAX_AUTO_TURN  = 0.7;   //  Clip the turn speed to this max value (adjust for your robot)
+    final double MAX_AUTO_SPEED = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
+    final double MAX_AUTO_STRAFE= 0.8;   //  Clip the strafing speed to this max value (adjust for your robot)
+    final double MAX_AUTO_TURN  = 0.8;   //  Clip the turn speed to this max value (adjust for your robot)
 
     private DcMotor frontLeftDrive = null;  //  Used to control the left front drive wheel
     private DcMotor frontRightDrive = null;  //  Used to control the right front drive wheel
@@ -133,13 +133,13 @@ public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
     private DcMotor stage2 = null;
     private DcMotor stage3 = null;
     private Servo blockShooter = null;
-    private double OPENSHOOTER_OPEN = 0.19;//0.3;
-    private double OPENSHOOTER_CLOSED = OPENSHOOTER_OPEN + 28;//0.55
+    final private double OPENSHOOTER_OPEN = 0.19;//0.3;
+    final private double OPENSHOOTER_CLOSED = OPENSHOOTER_OPEN + 28;//0.55
 
     private Servo cameraServo = null;
-    private double CAMERASERVO_HIGH = 0.55;
+    final private double CAMERASERVO_HIGH = 0.55;
     //private double CAMERASERVO_LOW = 0.72;
-    private double CAMERASERVO_LOW = 0.68;
+    final private double CAMERASERVO_LOW = 0.68;
 
     private DistanceSensor leftDist;
     private DistanceSensor rightDist;
@@ -200,7 +200,7 @@ public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         boolean intakeMode = false;
         boolean lastYState = false;  // The previous state of the Y button
-
+        boolean shooting = false;
         while (opModeIsActive())
         {
 //            ///TEST CODE -- Test servo -- open it to fine turn servo
@@ -338,13 +338,17 @@ public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
             lastYState = gamepad1.y;
             if(intakeMode){
                 //turn on intake power
-                stage1_power = 0.5;
-                stage2_power = 0.3;
-                stage3_power = 0;
+                stage1_power = 0.6;
+                stage2_power = 0.5;
+                stage3_power = 0.5;
             }else{
                 stage1_power = 0;
                 stage2_power = 0;
                 stage3_power = 0;
+            }
+            if (gamepad1.a && !shooting){
+                shootOnce();
+                shooting = false;
             }
             /**************************************************************************************/
             // Apply desired axes motions to the drivetrain.
@@ -356,6 +360,27 @@ public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
     }
     /**************************************************************************************/
     //Move robot according to desired axes motions: Positive X is forward,  Positive Y is strafe left, Positive Yaw is counter-clockwise
+    public void shootOnce(){
+        blockShooter.setPosition(OPENSHOOTER_CLOSED);
+        shooter.setPower(1);
+        sleep(500);
+
+        stage1.setPower(0.6);
+        stage3.setPower(1);
+        stage2.setPower(-0.2);
+
+        sleep(200);
+        blockShooter.setPosition(OPENSHOOTER_OPEN);
+
+        sleep(300);
+        blockShooter.setPosition(OPENSHOOTER_CLOSED);
+
+        shooter.setPower(0);
+        stage3.setPower(0);
+        stage2.setPower(0);
+        sleep(10);
+
+    }
     public void moveRobot(double x, double y, double yaw) {
         // Calculate wheel powers.
         double frontLeftPower    =  x - y - yaw;
@@ -400,7 +425,7 @@ public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
         stage1 = hardwareMap.get(DcMotor.class, "stage1");
         stage2 = hardwareMap.get(DcMotor.class, "stage2");
         stage3 = hardwareMap.get(DcMotor.class, "stage3");
-        blockShooter = hardwareMap.get(Servo.class, "blockShooter");;
+        blockShooter = hardwareMap.get(Servo.class, "blockShooter");
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
