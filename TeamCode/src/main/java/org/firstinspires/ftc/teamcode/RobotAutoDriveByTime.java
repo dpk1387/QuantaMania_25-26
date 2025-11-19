@@ -1,4 +1,4 @@
-/* Copyright (c) 2023 FIRST. All rights reserved.
+/* Copyright (c) 2017 FIRST. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted (subject to the limitations in the disclaimer below) provided that
@@ -29,12 +29,15 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 import android.graphics.Color;
 import android.util.Size;
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -61,59 +64,49 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /*
- * This OpMode illustrates using a camera to locate and drive towards a specific AprilTag.
- * The code assumes a Holonomic (Mecanum or X Drive) Robot.
+ * This OpMode illustrates the concept of driving a path based on time.
+ * The code is structured as a LinearOpMode
  *
- * For an introduction to AprilTags, see the ftc-docs link below:
- * https://ftc-docs.firstinspires.org/en/latest/apriltag/vision_portal/apriltag_intro/apriltag-intro.html
+ * The code assumes that you do NOT have encoders on the wheels,
+ *   otherwise you would use: RobotAutoDriveByEncoder;
  *
- * When an AprilTag in the TagLibrary is detected, the SDK provides location and orientation of the tag, relative to the camera.
- * This information is provided in the "ftcPose" member of the returned "detection", and is explained in the ftc-docs page linked below.
- * https://ftc-docs.firstinspires.org/apriltag-detection-values
+ *   The desired path in this example is:
+ *   - Drive forward for 3 seconds
+ *   - Spin right for 1.3 seconds
+ *   - Drive Backward for 1 Second
  *
- * The drive goal is to rotate to keep the Tag centered in the camera, while strafing to be directly in front of the tag, and
- * driving towards the tag to achieve the desired distance.
- * To reduce any motion blur (which will interrupt the detection process) the Camera exposure is reduced to a very low value (5mS)
- * You can determine the best Exposure and Gain values by using the ConceptAprilTagOptimizeExposure OpMode in this Samples folder.
+ *  The code is written in a simple form with no optimizations.
+ *  However, there are several ways that this type of sequence could be streamlined,
  *
- * Under manual control, the left stick will move forward/back & left/right.  The right stick will rotate the robot.
- * Manually drive the robot until it displays Target data on the Driver Station.
- * Press and hold the *Left Bumper* to enable the automatic "Drive to target" mode.
- * Release the Left Bumper to return to manual driving mode.
- *
- * Under "Drive To Target" mode, the robot has three goals:
- * 1) Turn the robot to always keep the Tag centered on the camera frame. (Use the Target Bearing to turn the robot.)
- * 2) Strafe the robot towards the centerline of the Tag, so it approaches directly in front  of the tag.  (Use the Target Yaw to strafe the robot)
- * 3) Drive towards the Tag to get to the desired distance.  (Use Tag Range to drive the robot forward/backward)
- *
- * Use DESIRED_DISTANCE to set how close you want the robot to get to the target.
- * Speed and Turn sensitivity can be adjusted using the SPEED_GAIN, STRAFE_GAIN and TURN_GAIN constants.
- *
- * V2 - THIS VERSION ADD THE PINPOINT
- * V3 - This version do the yaw turn first
- * V4 - add ColorBlob
- * V5 - Add B to breakaway from obstacles
- * V6 - Add Intake
+ * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
+ * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
+ * 1. Go back to desired location
+ * 2. Shoot 3 times
+ * 3. Go to the first row
+ * 4. move in get three balls
+ * 5. go to the latch -> stay for a couple of seconds
+ * 6. go back to desired location
+ * 7. shoot 3 times
+ * 8. go back to second row, get the balls,
+ * 9. go back to shoot them
+ * ...
  */
 
-@TeleOp(name="Omni Drive To AprilTag6", group = "Concept")
+@Autonomous(name="Robot: Auto Drive By Time", group="Robot")
 //@Disabled
-public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
-{
+public class RobotAutoDriveByTime extends LinearOpMode {
+    /**********************************************************************************************/
     // Adjust these numbers to suit your robot. Should be from 30 - 55 inches
     final double DESIRED_DISTANCE = 45;//12.0; //  this is how close the camera should get to the target (inches)
-
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
     //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
     final double SPEED_GAIN  =  0.02  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
     final double STRAFE_GAIN =  0.015 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
     final double TURN_GAIN   =  0.02  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
-
     final double MAX_AUTO_SPEED = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_STRAFE= 0.8;   //  Clip the strafing speed to this max value (adjust for your robot)
     final double MAX_AUTO_TURN  = 0.8;   //  Clip the turn speed to this max value (adjust for your robot)
-
     private DcMotor frontLeftDrive = null;  //  Used to control the left front drive wheel
     private DcMotor frontRightDrive = null;  //  Used to control the right front drive wheel
     private DcMotor backLeftDrive = null;  //  Used to control the left back drive wheel
@@ -125,27 +118,20 @@ public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
     private Servo blockShooter = null;
     final private double OPENSHOOTER_OPEN = 0.19;//0.3;
     final private double OPENSHOOTER_CLOSED = OPENSHOOTER_OPEN + 28;//0.55
-
     private Servo cameraServo = null;
     final private double CAMERASERVO_HIGH = 0.55;
     //private double CAMERASERVO_LOW = 0.72;
     final private double CAMERASERVO_LOW = 0.68;
-
     private DistanceSensor leftDist;
     private DistanceSensor rightDist;
-
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
     private static final int DESIRED_TAG_ID = 24;//20;//24;// -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
     private VisionPortal visionPortal;               // Used to manage the video source.
     private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
     private AprilTagDetection desiredTag = null;     // Used to hold the data for a detected AprilTag
-    private Position cameraPosition = //new Position(DistanceUnit.INCH, 0, 0, 0, 0);
-            //new Position(DistanceUnit.INCH, -4, -7, 15, 0);
-            new Position(DistanceUnit.INCH, 0, 5, 13.5, 0); //middle, 5 inch forward, 13.5 height
-    private YawPitchRollAngles cameraOrientation = new YawPitchRollAngles(AngleUnit.DEGREES,
-            0, -75, 0, 0);//-90
+    private Position cameraPosition = new Position(DistanceUnit.INCH, 0, 5, 13.5, 0); //middle, 5 inch forward, 13.5 height
+    private YawPitchRollAngles cameraOrientation = new YawPitchRollAngles(AngleUnit.DEGREES,0, -75, 0, 0);//-90
     GoBildaPinpointDriver pinpoint;
-    ///
     enum LbState { IDLE, ALIGN, TRANSLATE }
     private LbState lbState = LbState.IDLE;
     private int yawStableCount = 0;
@@ -154,9 +140,11 @@ public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
     //obstacle avoidance
     private boolean prevB = false;
     private double dodgeDirection = 0.0;   // -1 = left, +1 = right, 0 = no dodge
+    private ElapsedTime     runtime = new ElapsedTime();
+    /**********************************************************************************************/
+    @Override
+    public void runOpMode() {
 
-    @Override public void runOpMode()
-    {
         boolean targetFound     = false;    // Set to true when an AprilTag target is detected
         double  drive           = 0;        // Desired forward power/speed (-1 to +1)
         double  strafe          = 0;        // Desired strafe power/speed (-1 to +1)
@@ -182,7 +170,9 @@ public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
         telemetry.addData(">", "Touch START to start OpMode");
         telemetry.update();
 
+        // Wait for the game to start (driver presses START)
         waitForStart();
+
         boolean aprilTagMode = false;
         boolean blobMode     = false;
 
@@ -191,164 +181,29 @@ public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
         boolean intakeMode = false;
         boolean lastYState = false;  // The previous state of the Y button
         boolean shooting = false;
-        while (opModeIsActive())
-        {
-//            ///TEST CODE -- Test servo -- open it to fine turn servo
-//            if (gamepad1.dpad_up) {
-//                pos += 0.01;
-//            } else if (gamepad1.dpad_down) {
-//                pos -= 0.01;
-//            }
-//            pos = Range.clip(pos, 0.0, 1.0);
-//            blockShooter.setPosition(pos);
-//            telemetry.addData("blockShooter position", blockShooter.getPosition());
 
-            // set camera exposure
-            if (gamepad1.left_bumper && !aprilTagMode) {
-                aprilTagMode = true;
-                blobMode = false;
-                setManualExposure(6, 250);
-            }
-            if ((gamepad1.right_bumper || gamepad1.right_trigger > 0.5) && !blobMode) {
-                aprilTagMode = false;
-                blobMode = true;
-                setBlobExposureAuto();
-            }
-            //set camera position
-            if (gamepad1.left_bumper) cameraServo.setPosition(CAMERASERVO_HIGH);
-            if (gamepad1.right_bumper || gamepad1.right_trigger > 0.5) {
-                cameraServo.setPosition(CAMERASERVO_LOW);
-            }
-            /**************************************************************************************/
-            targetFound = false;
-            desiredTag  = null;
-            // Step through the list of detected tags and look for a matching tag
-            List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-            for (AprilTagDetection detection : currentDetections) {
-                // Look to see if we have size info on this tag.
-                if (detection.metadata != null) {
-                    //  Check to see if we want to track towards this tag.
-                    if ((DESIRED_TAG_ID < 0) || (detection.id == DESIRED_TAG_ID)) {
-                        targetFound = true;                         // Yes, we want to use this tag.
-                        desiredTag = detection;
-                        break;  // don't look any further.
-                    }else
-                        telemetry.addData("Skipping", "Tag ID %d is not desired", detection.id);
-                }
-            }
-            /**************************************************************************************/
-            // Tell the driver what we see, and what to do.
-            if (targetFound) {
-                telemetry.addData("\n>","HOLD Left-Bumper to Drive to Target\n");
-                telemetry.addData("Found", "ID %d (%s)", desiredTag.id, desiredTag.metadata.name);
-                telemetry.addData("Range",  "%5.1f inches", desiredTag.ftcPose.range);
-                telemetry.addData("Bearing","%3.0f degrees", desiredTag.ftcPose.bearing);
-                telemetry.addData("Yaw","%3.0f degrees", desiredTag.ftcPose.yaw);
-                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", desiredTag.robotPose.getPosition().x, desiredTag.robotPose.getPosition().y,desiredTag.robotPose.getPosition().z));
-            } else {
-                telemetry.addData("\n>","Drive using joysticks to find valid target\n");
-            }
-            /**************************************************************************************/
-            // If Left Bumper is being pressed, AND we have found the desired target, Drive to target Automatically .
-            if (gamepad1.left_bumper) {
-                if (targetFound) {
-                    // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-                    double rangeError = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
-                    double headingError = desiredTag.ftcPose.bearing;
-                    double yawError = desiredTag.ftcPose.yaw;
-                    // Use the speed and turn "gains" to calculate how we want the robot to move.
-                    drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-                    turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-                    strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
-                    telemetry.addData("Auto", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-                    // Update robot location according to tag - reset pinpoint position
-                    if (yawError < 30) {
-                        // update the position according to localization, based on tag -- this is field coordinate
-                        Position rp = desiredTag.robotPose.getPosition();
-                        YawPitchRollAngles ro = desiredTag.robotPose.getOrientation();
-                        double x_fwd = fieldX_to_pfwd(rp.x, rp.y);
-                        double y_left = fieldY_to_pleft(rp.x, rp.y);
-                        double h_rr = heading_field_to_rr(ro.getYaw(AngleUnit.DEGREES));
-                        pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, x_fwd, y_left, AngleUnit.DEGREES, h_rr));
-                    }
-                } else {
-                    // if left bumper is pressed, but no tag in sight -- then move according to localization
-                    DriveCommand cmd = drivePinpoint(); //result always valid
-                    drive = cmd.drive;
-                    strafe = cmd.strafe;
-                    turn = cmd.turn;
-                }
-            }else {
-                    // LB released → reset for next run
-                    lbState = LbState.IDLE;
-                    yawStableCount = 0;
-                    // drive using manual POV Joystick mode.  Slow things down to make the robot more controlable.
-                    drive = -gamepad1.left_stick_y / 1.5;  // Reduce drive rate to 50%.
-                    strafe = -gamepad1.left_stick_x / 1.5;  // Reduce strafe rate to 50%.
-                    turn = -gamepad1.right_stick_x / 2.0;  // Reduce turn rate to 33%.
-                    telemetry.addData("Manual", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-            }
-            /**************************************************************************************/
-            // if right bumper is press -> and there is an object in sights -> turn and drive toward it
-            if (gamepad1.right_bumper || gamepad1.right_trigger > 0.5) {
-                DriveCommand cmd = autoAcquirePurple();
-                if (cmd.validBlob) {
-                    drive = cmd.drive;
-                    strafe = cmd.strafe;
-                    turn = cmd.turn;
-                }
-            }
-            /**************************************************************************************/
-            /// THIS IS OPTIONAL --  to disentangle the robot from clutter
-            final double DODGE_STRAFE_POWER = 0.6;
-            // Detect rising edge of B
-            boolean curB = gamepad1.b;
-            if (curB && !prevB) {// B was just pressed: decide dodge direction ONCE
-                dodgeDirection = -chooseDodgeDirectionOnce();
-            }
-            prevB = curB;
+        /******************************************************************************************/
+        // Step through each leg of the path, ensuring that the OpMode has not been stopped along the way.
 
-            if (gamepad1.b && dodgeDirection != 0.0) {
-                // While B is held, keep strafing in the chosen direction.
-                drive = 0.0;
-                strafe = dodgeDirection * DODGE_STRAFE_POWER;
-                turn = 0.0;
-            }else{
-                dodgeDirection = 0.0;
-            }
+        //1. whenever want to loop, use the following
 
-            /**************************************************************************************/
-//            pinpoint.update();
-//            pose2D = pinpoint.getPosition();
-//            telemetry.addLine(String.format("PINPOINT -- XY-yaw %6.1f %6.1f %6.1f  (inch)", pose2D.getX(DistanceUnit.INCH), pose2D.getY(DistanceUnit.INCH), pose2D.getHeading(AngleUnit.DEGREES)));
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 3.0)) {
+            telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
             telemetry.update();
-            /**************************************************************************************/
-            if (gamepad1.y && !lastYState)
-                intakeMode = !intakeMode;
-            lastYState = gamepad1.y;
-            if(intakeMode){
-                //turn on intake power
-                stage1_power = 0.6;
-                stage2_power = 0.5;
-                stage3_power = 0.5;
-            }else{
-                stage1_power = 0;
-                stage2_power = 0;
-                stage3_power = 0;
-            }
-            if (gamepad1.a && !shooting){
-                shootOnce();
-                shooting = false;
-            }
-            /**************************************************************************************/
-            // Apply desired axes motions to the drivetrain.
-            moveRobot(drive, strafe, turn);
-            //Apply power to stage1, stage2, stage3
-            runIntake(stage1_power, stage2_power, stage3_power);
-            sleep(10);
         }
+
     }
-    /**************************************************************************************/
+    private void moveToShootLocation(double desiredDistance){
+        /*Move while looking up*/
+
+    }
+
+    private void moveToLocation(double x, double y, double yaw){
+
+    }
+
+    /***********************************************************************************************/
     //Move robot according to desired axes motions: Positive X is forward,  Positive Y is strafe left, Positive Yaw is counter-clockwise
     public void shootOnce(){
         //1. make sure the gate is closed
@@ -435,7 +290,7 @@ public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
 
         shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
-     //Initialize the AprilTag processor.
+    //Initialize the AprilTag processor.
     private void initAprilTagAndColorBlob() {
         /******************************************************************************************/
         // Create the AprilTag processor by using a builder.
@@ -873,9 +728,9 @@ public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
                 double radius_px  = circle.getRadius();
                 // --- Check if blob is partially outside image (clipped) ---
                 boolean isPartial = (centerX_px - radius_px <= 0) ||
-                                (centerX_px + radius_px >= IMG_WIDTH) ||
-                                (centerY_px - radius_px <= 0) ||
-                                (centerY_px + radius_px >= IMG_HEIGHT);
+                        (centerX_px + radius_px >= IMG_WIDTH) ||
+                        (centerY_px - radius_px <= 0) ||
+                        (centerY_px + radius_px >= IMG_HEIGHT);
                 // --- Horizontal alignment: compute angle error from image center ---
                 double dx_px = centerX_px - CX;              // + if blob is to the right
                 double angleErrRad = Math.atan2(dx_px, FX);  // small-angle approx
@@ -977,5 +832,5 @@ public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
         stage2.setPower(stage2_power);
         stage3.setPower(stage3_power);
     }
-}
 
+}
