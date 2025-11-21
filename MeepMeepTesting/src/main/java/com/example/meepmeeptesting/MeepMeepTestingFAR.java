@@ -15,14 +15,36 @@ public class MeepMeepTestingFAR {
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 //.setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
-                .setConstraints(70, 70, Math.toRadians(180), Math.toRadians(180), 15)
+                .setConstraints(80, 80, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
-        double shootX = -34, shootY = 11;
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(56, 11, Math.toRadians(180)))
-                .splineToLinearHeading(new Pose2d(shootX, shootY,  Math.toRadians(135)), Math.toRadians(180)) //go into
+        double shootX = -11, shootY = 11, shootYaw = 135;
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(61, 11, Math.toRadians(180)))
+                .splineToLinearHeading(new Pose2d(shootX, shootY,  Math.toRadians(shootYaw)), Math.toRadians(180)) //go into
                 .waitSeconds(3) //to shoot
+
                 .setTangent(Math.toRadians(0))
-                .splineToLinearHeading(new Pose2d(56, 11,  Math.toRadians(90)), Math.toRadians(0)) //go into
+                .splineToLinearHeading(new Pose2d(60, 11,  Math.toRadians(90)), Math.toRadians(0)) //go into
+                .strafeTo(new Vector2d(60, 60))
+                .strafeTo(new Vector2d(60, 11))
+                .setTangent(Math.toRadians(180))
+                .splineToLinearHeading(new Pose2d(shootX, shootY,  Math.toRadians(shootYaw)), Math.toRadians(180)) //go into
+                .waitSeconds(3) //to shoot
+
+                .setTangent(Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(60, 11,  Math.toRadians(90)), Math.toRadians(0)) //go into
+                .strafeTo(new Vector2d(60, 60))
+                .strafeTo(new Vector2d(60, 11))
+                .setTangent(Math.toRadians(180))
+                .splineToLinearHeading(new Pose2d(shootX, shootY,  Math.toRadians(shootYaw)), Math.toRadians(180)) //go into
+                .waitSeconds(3) //to shoot
+
+                .setTangent(Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(60, 11,  Math.toRadians(90)), Math.toRadians(0)) //go into
+                .strafeTo(new Vector2d(60, 60))
+                .strafeTo(new Vector2d(60, 11))
+                .setTangent(Math.toRadians(180))
+                .splineToLinearHeading(new Pose2d(shootX, shootY,  Math.toRadians(shootYaw)), Math.toRadians(180)) //go into
+                .waitSeconds(3) //to shoot
 
                 //.splineTo(new Vector2d(-11, 24), Math.toRadians(90))
                 //.strafeTo(new Vector2d(-11, 52))

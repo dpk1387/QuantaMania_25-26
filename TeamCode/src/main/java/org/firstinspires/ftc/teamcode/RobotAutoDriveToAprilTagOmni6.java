@@ -408,6 +408,7 @@ public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
         frontRightDrive = hardwareMap.get(DcMotor.class, "frontRightWheel");//frontRightWheel
         backLeftDrive = hardwareMap.get(DcMotor.class, "backLeftWheel"); //backLeftWheel
         backRightDrive = hardwareMap.get(DcMotor.class, "backRightWheel");//backRightWheel
+
         cameraServo = hardwareMap.get(Servo.class, "cameraServo");
         leftDist  = hardwareMap.get(DistanceSensor.class, "leftDistanceSensor");
         rightDist = hardwareMap.get(DistanceSensor.class, "rightDistanceSensor");
