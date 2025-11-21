@@ -221,48 +221,82 @@ public class RedAutoNEAR extends LinearOpMode {
         runtime.reset();
         telemetryThread.start();
         //double shootX = -34, shootY = 11, shootYaw = 135;
-        double shootX = -11, shootY = 11, shootYaw = 135;
+        double shootX = -24, shootY = 24, shootYaw = 135;
         Pose2d shootPose = new Pose2d(shootX, shootY,  Math.toRadians(shootYaw));
+        /*
+        *         double shootX = -24, shootY = 24;
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-48, 48, Math.toRadians(135)))
+               x .strafeTo(new Vector2d(shootX, shootY))
+               x .waitSeconds(3) //to shoot
+                *
+                x.setTangent(Math.toRadians(0))
+                x.splineToLinearHeading(new Pose2d(-11, 28,  Math.toRadians(90)), Math.toRadians(45)) //go into
+                x//.splineTo(new Vector2d(-11, 24), Math.toRadians(90))
+                x.strafeTo(new Vector2d(-11, 52))
+                x.strafeTo(new Vector2d(-6, 46))
+                x.strafeTo(new Vector2d(-6, 52))
+                x.setTangent(Math.toRadians(225))
+                x.splineToLinearHeading(new Pose2d(shootX, shootY,  Math.toRadians(135)), Math.toRadians(225))
+                x.waitSeconds(3) //to shoot
+
+                x.setTangent(Math.toRadians(10))
+                x.splineToLinearHeading(new Pose2d(11, 28,  Math.toRadians(90)), Math.toRadians(20))
+                x.strafeTo(new Vector2d(11, 56))
+                x.strafeTo(new Vector2d(6, 48))
+                x.strafeTo(new Vector2d(-6, 52))
+                x.setTangent(Math.toRadians(225))
+                x.splineToLinearHeading(new Pose2d(shootX, shootY,  Math.toRadians(135)), Math.toRadians(225))
+                x.waitSeconds(3) //to shoot
+
+                .setTangent(Math.toRadians(10))
+                .splineToLinearHeading(new Pose2d(33, 28,  Math.toRadians(90)), Math.toRadians(15))
+                .strafeTo(new Vector2d(33, 56))
+                .setTangent(Math.toRadians(225))
+                .splineToLinearHeading(new Pose2d(shootX, shootY,  Math.toRadians(135)), Math.toRadians(225))
+                .waitSeconds(3) //to shoot
+                .build());
+
+        * */
         try {
             Actions.runBlocking(
                     new SequentialAction(
                             //1. Go to shooting place
                             drive.actionBuilder(startPose)
-                                    .splineToLinearHeading(shootPose, Math.toRadians(180))
-                                    //.waitSeconds(3)
+                                    .strafeTo(new Vector2d(shootX, shootY))
                                     .build(),
                             //2. Replace with ShootAction
-                            //new SleepAction(3),
                             shootAll(),
-                            //3. goback to get ball at the corner
+                            //3. get the inner most 3 balls
                             drive.actionBuilder(shootPose)
                                     .setTangent(Math.toRadians(0))
-                                    .splineToLinearHeading(new Pose2d(60, 11,  Math.toRadians(90)), Math.toRadians(0)) //go into
-                                    .strafeTo(new Vector2d(60, 60))
-                                    .strafeTo(new Vector2d(60, 11))
-                                    .setTangent(Math.toRadians(180))
-                                    .splineToLinearHeading(shootPose, Math.toRadians(180)) //go into
+                                    .splineToLinearHeading(new Pose2d(-11, 28,  Math.toRadians(90)), Math.toRadians(45)) //go into
+                                    .strafeTo(new Vector2d(-11, 52))
+                                    .strafeTo(new Vector2d(-6, 46))
+                                    .strafeTo(new Vector2d(-6, 52))
+                                    .setTangent(Math.toRadians(225))
+                                    .splineToLinearHeading(shootPose, Math.toRadians(225))
                                     .build(),
-                            //new SleepAction(3),
                             shootAll(),
+                            //4. get the middle row balls
                             drive.actionBuilder(shootPose)
-                                    .setTangent(Math.toRadians(0))
-                                    .splineToLinearHeading(new Pose2d(60, 11,  Math.toRadians(90)), Math.toRadians(0)) //go into
-                                    .strafeTo(new Vector2d(60, 60))
-                                    .strafeTo(new Vector2d(60, 11))
-                                    .setTangent(Math.toRadians(180))
-                                    .splineToLinearHeading(shootPose, Math.toRadians(180)) //go into
+                                    .setTangent(Math.toRadians(10))
+                                    .splineToLinearHeading(new Pose2d(11, 28,  Math.toRadians(90)), Math.toRadians(20))
+                                    .strafeTo(new Vector2d(11, 56))
+                                    .strafeTo(new Vector2d(6, 48))
+                                    .strafeTo(new Vector2d(-6, 52))
+                                    .setTangent(Math.toRadians(225))
+                                    .splineToLinearHeading(new Pose2d(shootX, shootY,  Math.toRadians(135)), Math.toRadians(225))
                                     .build(),
-                            //new SleepAction(3),
                             shootAll(),
+                            //5. get the outermost row balls
                             drive.actionBuilder(shootPose)
-                                    .setTangent(Math.toRadians(0))
-                                    .splineToLinearHeading(new Pose2d(60, 11,  Math.toRadians(90)), Math.toRadians(0)) //go into
-                                    .strafeTo(new Vector2d(60, 60))
-                                    .strafeTo(new Vector2d(60, 11))
-                                    .setTangent(Math.toRadians(180))
-                                    .splineToLinearHeading(shootPose, Math.toRadians(180)) //go into
-                                    .build()
+                                    .setTangent(Math.toRadians(10))
+                                    .splineToLinearHeading(new Pose2d(33, 28,  Math.toRadians(90)), Math.toRadians(15))
+                                    .strafeTo(new Vector2d(33, 56))
+                                    .setTangent(Math.toRadians(225))
+                                    .splineToLinearHeading(new Pose2d(shootX, shootY,  Math.toRadians(135)), Math.toRadians(225))
+                                    .build(),
+                            shootAll()
                     )
             );
             telemetry.addData("Trajectory", "Executed Successfully");
