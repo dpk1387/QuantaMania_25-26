@@ -27,17 +27,26 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode;
 
+import android.util.Size;
+
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
+
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -90,7 +99,8 @@ import java.util.concurrent.TimeUnit;
 public class RobotAutoDriveToAprilTagOmni extends LinearOpMode
 {
     // Adjust these numbers to suit your robot.
-    final double DESIRED_DISTANCE = 12.0; //  this is how close the camera should get to the target (inches)
+    // Should be from 30 - 55 inches
+    final double DESIRED_DISTANCE = 40;//12.0; //  this is how close the camera should get to the target (inches)
 
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
@@ -109,10 +119,14 @@ public class RobotAutoDriveToAprilTagOmni extends LinearOpMode
     private DcMotor backRightDrive = null;  //  Used to control the right back drive wheel
 
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
-    private static final int DESIRED_TAG_ID = -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
+    private static final int DESIRED_TAG_ID = 20;// -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
     private VisionPortal visionPortal;               // Used to manage the video source.
     private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
     private AprilTagDetection desiredTag = null;     // Used to hold the data for a detected AprilTag
+    private Position cameraPosition = //new Position(DistanceUnit.INCH, 0, 0, 0, 0);
+            new Position(DistanceUnit.INCH, -4, -7, 15, 0);
+    private YawPitchRollAngles cameraOrientation = new YawPitchRollAngles(AngleUnit.DEGREES,
+            0, -75, 0, 0);//-90
 
     @Override public void runOpMode()
     {
@@ -127,10 +141,11 @@ public class RobotAutoDriveToAprilTagOmni extends LinearOpMode
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must match the names assigned during the robot configuration.
         // step (using the FTC Robot Controller app on the phone).
-        frontLeftDrive = hardwareMap.get(DcMotor.class, "front_left_drive");
-        frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive");
-        backLeftDrive = hardwareMap.get(DcMotor.class, "back_left_drive");
-        backRightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");
+
+        frontLeftDrive = hardwareMap.get(DcMotor.class, "frontLeftWheel"); //frontLeftWheel
+        frontRightDrive = hardwareMap.get(DcMotor.class, "frontRightWheel");//frontRightWheel
+        backLeftDrive = hardwareMap.get(DcMotor.class, "backLeftWheel"); //backLeftWheel
+        backRightDrive = hardwareMap.get(DcMotor.class, "backRightWheel");//backRightWheel
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
@@ -256,7 +271,11 @@ public class RobotAutoDriveToAprilTagOmni extends LinearOpMode
      */
     private void initAprilTag() {
         // Create the AprilTag processor by using a builder.
-        aprilTag = new AprilTagProcessor.Builder().build();
+        aprilTag = new AprilTagProcessor.Builder()
+                .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
+                .setCameraPose(cameraPosition, cameraOrientation)
+                .setLensIntrinsics(822.317, 822.317, 319.495, 242.502)
+                .build();
 
         // Adjust Image Decimation to trade-off detection-range for detection-rate.
         // e.g. Some typical detection data using a Logitech C920 WebCam
@@ -271,11 +290,13 @@ public class RobotAutoDriveToAprilTagOmni extends LinearOpMode
         if (USE_WEBCAM) {
             visionPortal = new VisionPortal.Builder()
                     .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                    .setCameraResolution(new Size(640, 480))
                     .addProcessor(aprilTag)
                     .build();
         } else {
             visionPortal = new VisionPortal.Builder()
                     .setCamera(BuiltinCameraDirection.BACK)
+                    .setCameraResolution(new Size(640, 480))
                     .addProcessor(aprilTag)
                     .build();
         }

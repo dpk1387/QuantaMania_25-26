@@ -1,0 +1,28 @@
+Note:
+1) build project
+2) gladlew installDebug/installRelease
+
+Always run this to deploy via Wifi
+ C:\Users\sondi\Code\platform-tools-latest-windows\platform-tools\adb.exe connect 192.168.43.1:5555
+---------
+RoadRunner:
+https://rr.brott.dev/docs/v1-0/installation/
+Tunning
+Logo facing direction: https://ftc-docs.firstinspires.org/en/latest/programming_resources/imu/imu.html?highlight=imu#physical-hub-mounting
+ (Logo FORWARD, USB LEFT)
+https://www.youtube.com/watch?v=3Sd1S6F35tA&ab_channel=FTC6282SimiValleyRobotics
+http://192.168.43.1:8080/dash
+1) run forward push test -> inPerTick
+2) run lateral push test -> lateralinPertick
+3) run angular ramp logger -> kS, kV
+http://192.168.43.1:8080/tuning/drive-encoder-angular-ramp.html
+4) run manual feed forward -> kA, and compare v0 vs. vref
+5) run manual feed back tunner -> gain
+
+6) Spline Test: follow a circe -> center axis aligned after movement
+
+
+MeepMeep
+ https://github.com/acmerobotics/MeepMeep?tab=readme-ov-file
+ https://www.youtube.com/watch?v=OqtzA7NYe18&ab_channel=techsupportguy
+ https://www.youtube.com/watch?v=vdn1v404go8&ab_channel=NoahBresler
