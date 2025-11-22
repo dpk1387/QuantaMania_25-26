@@ -127,6 +127,7 @@ public class TeleOpV1 extends LinearOpMode {
         }
     }
 
+    //MECANUM DRIVE
     private void drive(double forward, double right, double rotate) {
         double MAX_DRIVE_PWR = 0.6;
         frontRightWheel.setPower(Range.clip(forward - right - rotate, -MAX_DRIVE_PWR, MAX_DRIVE_PWR));

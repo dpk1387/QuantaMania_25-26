@@ -65,7 +65,7 @@ public class RedAutoNEAR extends LinearOpMode {
 
     private ColorBlobLocatorProcessor colorLocator;
     private ElapsedTime runtime = new ElapsedTime();
-    //*************************************************************************************
+
     /*
     /// 1. Define Action
     ///

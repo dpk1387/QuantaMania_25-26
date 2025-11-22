@@ -47,16 +47,29 @@ import java.util.concurrent.TimeUnit;
 @Autonomous(name = "RedAutoFAR", group = "Autonomous")
 @Config
 public class RedAutoFAR extends LinearOpMode {
-    /* HARDWARE */
+    /* HARDWARE INITIALIZATION*/
+    //shooter
     private DcMotor shooter = null;
+
+    //stages
     private DcMotor stage1 = null;
     private DcMotor stage2 = null;
     private DcMotor stage3 = null;
+
+    //blocking servo
     private Servo blockShooter = null;
+
+    //servo that controls where the camera looks
     private Servo cameraServo = null;
+
+    //distance sensors (usually used to see how far away from the goal the robot is)
     private DistanceSensor leftDist = null;
     private DistanceSensor rightDist = null;
+
+    //pinpoint for odometry
     GoBildaPinpointDriver pinpoint = null;
+
+    //blockShooter servo positions
     final private double OPENSHOOTER_OPEN = 0.19;//0.3;
     final private double OPENSHOOTER_CLOSED = OPENSHOOTER_OPEN + 28;//0.55
     final private double CAMERASERVO_HIGH = 0.55;
