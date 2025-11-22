@@ -58,7 +58,7 @@ public class RedAutoFAR extends LinearOpMode {
     private DistanceSensor rightDist = null;
     GoBildaPinpointDriver pinpoint = null;
     final private double OPENSHOOTER_OPEN = 0.19;//0.3;
-    final private double OPENSHOOTER_CLOSED = OPENSHOOTER_OPEN + 28;//0.55
+    final private double OPENSHOOTER_CLOSED = OPENSHOOTER_OPEN + 0.28;//0.55
     final private double CAMERASERVO_HIGH = 0.55;
     final private double CAMERASERVO_LOW = 0.68;
     /* INIT */
