@@ -58,7 +58,7 @@ public class RedAutoFAR extends LinearOpMode {
     private DistanceSensor rightDist = null;
     GoBildaPinpointDriver pinpoint = null;
     final private double OPENSHOOTER_OPEN = 0.19;//0.3;
-    final private double OPENSHOOTER_CLOSED = OPENSHOOTER_OPEN + 0.28;//0.55
+    final private double OPENSHOOTER_CLOSED = OPENSHOOTER_OPEN + 28;//0.55
     final private double CAMERASERVO_HIGH = 0.55;
     final private double CAMERASERVO_LOW = 0.68;
     /* INIT */
@@ -227,6 +227,7 @@ public class RedAutoFAR extends LinearOpMode {
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         runtime.reset();
         telemetryThread.start();
+        //double shootX = -34, shootY = 11, shootYaw = 135;
         double shootX = -11, shootY = 11, shootYaw = 135;
         Pose2d shootPose = new Pose2d(shootX, shootY,  Math.toRadians(shootYaw));
         try {
@@ -235,8 +236,10 @@ public class RedAutoFAR extends LinearOpMode {
                             //1. Go to shooting place
                             drive.actionBuilder(startPose)
                                     .splineToLinearHeading(shootPose, Math.toRadians(180))
+                                    //.waitSeconds(3)
                                     .build(),
                             //2. Replace with ShootAction
+                            //new SleepAction(3),
                             shootAll(),
                             //3. goback to get ball at the corner
                             drive.actionBuilder(shootPose)
@@ -247,17 +250,7 @@ public class RedAutoFAR extends LinearOpMode {
                                     .setTangent(Math.toRadians(180))
                                     .splineToLinearHeading(shootPose, Math.toRadians(180)) //go into
                                     .build(),
-                            shootAll(),
-                            //4. goe back to the corner for the second round
-                            drive.actionBuilder(shootPose)
-                                    .setTangent(Math.toRadians(0))
-                                    .splineToLinearHeading(new Pose2d(60, 11,  Math.toRadians(90)), Math.toRadians(0)) //go into
-                                    .strafeTo(new Vector2d(60, 60))
-                                    .strafeTo(new Vector2d(60, 11))
-                                    .setTangent(Math.toRadians(180))
-                                    .splineToLinearHeading(shootPose, Math.toRadians(180)) //go into
-                                    .build(),
-                            //5. go back for the third round
+                            //new SleepAction(3),
                             shootAll(),
                             drive.actionBuilder(shootPose)
                                     .setTangent(Math.toRadians(0))
@@ -267,7 +260,16 @@ public class RedAutoFAR extends LinearOpMode {
                                     .setTangent(Math.toRadians(180))
                                     .splineToLinearHeading(shootPose, Math.toRadians(180)) //go into
                                     .build(),
-                            shootAll()
+                            //new SleepAction(3),
+                            shootAll(),
+                            drive.actionBuilder(shootPose)
+                                    .setTangent(Math.toRadians(0))
+                                    .splineToLinearHeading(new Pose2d(60, 11,  Math.toRadians(90)), Math.toRadians(0)) //go into
+                                    .strafeTo(new Vector2d(60, 60))
+                                    .strafeTo(new Vector2d(60, 11))
+                                    .setTangent(Math.toRadians(180))
+                                    .splineToLinearHeading(shootPose, Math.toRadians(180)) //go into
+                                    .build()
                     )
             );
             telemetry.addData("Trajectory", "Executed Successfully");
