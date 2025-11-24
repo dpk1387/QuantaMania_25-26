@@ -369,12 +369,12 @@ public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         //2. start the shooter
         shooter.setPower(1);
-        sleep(500);
+        sleep(250);
         //3. set stage power
         stage1.setPower(0.5); //keep stage1 as inake
-        stage3.setPower(1); //accelate stage3
         stage2.setPower(-0.7); //use stage 2 as the second gate
-        sleep(200); //wait for them to be full speed
+        stage3.setPower(1); //accelate stage3
+        //sleep(200); //wait for them to be full speed
 
         blockShooter.setPosition(OPENSHOOTER_OPEN); //open the gate so that the ball can go through
         sleep(300); //wait until the ball go through
@@ -382,10 +382,10 @@ public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
         //4. close the gate
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         //5. set all the power back, except the stage 1. Note that this could be use for the first ball, thre are still two balles needed to be brought up
-        shooter.setPower(0);
-        stage3.setPower(0);
-        stage2.setPower(0);
-        sleep(10);
+//        shooter.setPower(0);
+//        stage3.setPower(0);
+//        stage2.setPower(0);
+//        sleep(10);
     }
 
     public void shootThree(){
