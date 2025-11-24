@@ -123,11 +123,11 @@ public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
     private DcMotor stage2 = null;
     private DcMotor stage3 = null;
     private Servo blockShooter = null;
-    final private double OPENSHOOTER_OPEN = 0.19;//0.3;
-    final private double OPENSHOOTER_CLOSED = OPENSHOOTER_OPEN + 28;//0.55
+    final private double OPENSHOOTER_OPEN = 0.5;//0.3;
+    final private double OPENSHOOTER_CLOSED = 1.0;//OPENSHOOTER_OPEN + 28;//0.55
 
     private Servo cameraServo = null;
-    final private double CAMERASERVO_HIGH = 0.55;
+    final private double CAMERASERVO_HIGH = 0.49;//0.55;
     //private double CAMERASERVO_LOW = 0.72;
     final private double CAMERASERVO_LOW = 0.68;
 
@@ -186,23 +186,27 @@ public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
         boolean aprilTagMode = false;
         boolean blobMode     = false;
 
-        //double pos = 0.4;
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         boolean intakeMode = false;
         boolean lastYState = false;  // The previous state of the Y button
         boolean shooting = false;
+
+        double pos= CAMERASERVO_LOW;//TEST
+
         while (opModeIsActive())
         {
-//            ///TEST CODE -- Test servo -- open it to fine turn servo
-//            if (gamepad1.dpad_up) {
-//                pos += 0.01;
-//            } else if (gamepad1.dpad_down) {
-//                pos -= 0.01;
-//            }
-//            pos = Range.clip(pos, 0.0, 1.0);
-//            blockShooter.setPosition(pos);
-//            telemetry.addData("blockShooter position", blockShooter.getPosition());
+            //*
+            //TEST CODE -- Test servo -- open it to fine turn servo
 
+            if (gamepad1.dpad_up) {
+                pos += 0.01;
+            } else if (gamepad1.dpad_down) {
+                pos -= 0.01;
+            }
+            pos = Range.clip(pos, 0.0, 1.0);
+            cameraServo.setPosition(pos);
+            telemetry.addData("cameraServo position", cameraServo.getPosition());
+            //*/
             // set camera exposure
             if (gamepad1.left_bumper && !aprilTagMode) {
                 aprilTagMode = true;
@@ -365,39 +369,60 @@ public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
     /**************************************************************************************/
     //Move robot according to desired axes motions: Positive X is forward,  Positive Y is strafe left, Positive Yaw is counter-clockwise
     public void shootOnce(){
-        //1. make sure the gate is closed
+//        //1. make sure the gate is closed
+//        blockShooter.setPosition(OPENSHOOTER_CLOSED);
+//        //2. start the shooter
+//        shooter.setPower(1);
+//        sleep(250);
+//        //3. set stage power
+//        stage1.setPower(0.5); //keep stage1 as inake
+//        stage2.setPower(-0.7); //use stage 2 as the second gate
+//        stage3.setPower(1); //accelate stage3
+//        //sleep(200); //wait for them to be full speed
+//
+//        blockShooter.setPosition(OPENSHOOTER_OPEN); //open the gate so that the ball can go through
+//        sleep(300); //wait until the ball go through
+//
+//        //4. close the gate
+//        blockShooter.setPosition(OPENSHOOTER_CLOSED);
+//        //5. set all the power back, except the stage 1. Note that this could be use for the first ball, thre are still two balles needed to be brought up
+////        shooter.setPower(0);
+////        stage3.setPower(0);
+////        stage2.setPower(0);
+////        sleep(10);
+
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
-        //2. start the shooter
         shooter.setPower(1);
-        sleep(250);
-        //3. set stage power
-        stage1.setPower(0.5); //keep stage1 as inake
-        stage2.setPower(-0.7); //use stage 2 as the second gate
-        stage3.setPower(1); //accelate stage3
-        //sleep(200); //wait for them to be full speed
+        sleep(500);
 
-        blockShooter.setPosition(OPENSHOOTER_OPEN); //open the gate so that the ball can go through
-        sleep(300); //wait until the ball go through
+        stage1.setPower(1.0);
+        sleep(100);
 
-        //4. close the gate
-        blockShooter.setPosition(OPENSHOOTER_CLOSED);
-        //5. set all the power back, except the stage 1. Note that this could be use for the first ball, thre are still two balles needed to be brought up
-//        shooter.setPower(0);
-//        stage3.setPower(0);
-//        stage2.setPower(0);
-//        sleep(10);
+        stage2.setPower(-0.4);
+        stage3.setPower(-0.3);
+        sleep(200);
+
+        stage3.setPower(1);
+
+        blockShooter.setPosition(OPENSHOOTER_OPEN);
+        sleep(200);
+
+        stage3.setPower(0);
+        stage2.setPower(0.7);
+        sleep(200);
+        stage2.setPower(0);
     }
 
     public void shootThree(){
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         shooter.setPower(1); //start shooter before
-        sleep(1000);//give shooter time to accelerate to full
+        //sleep(1000);//give shooter time to accelerate to full
 
         stage1.setPower(0.7);
         stage2.setPower(-0.75);
         stage3.setPower(1);
 
-        sleep(1000);//continue to let shooter accelerate
+        sleep(300);//continue to let shooter accelerate
         blockShooter.setPosition(OPENSHOOTER_OPEN);
         sleep(1000);//shoot 1st, 2nd stays back
 

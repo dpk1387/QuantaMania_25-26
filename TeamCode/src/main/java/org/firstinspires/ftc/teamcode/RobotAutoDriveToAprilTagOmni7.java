@@ -127,7 +127,7 @@ public class RobotAutoDriveToAprilTagOmni7 extends LinearOpMode
     final private double OPENSHOOTER_CLOSED = OPENSHOOTER_OPEN + 28;//0.55
 
     private Servo cameraServo = null;
-    final private double CAMERASERVO_HIGH = 0.55;
+    final private double CAMERASERVO_HIGH = 0.49;//0.55;
     //private double CAMERASERVO_LOW = 0.72;
     final private double CAMERASERVO_LOW = 0.68;
 
