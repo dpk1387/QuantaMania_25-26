@@ -340,6 +340,20 @@ public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
                 shootOnce();
                 shooting = false;
             }
+
+            if (gamepad1.x && !shooting){
+                shootThree();
+                shooting = false;
+
+            }
+
+            if (gamepad1.b){
+                stage1_power = 0;
+                stage2_power = 0;
+                stage3_power = 0;
+
+            }
+
             /**************************************************************************************/
             // Apply desired axes motions to the drivetrain.
             moveRobot(drive, strafe, turn);
@@ -357,9 +371,9 @@ public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
         shooter.setPower(1);
         sleep(500);
         //3. set stage power
-        stage1.setPower(0.6); //keep stage1 as inake
+        stage1.setPower(0.5); //keep stage1 as inake
         stage3.setPower(1); //accelate stage3
-        stage2.setPower(-0.2); //use stage 2 as the second gate
+        stage2.setPower(-0.7); //use stage 2 as the second gate
         sleep(200); //wait for them to be full speed
 
         blockShooter.setPosition(OPENSHOOTER_OPEN); //open the gate so that the ball can go through
@@ -373,6 +387,39 @@ public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
         stage2.setPower(0);
         sleep(10);
     }
+
+    public void shootThree(){
+        blockShooter.setPosition(OPENSHOOTER_CLOSED);
+        shooter.setPower(1); //start shooter before
+        sleep(1000);//give shooter time to accelerate to full
+
+        stage1.setPower(0.7);
+        stage2.setPower(-0.75);
+        stage3.setPower(1);
+
+        sleep(1000);//continue to let shooter accelerate
+        blockShooter.setPosition(OPENSHOOTER_OPEN);
+        sleep(1000);//shoot 1st, 2nd stays back
+
+        stage1.setPower(0.7);
+        stage2.setPower(0.5);
+        stage3.setPower(1);
+
+        sleep(200);//let it go up
+
+        stage1.setPower(1);
+        stage2.setPower(-0.8);
+        stage3.setPower(1);
+        sleep(600);
+
+        stage1.setPower(1);
+        stage2.setPower(1);
+        stage2.setPower(1);
+        sleep(1000);
+
+        blockShooter.setPosition(OPENSHOOTER_CLOSED);
+    }
+
     public void moveRobot(double x, double y, double yaw) {
         // Calculate wheel powers.
         double frontLeftPower    =  x - y - yaw;

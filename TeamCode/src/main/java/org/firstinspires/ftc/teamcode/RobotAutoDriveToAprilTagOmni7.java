@@ -327,13 +327,13 @@ public class RobotAutoDriveToAprilTagOmni7 extends LinearOpMode
             lastYState = gamepad2.y;
             if(intakeMode){
                 //turn on intake power
-                stage1.setPower(0.6);
-                stage2.setPower(0.5);
-                stage3.setPower(0.5);
+                stage1_power = 0.6;
+                stage2_power = 0.5;
+                stage3_power = 0.5;
             }else{
-                stage1.setPower(0);
-                stage2.setPower(0);
-                stage3.setPower(0);
+                stage1_power = 0;
+                stage2_power = 0;
+                stage3_power = 0;
             }
             if (gamepad2.a && !shooting){
                 shootOnce();
@@ -346,10 +346,14 @@ public class RobotAutoDriveToAprilTagOmni7 extends LinearOpMode
 
             }
 
-            if (gamepad2.b)
-                stage1.setPower(0);
-                stage2.setPower(0);
-                stage3.setPower(0);
+            if (gamepad2.b){
+                stage1_power = 0;
+                stage2_power = 0;
+                stage3_power = 0;
+
+            }
+
+
             /**************************************************************************************/
             // Apply desired axes motions to the drivetrain.
             moveRobot(drive, strafe, turn);
@@ -367,7 +371,7 @@ public class RobotAutoDriveToAprilTagOmni7 extends LinearOpMode
         shooter.setPower(1);
         sleep(500);
         //3. set stage power
-        stage1.setPower(0.7); //keep stage1 as inake
+        stage1.setPower(0.5); //keep stage1 as inake
         stage2.setPower(-0.7); //use stage 2 as the second gate
         stage3.setPower(1); //accelate stage3
         sleep(200); //wait for them to be full speed
@@ -389,21 +393,28 @@ public class RobotAutoDriveToAprilTagOmni7 extends LinearOpMode
         shooter.setPower(1); //start shooter before
         sleep(1000);//give shooter time to accelerate to full
 
-        runIntake(0.85, -0.75, 1);
+        stage1.setPower(0.7);
+        stage2.setPower(-0.75);
+        stage3.setPower(1);
 
-        sleep(500);//continue to let shooter accelerate
+        sleep(1000);//continue to let shooter accelerate
         blockShooter.setPosition(OPENSHOOTER_OPEN);
-        sleep(400);//shoot 1st, 2nd stays back
+        sleep(1000);//shoot 1st, 2nd stays back
 
-        runIntake(0.7, 0.5, 1);
+        stage1.setPower(0.7);
+        stage2.setPower(0.5);
+        stage3.setPower(1);
 
-        sleep(400);//let it go up
+        sleep(200);//let it go up
 
-        runIntake(1, -0.8, 1);
+        stage1.setPower(1);
+        stage2.setPower(-0.8);
+        stage3.setPower(1);
+        sleep(600);
 
-        sleep(400);
-
-        runIntake(1, 1, 1);
+        stage1.setPower(1);
+        stage2.setPower(1);
+        stage2.setPower(1);
         sleep(1000);
 
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
