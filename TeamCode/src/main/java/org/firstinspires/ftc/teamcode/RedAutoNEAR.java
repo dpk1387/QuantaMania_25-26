@@ -342,8 +342,10 @@ public class RedAutoNEAR extends LinearOpMode {
                             //3. get the inner most 3 balls
                             drive.actionBuilder(shootPose)
                                     .setTangent(Math.toRadians(45))
-                                    .splineToLinearHeading(new Pose2d(-22, 33,  Math.toRadians(45)), Math.toRadians(45)) //go into
-                                    .splineToLinearHeading(new Pose2d(-6, 56,  Math.toRadians(90)), Math.toRadians(90)) //go into
+                                    //.splineToLinearHeading(new Pose2d(-22, 35,  Math.toRadians(45)), Math.toRadians(45)) //go into
+                                    .splineToLinearHeading(new Pose2d(-24, 38,  Math.toRadians(45)), Math.toRadians(45)) //go into
+                                    .splineToLinearHeading(new Pose2d(-6, 58,  Math.toRadians(95)), Math.toRadians(90)) //go into
+                                    //.splineToLinearHeading(new Pose2d(-10, 58,  Math.toRadians(180)), Math.toRadians(180)) //go into
                                     .setTangent(Math.toRadians(-90))
                                     .splineToLinearHeading(shootPose, Math.toRadians(225)) //go into
                                     .build(),
@@ -355,8 +357,9 @@ public class RedAutoNEAR extends LinearOpMode {
                             drive.actionBuilder(shootPose)
                                     .setTangent(Math.toRadians(15))
                                     .splineToLinearHeading(new Pose2d(4, 38,  Math.toRadians(45)), Math.toRadians(15)) //go into
-                                    .splineToLinearHeading(new Pose2d(8, 60,  Math.toRadians(115)), Math.toRadians(95)) //go into
-                                    .setTangent(Math.toRadians(-70))
+                                    //.splineToLinearHeading(new Pose2d(8, 60,  Math.toRadians(115)), Math.toRadians(95)) //go into
+                                    .splineToLinearHeading(new Pose2d(6, 60,  Math.toRadians(115)), Math.toRadians(95)) //go into
+                                    .setTangent(Math.toRadians(-90))
                                     .splineToLinearHeading(shootPose, Math.toRadians(200)) //go into
                                     .build(),
                             shootAll(),
@@ -579,7 +582,7 @@ public class RedAutoNEAR extends LinearOpMode {
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         //2. start the shooter
         shooter.setPower(1);
-        sleep(400);//We still need this to make sure it stable
+        sleep(200);
         //3. set stage power
         stage1.setPower(1.0); //keep stage1 as intake
         sleep(100);
@@ -589,7 +592,7 @@ public class RedAutoNEAR extends LinearOpMode {
         stage3.setPower(1); //accelate stage3
         //open the gate so that the ball can go through
         blockShooter.setPosition(OPENSHOOTER_OPEN);
-        sleep(200);
+        sleep(300);
         //4. close the gate
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         stage3.setPower(0);
