@@ -13,7 +13,7 @@ public class MeepMeepTesting {
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 //.setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
-                .setConstraints(70, 70, Math.toRadians(180), Math.toRadians(180), 15)
+                .setConstraints(55, 55, Math.toRadians(180), Math.toRadians(180), 15)//55 speed here 70 in real robot (roadrunner)
                 .build();
         double shootX = -30, shootY = 30;
         Pose2d shootPos = new Pose2d(shootX, shootY, Math.toRadians(135));

@@ -198,8 +198,8 @@ public class RedAutoNEAR extends LinearOpMode {
                 // Optionally log something
                 packet.put("PowerShooterAction", "Power shooter to power = 0.9");
                 //set the shooter power to 0.9
-                shooter.setPower(1.0);
-                sleep(500);
+                shooter.setPower(0.9);
+                //sleep(500);
                 initialized = true;
             }
             // Returning false tells Road Runner this action is finished
@@ -295,42 +295,13 @@ public class RedAutoNEAR extends LinearOpMode {
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         runtime.reset();
         telemetryThread.start();
-        double shootX = -30, shootY = 30;
+        double shootX = -32, shootY = 32; //30, 30
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(135));
 
-        /*
-                .strafeTo(new Vector2d(shootX, shootY))
-
-                .waitSeconds(3) //to shoot
-                //.turn(-Math.toRadians(100))
-                //.strafeTo(new Vector2d(-20, 40))
-                .setTangent(Math.toRadians(45))
-                .splineToLinearHeading(new Pose2d(-22, 33,  Math.toRadians(45)), Math.toRadians(45)) //go into
-                .splineToLinearHeading(new Pose2d(-8, 52,  Math.toRadians(90)), Math.toRadians(90)) //go into
-                .setTangent(Math.toRadians(-90))
-                .splineToLinearHeading(shootPos, Math.toRadians(225)) //go into
-                .waitSeconds(3)
-
-                //.turn(-Math.toRadians(120))
-                //.strafeTo(new Vector2d(0, 38))
-                .setTangent(Math.toRadians(15))
-                .splineToLinearHeading(new Pose2d(4, 38,  Math.toRadians(45)), Math.toRadians(15)) //go into
-                .splineToLinearHeading(new Pose2d(10, 57,  Math.toRadians(115)), Math.toRadians(95)) //go into
-                .setTangent(Math.toRadians(-70))
-                .splineToLinearHeading(shootPos, Math.toRadians(200)) //go into
-                .waitSeconds(3)
-
-                //.turn(-Math.toRadians(125))
-                .setTangent(Math.toRadians(10))
-                .splineToLinearHeading(new Pose2d(26, 35,  Math.toRadians(45)), Math.toRadians(0)) //go into
-                .splineToLinearHeading(new Pose2d(33, 54,  Math.toRadians(135)), Math.toRadians(135)) //go into
-                .setTangent(Math.toRadians(200))
-                .splineToLinearHeading(shootPos, Math.toRadians(200)) //go into
-
-        * */
         try {
             Actions.runBlocking(
                     new SequentialAction(
+                            startShooter(),
                             //1. Go to shooting place
                             drive.actionBuilder(startPose)
                                     .strafeTo(new Vector2d(shootX, shootY))
@@ -342,10 +313,8 @@ public class RedAutoNEAR extends LinearOpMode {
                             //3. get the inner most 3 balls
                             drive.actionBuilder(shootPose)
                                     .setTangent(Math.toRadians(45))
-                                    //.splineToLinearHeading(new Pose2d(-22, 35,  Math.toRadians(45)), Math.toRadians(45)) //go into
                                     .splineToLinearHeading(new Pose2d(-24, 38,  Math.toRadians(45)), Math.toRadians(45)) //go into
                                     .splineToLinearHeading(new Pose2d(-6, 58,  Math.toRadians(95)), Math.toRadians(90)) //go into
-                                    //.splineToLinearHeading(new Pose2d(-10, 58,  Math.toRadians(180)), Math.toRadians(180)) //go into
                                     .setTangent(Math.toRadians(-90))
                                     .splineToLinearHeading(shootPose, Math.toRadians(225)) //go into
                                     .build(),
@@ -356,9 +325,8 @@ public class RedAutoNEAR extends LinearOpMode {
                             //4. get the middle row balls
                             drive.actionBuilder(shootPose)
                                     .setTangent(Math.toRadians(15))
-                                    .splineToLinearHeading(new Pose2d(4, 38,  Math.toRadians(45)), Math.toRadians(15)) //go into
-                                    //.splineToLinearHeading(new Pose2d(8, 60,  Math.toRadians(115)), Math.toRadians(95)) //go into
-                                    .splineToLinearHeading(new Pose2d(6, 60,  Math.toRadians(115)), Math.toRadians(95)) //go into
+                                    .splineToLinearHeading(new Pose2d(2, 38,  Math.toRadians(45)), Math.toRadians(30)) //go into
+                                    .splineToLinearHeading(new Pose2d(4, 60,  Math.toRadians(115)), Math.toRadians(95)) //go into
                                     .setTangent(Math.toRadians(-90))
                                     .splineToLinearHeading(shootPose, Math.toRadians(200)) //go into
                                     .build(),
@@ -374,7 +342,8 @@ public class RedAutoNEAR extends LinearOpMode {
                                     .setTangent(Math.toRadians(200))
                                     .splineToLinearHeading(shootPose, Math.toRadians(200)) //go into
                                     .build(),
-                            shootAll()
+                            shootAll(),
+                            closeGate()
                     )
             );
             telemetry.addData("Trajectory", "Executed Successfully");
@@ -581,23 +550,25 @@ public class RedAutoNEAR extends LinearOpMode {
         //1. make sure the gate is closed
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         //2. start the shooter
-        shooter.setPower(1);
-        sleep(200);
+        shooter.setPower(0.95);
+        //sleep(200);
+
         //3. set stage power
         stage1.setPower(1.0); //keep stage1 as intake
         sleep(100);
         stage2.setPower(-0.4); //use stage 2 as the second gate
         stage3.setPower(-0.3);
-        sleep(100);
+        sleep(110);
         stage3.setPower(1); //accelate stage3
         //open the gate so that the ball can go through
         blockShooter.setPosition(OPENSHOOTER_OPEN);
-        sleep(300);
+        sleep(250); //300
         //4. close the gate
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         stage3.setPower(0);
         stage2.setPower(0.7);
-        sleep(100);
+        sleep(200);//150
+
         stage2.setPower(0);
         /*
         //1. make sure the gate is closed

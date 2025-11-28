@@ -206,8 +206,8 @@ public class RedAutoFAR extends LinearOpMode {
                 // Optionally log something
                 packet.put("PowerShooterAction", "Power shooter to power = 0.9");
                 //set the shooter power to 0.9
-                shooter.setPower(1.0);
-                sleep(500);
+                shooter.setPower(0.95);
+                //sleep(500);
                 initialized = true;
             }
             // Returning false tells Road Runner this action is finished
@@ -309,22 +309,25 @@ public class RedAutoFAR extends LinearOpMode {
         telemetryThread.start();
 
         //initialize shooting position on field
-        double shootX = -16, shootY = 11, shootYaw = 132;//135;
+        //double shootX = -9, shootY = 11, shootYaw = 132;//135;
+        double shootX = -6, shootY = 13, shootYaw = 140;//135;
         //intake the set of balls closest to the right
-        double intakeX = 35, intakeY = 30, intakeYaw = 90;
-        double pastIntakeY = 62; //this y value is up higher, closer to the goal
+        //double intakeX = 35, intakeY = 30, intakeYaw = 90;
+        //double pastIntakeY = 62; //this y value is up higher, closer to the goal
 
         //shooting position
         Pose2d shootPose = new Pose2d(shootX, shootY,  Math.toRadians(shootYaw));
-
+        double inX = 58, inY = 58;
+        double turnX = inX - 8, turnY = 11;
+        Pose2d intakePose = new Pose2d(inX, inY, Math.toRadians(90));//
         try {
             Actions.runBlocking(
                     new SequentialAction(
+                            startShooter(),
                             //1. Go to shooting place
                             drive.actionBuilder(startPose)
                                     .splineToLinearHeading(shootPose, Math.toRadians(180))
                                     .build(),
-                            //startShooter(),
                             shootAll(), //shoot
                             closeGate(), //make sure the gate is actually closed
 
@@ -333,11 +336,14 @@ public class RedAutoFAR extends LinearOpMode {
                             drive.actionBuilder(shootPose)
                                     .setTangent(Math.toRadians(0))
                                     //go to intake the 3rd set of balls
-                                    .splineToLinearHeading(new Pose2d(intakeX, intakeY, Math.toRadians(intakeYaw)),Math.toRadians(45))
+                                    .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(90)),Math.toRadians(0))
                                     //strafe forwards to intake
-                                    .strafeTo(new Vector2d(intakeX, pastIntakeY))
+                                    .splineToLinearHeading(new Pose2d(inX, inY, Math.toRadians(90)),Math.toRadians(90))
+                                    .turn(Math.toRadians(-45))
+                                    //.turn(Math.toRadians(45))
+                                    //.strafeTo(new Vector2d(inX + 2, inY+4))
                                     //go back
-                                    .strafeTo(new Vector2d(intakeX, intakeY))
+                                    .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(90)),Math.toRadians(-90))
                                     .setTangent(Math.toRadians(180))
                                     //go to shoot
                                     .splineToLinearHeading(new Pose2d(shootX, shootY,  Math.toRadians(shootYaw)), Math.toRadians(180)) //go into
@@ -347,40 +353,23 @@ public class RedAutoFAR extends LinearOpMode {
                             closeGate(), //make sure gate is closed
 
                             //3rd. intake balls from blue alliance human player side
-                            startIntake(1.0, 0.3, 0),
                             drive.actionBuilder(shootPose)
                                     .setTangent(Math.toRadians(0))
-                                    //go back to launch line
-                                    .splineToLinearHeading(new Pose2d(60, 11,  Math.toRadians(intakeYaw)), Math.toRadians(0)) //go into
-                                    //go forward to intake the balls
-                                    .strafeTo(new Vector2d(60, 60))
-                                    //go back to original launch line position
-                                    .strafeTo(new Vector2d(60, 11))
-                                    .setTangent(Math.toRadians(180))
-                                    //go to shooting position
-                                    .splineToLinearHeading(shootPose, Math.toRadians(180)) //go into
-                                    .build(),
-                            //startShooter(), //keep shooter running
-                            shootAll(), //shoot all
-                            closeGate(), //make sure gate is close
-
-                            //get 2nd set of balls
-                            startIntake(1.0, 0.3, 0),
-                            drive.actionBuilder(shootPose)
-                                    .setTangent(Math.toRadians(0))
-                                    //go get second set of balls
-                                    .splineToLinearHeading(new Pose2d(12, intakeY, Math.toRadians(90)), Math.toRadians(80))
-                                    //go forward to intake
-                                    .strafeTo(new Vector2d(12, pastIntakeY))
+                                    //go to intake the 3rd set of balls
+                                    .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(135)),Math.toRadians(0))
+                                    //strafe forwards to intake
+                                    .splineToLinearHeading(new Pose2d(inX, inY, Math.toRadians(90)),Math.toRadians(90))
+                                    .turn(Math.toRadians(-45))
+                                    //.turn(Math.toRadians(45))
+                                    //.strafeTo(new Vector2d(inX + 2, inY+4))
                                     //go back
-                                    .strafeTo(new Vector2d(12, intakeY))
+                                    .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(135)),Math.toRadians(-90))
                                     .setTangent(Math.toRadians(180))
-                                    //go to shooting position
+                                    //go to shoot
                                     .splineToLinearHeading(new Pose2d(shootX, shootY,  Math.toRadians(shootYaw)), Math.toRadians(180)) //go into
                                     .build(),
-                            //startShooter(), //make sure shooter is still running
-                            shootAll(), //shoot all the balls
-                            closeGate() //make sure gate is close
+                            shootAll(), //shoot
+                            closeGate()
                     )
             );
             telemetry.addData("Trajectory", "Executed Successfully");
@@ -598,6 +587,30 @@ public class RedAutoFAR extends LinearOpMode {
         //1. make sure the gate is closed
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         //2. start the shooter
+        shooter.setPower(0.95);
+        //sleep(200);
+        //3. set stage power
+        stage1.setPower(1.0); //keep stage1 as intake
+        sleep(100);
+        stage2.setPower(-0.4); //use stage 2 as the second gate
+        stage3.setPower(-0.3);
+        sleep(100);
+        stage3.setPower(1); //accelate stage3
+        //open the gate so that the ball can go through
+        blockShooter.setPosition(OPENSHOOTER_OPEN);
+        sleep(250); //300
+        //4. close the gate
+        blockShooter.setPosition(OPENSHOOTER_CLOSED);
+        stage3.setPower(0);
+        stage2.setPower(0.7);
+        sleep(200);//150
+
+        stage2.setPower(0);
+
+        /*
+        //1. make sure the gate is closed
+        blockShooter.setPosition(OPENSHOOTER_CLOSED);
+        //2. start the shooter
         shooter.setPower(1);
         sleep(500);//We still need this to make sure it stable
         //3. set stage power
@@ -620,6 +633,7 @@ public class RedAutoFAR extends LinearOpMode {
         stage2.setPower(0.7);
         sleep(200);
         stage2.setPower(0);
+         */
         /*
         //1. make sure the gate is closed
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
