@@ -598,7 +598,7 @@ public class RedAutoFAR extends LinearOpMode {
         stage3.setPower(1); //accelate stage3
         //open the gate so that the ball can go through
         blockShooter.setPosition(OPENSHOOTER_OPEN);
-        sleep(250); //300
+        sleep(200); //300
         //4. close the gate
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         stage3.setPower(0);
