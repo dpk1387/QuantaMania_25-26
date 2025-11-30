@@ -550,7 +550,7 @@ public class RedAutoNEAR extends LinearOpMode {
         //1. make sure the gate is closed
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         //2. start the shooter
-        shooter.setVelocity(1450); //max RPM * 0.9
+        shooter.setVelocity(5400); //max RPM * 0.9
         //sleep(200);
 
         //3. set stage power
