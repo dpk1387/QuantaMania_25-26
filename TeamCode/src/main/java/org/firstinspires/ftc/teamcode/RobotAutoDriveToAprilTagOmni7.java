@@ -474,6 +474,11 @@ public class RobotAutoDriveToAprilTagOmni7 extends LinearOpMode
         frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);
 
+        frontLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeftDriver.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         shooter.setDirection(DcMotor.Direction.REVERSE);
         stage1.setDirection(DcMotor.Direction.REVERSE);
         stage2.setDirection(DcMotor.Direction.REVERSE);
