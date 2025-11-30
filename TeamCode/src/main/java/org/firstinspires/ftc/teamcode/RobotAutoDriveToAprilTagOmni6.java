@@ -106,9 +106,9 @@ public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
     //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
-    final double SPEED_GAIN  =  0.02  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-    final double STRAFE_GAIN =  0.015 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
-    final double TURN_GAIN   =  0.02  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    final double SPEED_GAIN  =  0.04;//0.02  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    final double STRAFE_GAIN =  0.03;//0.015 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
+    final double TURN_GAIN   =  0.03;//0.04;//0.02  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
     final double MAX_AUTO_SPEED = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_STRAFE= 0.8;   //  Clip the strafing speed to this max value (adjust for your robot)
@@ -157,6 +157,23 @@ public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
 
     @Override public void runOpMode()
     {
+        /*MORE PARAMETER SETTINGS*/
+        //desired shoot location, when tag view is not available - ie. robot will blindly aim to return to this location
+        double desired_x, desired_y, desired_yaw; // FIELD: x=right, y=forward, deg (0°=+Y)
+        double latch_x, latch_y, latch_yaw; //0, 50
+        double park_x, park_y, park_yaw;
+        if (DESIRED_TAG_ID == 24) {
+            //desired_x = -30; desired_y =  30; desired_yaw =  45;
+            desired_x = -20; desired_y =  20; desired_yaw =  135; //corresonpindng do DESIRED DISTANCE 50 -- NEED TO CHeck the yaw
+            latch_x = 0; latch_y = 46; latch_yaw = 90; //0, 50, 90
+            park_x = 38.5; park_y = -35; park_yaw = 90;
+        } else {
+            //desired_x = -30; desired_y = -30; desired_yaw = 135;
+            desired_x = -20; desired_y = -20; desired_yaw = 135;
+            latch_x = 0; latch_y = -46; latch_yaw = -90; //0, 50
+            park_x = 38.5; park_y = 35; park_yaw = -90;
+        }
+
         boolean targetFound     = false;    // Set to true when an AprilTag target is detected
         double  drive           = 0;        // Desired forward power/speed (-1 to +1)
         double  strafe          = 0;        // Desired strafe power/speed (-1 to +1)
@@ -195,7 +212,7 @@ public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
 
         while (opModeIsActive())
         {
-            //*
+            /*
             //TEST CODE -- Test servo -- open it to fine turn servo
 
             if (gamepad1.dpad_up) {
@@ -213,14 +230,14 @@ public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
                 blobMode = false;
                 setManualExposure(6, 250);
             }
-            if ((gamepad1.right_bumper || gamepad1.right_trigger > 0.5) && !blobMode) {
+            if ((gamepad1.right_trigger > 0.5) && !blobMode) {
                 aprilTagMode = false;
                 blobMode = true;
                 setBlobExposureAuto();
             }
             //set camera position
             if (gamepad1.left_bumper) cameraServo.setPosition(CAMERASERVO_HIGH);
-            if (gamepad1.right_bumper || gamepad1.right_trigger > 0.5) {
+            if (gamepad1.right_trigger > 0.5) {
                 cameraServo.setPosition(CAMERASERVO_LOW);
             }
             /**************************************************************************************/
@@ -257,44 +274,59 @@ public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
             if (gamepad1.left_bumper) {
                 if (targetFound) {
                     // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-                    double rangeError = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
+                    double rangeError   = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
                     double headingError = desiredTag.ftcPose.bearing;
-                    double yawError = desiredTag.ftcPose.yaw;
+                    double yawError     = desiredTag.ftcPose.yaw;
                     // Use the speed and turn "gains" to calculate how we want the robot to move.
-                    drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-                    turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-                    strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+                    drive   = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+                    turn    = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
+                    strafe  = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
                     telemetry.addData("Auto", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
                     // Update robot location according to tag - reset pinpoint position
-                    if (yawError < 30) {
+                    if ((yawError < 15) && (rangeError < 70)) {
                         // update the position according to localization, based on tag -- this is field coordinate
                         Position rp = desiredTag.robotPose.getPosition();
                         YawPitchRollAngles ro = desiredTag.robotPose.getOrientation();
-                        double x_fwd = fieldX_to_pfwd(rp.x, rp.y);
-                        double y_left = fieldY_to_pleft(rp.x, rp.y);
-                        double h_rr = heading_field_to_rr(ro.getYaw(AngleUnit.DEGREES));
+                        double x_fwd    = fieldX_to_pfwd(rp.x, rp.y);
+                        double y_left   = fieldY_to_pleft(rp.x, rp.y);
+                        double h_rr     = ro.getYaw(AngleUnit.DEGREES);//heading_field_to_rr(ro.getYaw(AngleUnit.DEGREES));
                         pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, x_fwd, y_left, AngleUnit.DEGREES, h_rr));
+                        telemetry.addData("UPDATE pinpoint from", "rp_x %5.2f, rp_y %5.2f, ro_yaw %5.2f ", rp.x, rp.y, ro.getYaw(AngleUnit.DEGREES));
                     }
                 } else {
                     // if left bumper is pressed, but no tag in sight -- then move according to localization
-                    DriveCommand cmd = drivePinpoint(); //result always valid
+                    DriveCommand cmd = drivePinpoint( desired_x, desired_y, desired_yaw); //result always valid
                     drive = cmd.drive;
                     strafe = cmd.strafe;
                     turn = cmd.turn;
                 }
-            }else {
-                    // LB released → reset for next run
-                    lbState = LbState.IDLE;
-                    yawStableCount = 0;
-                    // drive using manual POV Joystick mode.  Slow things down to make the robot more controlable.
-                    drive = -gamepad1.left_stick_y / 1.5;  // Reduce drive rate to 50%.
-                    strafe = -gamepad1.left_stick_x / 1.5;  // Reduce strafe rate to 50%.
-                    turn = -gamepad1.right_stick_x / 2.0;  // Reduce turn rate to 33%.
-                    telemetry.addData("Manual", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-            }
-            /**************************************************************************************/
-            // if right bumper is press -> and there is an object in sights -> turn and drive toward it
-            if (gamepad1.right_bumper || gamepad1.right_trigger > 0.5) {
+            } else
+                //if right bumper is pressed -> go to the location to release the latch
+                if (gamepad1.right_bumper){
+                    DriveCommand cmd = drivePinpoint( latch_x, latch_y, latch_yaw); //result always valid
+                    drive = cmd.drive;
+                    strafe = cmd.strafe;
+                    turn = cmd.turn;
+                } else
+                    //if lef trigger is press and final 20 second
+                    if (gamepad1.left_trigger > 0.5){
+                        DriveCommand cmd = drivePinpoint( park_x, park_y, park_yaw); //result always valid
+                        drive = cmd.drive;
+                        strafe = cmd.strafe;
+                        turn = cmd.turn;
+                    }
+                    else{
+                        // LB released → reset for next run
+                        lbState = LbState.IDLE;
+                        yawStableCount = 0;
+                        // drive using manual POV Joystick mode.  Slow things down to make the robot more controlable.
+                        drive = -gamepad1.left_stick_y / 1.5;  // Reduce drive rate to 50%.
+                        strafe = -gamepad1.left_stick_x / 1.5;  // Reduce strafe rate to 50%.
+                        turn = -gamepad1.right_stick_x / 2.0;  // Reduce turn rate to 33%.
+                        telemetry.addData("Manual", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+                    }
+            // if right bumper is press -> and there is purple ball in sights -> turn and drive toward it
+            if (gamepad1.right_trigger > 0.5) {
                 DriveCommand cmd = autoAcquirePurple();
                 if (cmd.validBlob) {
                     drive = cmd.drive;
@@ -320,7 +352,6 @@ public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
             }else{
                 dodgeDirection = 0.0;
             }
-
             /**************************************************************************************/
 //            pinpoint.update();
 //            pose2D = pinpoint.getPosition();
@@ -725,8 +756,8 @@ public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
     static double fieldX_to_pfwd(double x_field, double y_field) { return y_field; }   // forward
     static double fieldY_to_pleft(double x_field, double y_field) { return -x_field; } // left
     static double heading_field_to_rr(double heading_field_deg) {  // wrap to (-180,180]
-        //return wrapDeg(heading_field_deg - 90.0);
-        return heading_field_deg;
+        return wrapDeg(heading_field_deg - 90.0);
+        //return heading_field_deg;
     }
     static double wrapDeg(double a) {
         a = (a + 180.0) % 360.0;
@@ -749,17 +780,10 @@ public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
         }
     }
 
-    private DriveCommand drivePinpoint(){
+    private DriveCommand drivePinpoint(double desired_x, double desired_y, double desired_yaw){
         double  drive           = 0;        // Desired forward power/speed (-1 to +1)
         double  strafe          = 0;        // Desired strafe power/speed (-1 to +1)
         double  turn            = 0;        // Desired turning power/speed (-1 to +1)
-
-        double desired_x, desired_y, desired_yaw; // FIELD: x=right, y=forward, deg (0°=+Y)
-//        if (DESIRED_TAG_ID == 24) { desired_x = -30; desired_y =  30; desired_yaw =  45; }
-//        else                      { desired_x = -30; desired_y = -30; desired_yaw = 135; }
-
-        if (DESIRED_TAG_ID == 24) { desired_x = -20; desired_y =  20; desired_yaw =  45; }//corresonpindng do DESIRED DISTANCE 50
-        else                      { desired_x = -20; desired_y = -20; desired_yaw = 135; }
 
         double goal_fwd = fieldX_to_pfwd(desired_x, desired_y);   // = y_field
         double goal_left = fieldY_to_pleft(desired_x, desired_y);  // = -x_field
@@ -772,6 +796,8 @@ public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
         double cur_left = p.getY(DistanceUnit.INCH);           // +Y left
         double cur_head = p.getHeading(AngleUnit.DEGREES);     // 0° = +X
 
+        //telemetry.addData("goal: ","goal_fwd %.2f /goal_left %.2f /goal_headRR %+.2f/ ", goal_fwd, goal_left, goal_headRR);
+        //telemetry.addData("cur: ","cur_fwd %.2f /cur_left %.2f /cur_head %+.2f/ ", cur_fwd, cur_left, cur_head);
         // --- 3) Errors / geometry ---
         double dF = goal_fwd - cur_fwd;
         double dL = goal_left - cur_left;
@@ -817,14 +843,16 @@ public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
             drive = speed * Math.cos(brad);  // forward
             strafe = speed * Math.sin(brad);  // left
             // (Optional tiny steering to keep path tight: leave at 0 if you truly want to freeze yaw)
-            turn = Range.clip(0.02 * wrapDeg(bearingDeg - cur_head), -0.2, 0.2);
+            //turn = Range.clip(0.02 * wrapDeg(bearingDeg - cur_head), -0.2, 0.2);
+            turn = Range.clip(TURN_GAIN * yawErr, -0.28, 0.8);
         }
         telemetry.addData("LB", lbState);
-        telemetry.addData("Yaw cur/goal/err", "%.2f / %.2f / %+.2f", cur_head, goal_headRR, yawErr);
+        telemetry.addData("Yaw cur/goal/err/yawStableCount", "%.2f / %.2f / %+.2f/ %d", cur_head, goal_headRR, yawErr, yawStableCount);
         telemetry.addData("Range / bearing", "%.2f in / %+.2f°", range, bearingDeg);
         telemetry.addData("Command drive/strife/turn ", "%.2f / %.2f / %.2f", drive, strafe, turn);
 
         return new DriveCommand(drive, strafe, turn, true);
+        //return new DriveCommand(0, 0, 0, true);
     }
     private DriveCommand autoAcquirePurple() {
 
