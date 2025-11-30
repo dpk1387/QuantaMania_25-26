@@ -382,7 +382,7 @@ public class RedAutoNEAR extends LinearOpMode {
         stage3.setDirection(DcMotor.Direction.REVERSE);
         blockShooter.setDirection(Servo.Direction.REVERSE); //Do we really need this?
 
-        shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODERS);
     }
     //Initialize the AprilTag processor.
     private void initAprilTagAndColorBlob() {
@@ -550,7 +550,7 @@ public class RedAutoNEAR extends LinearOpMode {
         //1. make sure the gate is closed
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         //2. start the shooter
-        shooter.setPower(0.9);
+        shooter.setVelocity(1450); //max RPM * 0.9
         //sleep(200);
 
         //3. set stage power
