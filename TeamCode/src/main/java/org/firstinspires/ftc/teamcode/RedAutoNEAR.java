@@ -17,6 +17,7 @@ import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -41,7 +42,7 @@ import java.util.concurrent.TimeUnit;
 @Config
 public class RedAutoNEAR extends LinearOpMode {
     /* HARDWARE */
-    private DcMotor shooter = null;
+    private DcMotorEx shooter = null;
     private DcMotor stage1 = null;
     private DcMotor stage2 = null;
     private DcMotor stage3 = null;
@@ -198,7 +199,7 @@ public class RedAutoNEAR extends LinearOpMode {
                 // Optionally log something
                 packet.put("PowerShooterAction", "Power shooter to power = 0.9");
                 //set the shooter power to 0.9
-                shooter.setPower(0.9);
+                shooter.setVelocity(0.9);
                 //sleep(500);
                 initialized = true;
             }
@@ -361,7 +362,7 @@ public class RedAutoNEAR extends LinearOpMode {
         rightDist = hardwareMap.get(DistanceSensor.class, "rightDistanceSensor");
 
         //1. need initial the shooter, stage1, 2, 3, servo
-        shooter = hardwareMap.get(DcMotor.class, "shooter");
+        shooter = hardwareMap.get(DcMotorEx.class, "shooter");
         stage1 = hardwareMap.get(DcMotor.class, "stage1");
         stage2 = hardwareMap.get(DcMotor.class, "stage2");
         stage3 = hardwareMap.get(DcMotor.class, "stage3");
@@ -376,13 +377,13 @@ public class RedAutoNEAR extends LinearOpMode {
 //        frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
 //        backRightDrive.setDirection(DcMotor.Direction.FORWARD);
 
-        shooter.setDirection(DcMotor.Direction.REVERSE);
+        shooter.setDirection(DcMotorEx.Direction.REVERSE);
         stage1.setDirection(DcMotor.Direction.REVERSE);
         stage2.setDirection(DcMotor.Direction.REVERSE);
         stage3.setDirection(DcMotor.Direction.REVERSE);
         blockShooter.setDirection(Servo.Direction.REVERSE); //Do we really need this?
 
-        shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODERS);
+        shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
     //Initialize the AprilTag processor.
     private void initAprilTagAndColorBlob() {
