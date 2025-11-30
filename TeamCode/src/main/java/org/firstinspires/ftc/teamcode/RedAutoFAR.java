@@ -587,7 +587,7 @@ public class RedAutoFAR extends LinearOpMode {
         //1. make sure the gate is closed
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         //2. start the shooter
-        shooter.setPower(0.90);
+        shooter.setPower(0.95);
         //sleep(200);
         //3. set stage power
         stage1.setPower(1.0); //keep stage1 as intake

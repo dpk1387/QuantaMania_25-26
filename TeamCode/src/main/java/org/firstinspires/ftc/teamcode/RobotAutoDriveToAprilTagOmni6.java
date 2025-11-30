@@ -363,9 +363,9 @@ public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
             lastYState = gamepad1.y;
             if(intakeMode){
                 //turn on intake power
-                stage1_power = 0.6;
-                stage2_power = 0.5;
-                stage3_power = 0.5;
+                stage1_power = 1.0;//0.6;
+                stage2_power = 0.3;//0.5;
+                stage3_power = 0;//0.5;
             }else{
                 stage1_power = 0;
                 stage2_power = 0;
@@ -400,80 +400,94 @@ public class RobotAutoDriveToAprilTagOmni6 extends LinearOpMode
     /**************************************************************************************/
     //Move robot according to desired axes motions: Positive X is forward,  Positive Y is strafe left, Positive Yaw is counter-clockwise
     public void shootOnce(){
-//        //1. make sure the gate is closed
-//        blockShooter.setPosition(OPENSHOOTER_CLOSED);
-//        //2. start the shooter
-//        shooter.setPower(1);
-//        sleep(250);
-//        //3. set stage power
-//        stage1.setPower(0.5); //keep stage1 as inake
-//        stage2.setPower(-0.7); //use stage 2 as the second gate
-//        stage3.setPower(1); //accelate stage3
-//        //sleep(200); //wait for them to be full speed
-//
-//        blockShooter.setPosition(OPENSHOOTER_OPEN); //open the gate so that the ball can go through
-//        sleep(300); //wait until the ball go through
-//
-//        //4. close the gate
-//        blockShooter.setPosition(OPENSHOOTER_CLOSED);
-//        //5. set all the power back, except the stage 1. Note that this could be use for the first ball, thre are still two balles needed to be brought up
-////        shooter.setPower(0);
-////        stage3.setPower(0);
-////        stage2.setPower(0);
-////        sleep(10);
-
+        //1. make sure the gate is closed
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
-        shooter.setPower(1);
+        //2. start the shooter
+        shooter.setPower(0.90);
         sleep(500);
-
-        stage1.setPower(1.0);
+        //3. set stage power
+        stage1.setPower(1.0); //keep stage1 as intake
         sleep(100);
-
-        stage2.setPower(-0.4);
+        stage2.setPower(-0.4); //use stage 2 as the second gate
         stage3.setPower(-0.3);
-        sleep(200);
-
-        stage3.setPower(1);
-
+        sleep(100);
+        stage3.setPower(1); //accelate stage3
+        //open the gate so that the ball can go through
         blockShooter.setPosition(OPENSHOOTER_OPEN);
-        sleep(200);
-
+        sleep(200); //300
+        //4. close the gate
+        blockShooter.setPosition(OPENSHOOTER_CLOSED);
         stage3.setPower(0);
         stage2.setPower(0.7);
-        sleep(200);
+        sleep(200);//150
+
         stage2.setPower(0);
     }
 
     public void shootThree(){
-        blockShooter.setPosition(OPENSHOOTER_CLOSED);
         shooter.setPower(1); //start shooter before
-        //sleep(1000);//give shooter time to accelerate to full
-
-        stage1.setPower(0.7);
-        stage2.setPower(-0.75);
-        stage3.setPower(1);
-
-        sleep(300);//continue to let shooter accelerate
-        blockShooter.setPosition(OPENSHOOTER_OPEN);
-        sleep(1000);//shoot 1st, 2nd stays back
-
-        stage1.setPower(0.7);
-        stage2.setPower(0.5);
-        stage3.setPower(1);
-
-        sleep(200);//let it go up
-
-        stage1.setPower(1);
-        stage2.setPower(-0.8);
-        stage3.setPower(1);
-        sleep(600);
-
-        stage1.setPower(1);
-        stage2.setPower(1);
-        stage2.setPower(1);
-        sleep(1000);
-
+        sleep(500);
+        /// loop three time
+        //------------------------------------------------------------------------------------
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
+        //2. start the shooter
+        shooter.setPower(0.90);
+        //3. set stage power
+        stage1.setPower(1.0); //keep stage1 as intake
+        sleep(100);
+        stage2.setPower(-0.4); //use stage 2 as the second gate
+        stage3.setPower(-0.3);
+        sleep(100);
+        stage3.setPower(1); //accelate stage3
+        //open the gate so that the ball can go through
+        blockShooter.setPosition(OPENSHOOTER_OPEN);
+        sleep(200); //300
+        //4. close the gate
+        blockShooter.setPosition(OPENSHOOTER_CLOSED);
+        stage3.setPower(0);
+        stage2.setPower(0.7);
+        sleep(200);//150
+        stage2.setPower(0);
+        //------------------------------------------------------------------------------------
+        blockShooter.setPosition(OPENSHOOTER_CLOSED);
+        //2. start the shooter
+        shooter.setPower(0.90);
+        //3. set stage power
+        stage1.setPower(1.0); //keep stage1 as intake
+        sleep(100);
+        stage2.setPower(-0.4); //use stage 2 as the second gate
+        stage3.setPower(-0.3);
+        sleep(100);
+        stage3.setPower(1); //accelate stage3
+        //open the gate so that the ball can go through
+        blockShooter.setPosition(OPENSHOOTER_OPEN);
+        sleep(200); //300
+        //4. close the gate
+        blockShooter.setPosition(OPENSHOOTER_CLOSED);
+        stage3.setPower(0);
+        stage2.setPower(0.7);
+        sleep(200);//150
+        stage2.setPower(0);
+        //------------------------------------------------------------------------------------
+        blockShooter.setPosition(OPENSHOOTER_CLOSED);
+        //2. start the shooter
+        shooter.setPower(0.90);
+        //3. set stage power
+        stage1.setPower(1.0); //keep stage1 as intake
+        sleep(100);
+        stage2.setPower(-0.4); //use stage 2 as the second gate
+        stage3.setPower(-0.3);
+        sleep(100);
+        stage3.setPower(1); //accelate stage3
+        //open the gate so that the ball can go through
+        blockShooter.setPosition(OPENSHOOTER_OPEN);
+        sleep(200); //300
+        //4. close the gate
+        blockShooter.setPosition(OPENSHOOTER_CLOSED);
+        stage3.setPower(0);
+        //stage2.setPower(0.7);
+        //sleep(200);//150
+        stage2.setPower(0);
     }
 
     public void moveRobot(double x, double y, double yaw) {

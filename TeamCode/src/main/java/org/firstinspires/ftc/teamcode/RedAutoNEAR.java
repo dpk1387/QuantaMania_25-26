@@ -200,6 +200,7 @@ public class RedAutoNEAR extends LinearOpMode {
                 packet.put("PowerShooterAction", "Power shooter to power = 0.9");
                 //set the shooter power to 0.9
                 shooter.setVelocity(0.9);
+                //shooter.setPower(0.95);
                 //sleep(500);
                 initialized = true;
             }
@@ -552,6 +553,7 @@ public class RedAutoNEAR extends LinearOpMode {
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         //2. start the shooter
         shooter.setVelocity(5400); //max RPM * 0.9
+        shooter.setPower(0.95);
         //sleep(200);
 
         //3. set stage power
@@ -567,7 +569,7 @@ public class RedAutoNEAR extends LinearOpMode {
         //4. close the gate
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         stage3.setPower(0);
-        stage2.setPower(0.7);
+        stage2.setPower(0.8);
         sleep(200);//150
 
         stage2.setPower(0);
