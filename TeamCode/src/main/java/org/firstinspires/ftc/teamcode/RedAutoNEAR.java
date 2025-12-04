@@ -55,6 +55,7 @@ public class RedAutoNEAR extends LinearOpMode {
     final private double OPENSHOOTER_CLOSED = OPENSHOOTER_OPEN + 28;//0.55
     final private double CAMERASERVO_HIGH = 0.55;
     final private double CAMERASERVO_LOW = 0.68;
+    final private double SHOOTER_VELOCITY = 4800;//5000;
     /* INIT */
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
     private static final int DESIRED_TAG_ID = 24;//RED //20;//BLUE//24;// -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
@@ -199,7 +200,8 @@ public class RedAutoNEAR extends LinearOpMode {
                 // Optionally log something
                 packet.put("PowerShooterAction", "Power shooter to power = 0.9");
                 //set the shooter power to 0.9
-                shooter.setVelocity(0.9);
+                //shooter.setVelocity(5400);
+                shooter.setVelocity(SHOOTER_VELOCITY);
                 //shooter.setPower(0.95);
                 //sleep(500);
                 initialized = true;
@@ -552,8 +554,8 @@ public class RedAutoNEAR extends LinearOpMode {
         //1. make sure the gate is closed
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         //2. start the shooter
-        shooter.setVelocity(5400); //max RPM * 0.9
-        shooter.setPower(0.95);
+        shooter.setVelocity(SHOOTER_VELOCITY); //max RPM * 0.9
+        //shooter.setPower(0.95);
         //sleep(200);
 
         //3. set stage power
