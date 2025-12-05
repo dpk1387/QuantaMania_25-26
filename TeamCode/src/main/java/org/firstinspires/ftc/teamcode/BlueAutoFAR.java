@@ -49,7 +49,7 @@ import java.util.concurrent.TimeUnit;
 @Config
 public class BlueAutoFAR extends LinearOpMode {
     /* HARDWARE */
-    private DcMotor shooter = null;
+    private DcMotorEx shooter = null;
     private DcMotor stage1 = null;
     private DcMotor stage2 = null;
     private DcMotor stage3 = null;
