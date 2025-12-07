@@ -36,6 +36,7 @@ import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
@@ -96,12 +97,12 @@ import java.util.concurrent.TimeUnit;
  * V6 - Add Intake
  */
 
-@TeleOp(name="Omni Drive To AprilTag7", group = "Concept")
+@TeleOp(name="TeleOp Red", group = "Concept")
 //@Disabled
 public class RobotAutoDriveToAprilTagOmni7 extends LinearOpMode
 {
     // Adjust these numbers to suit your robot. Should be from 30 - 55 inches
-    final double DESIRED_DISTANCE = 45;//12.0; //  this is how close the camera should get to the target (inches)
+    final double DESIRED_DISTANCE = 35;//45;//12.0; //  this is how close the camera should get to the target (inches)
 
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
@@ -118,7 +119,7 @@ public class RobotAutoDriveToAprilTagOmni7 extends LinearOpMode
     private DcMotor frontRightDrive = null;  //  Used to control the right front drive wheel
     private DcMotor backLeftDrive = null;  //  Used to control the left back drive wheel
     private DcMotor backRightDrive = null;  //  Used to control the right back drive wheel
-    private DcMotor shooter = null;
+    private DcMotorEx shooter = null;
     private DcMotor stage1 = null;
     private DcMotor stage2 = null;
     private DcMotor stage3 = null;
@@ -130,7 +131,7 @@ public class RobotAutoDriveToAprilTagOmni7 extends LinearOpMode
     final private double CAMERASERVO_HIGH = 0.49;//0.55;
     //private double CAMERASERVO_LOW = 0.72;
     final private double CAMERASERVO_LOW = 0.68;
-
+    final private double SHOOTER_VELOCITY = 4800;//4800;//5000;
     private DistanceSensor leftDist;
     private DistanceSensor rightDist;
 
@@ -164,12 +165,12 @@ public class RobotAutoDriveToAprilTagOmni7 extends LinearOpMode
         double park_x, park_y, park_yaw;
         if (DESIRED_TAG_ID == 24) {
             //desired_x = -30; desired_y =  30; desired_yaw =  45;
-            desired_x = -20; desired_y =  20; desired_yaw =  135; //corresonpindng do DESIRED DISTANCE 50 -- NEED TO CHeck the yaw
+            desired_x = -32; desired_y =  32; desired_yaw =  135; //corresonpindng do DESIRED DISTANCE 50 -- NEED TO CHeck the yaw
             latch_x = 0; latch_y = 46; latch_yaw = 90; //0, 50, 90
             park_x = 38.5; park_y = -35; park_yaw = 90;
         } else {
             //desired_x = -30; desired_y = -30; desired_yaw = 135;
-            desired_x = -20; desired_y = -20; desired_yaw = 135;
+            desired_x = -32; desired_y = -32; desired_yaw = 225;
             latch_x = 0; latch_y = -46; latch_yaw = -90; //0, 50
             park_x = 38.5; park_y = 35; park_yaw = -90;
         }
@@ -405,8 +406,9 @@ public class RobotAutoDriveToAprilTagOmni7 extends LinearOpMode
     public void shootOnce(){
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         //2. start the shooter
-        shooter.setPower(0.95);
-        //sleep(200);
+        //shooter.setPower(0.95);
+        shooter.setVelocity(SHOOTER_VELOCITY);
+        sleep(200);
 
         //3. set stage power
         stage1.setPower(1.0); //keep stage1 as intake
@@ -475,7 +477,7 @@ public class RobotAutoDriveToAprilTagOmni7 extends LinearOpMode
         rightDist = hardwareMap.get(DistanceSensor.class, "rightDistanceSensor");
 
         //1. need initial the shooter, stage1, 2, 3, servo
-        shooter = hardwareMap.get(DcMotor.class, "shooter");
+        shooter = hardwareMap.get(DcMotorEx.class, "shooter");
         stage1 = hardwareMap.get(DcMotor.class, "stage1");
         stage2 = hardwareMap.get(DcMotor.class, "stage2");
         stage3 = hardwareMap.get(DcMotor.class, "stage3");
@@ -500,7 +502,8 @@ public class RobotAutoDriveToAprilTagOmni7 extends LinearOpMode
         stage3.setDirection(DcMotor.Direction.REVERSE);
         blockShooter.setDirection(Servo.Direction.REVERSE); //Do we really need this?
 
-        shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
     //Initialize the AprilTag processor.
     private void initAprilTagAndColorBlob() {
