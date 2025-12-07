@@ -163,9 +163,9 @@ public class TeleOpBlue extends LinearOpMode
         double desired_x, desired_y, desired_yaw; // FIELD: x=right, y=forward, deg (0°=+Y)
         double latch_x, latch_y, latch_yaw; //0, 50
         double park_x, park_y, park_yaw;
-        if (DESIRED_TAG_ID == 24) {
+        if (DESIRED_TAG_ID == 20) {
             //desired_x = -30; desired_y =  30; desired_yaw =  45;
-            desired_x = -32; desired_y =  32; desired_yaw =  135; //corresonpindng do DESIRED DISTANCE 50 -- NEED TO CHeck the yaw
+            desired_x = -32; desired_y =  -32; desired_yaw =  135; //corresponding do DESIRED DISTANCE 50 -- NEED TO CHeck the yaw
             latch_x = 0; latch_y = 46; latch_yaw = 90; //0, 50, 90
             park_x = 38.5; park_y = -35; park_yaw = 90;
         } else {
