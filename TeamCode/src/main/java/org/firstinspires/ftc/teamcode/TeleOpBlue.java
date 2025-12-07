@@ -97,9 +97,9 @@ import java.util.concurrent.TimeUnit;
  * V6 - Add Intake
  */
 
-@TeleOp(name="TeleOp Red", group = "Concept")
+@TeleOp(name="TeleOp Blue", group = "Concept")
 //@Disabled
-public class RobotAutoDriveToAprilTagOmni7 extends LinearOpMode
+public class TeleOpBlue extends LinearOpMode
 {
     // Adjust these numbers to suit your robot. Should be from 30 - 55 inches
     final double DESIRED_DISTANCE = 35;//45;//12.0; //  this is how close the camera should get to the target (inches)
