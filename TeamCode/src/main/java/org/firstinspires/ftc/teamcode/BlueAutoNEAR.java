@@ -55,7 +55,7 @@ public class BlueAutoNEAR extends LinearOpMode {
     final private double OPENSHOOTER_CLOSED = OPENSHOOTER_OPEN + 28;//0.55
     final private double CAMERASERVO_HIGH = 0.55;
     final private double CAMERASERVO_LOW = 0.68;
-    final private double SHOOTER_VELOCITY = 3300;
+    final private double SHOOTER_VELOCITY = 4800;//5000;
     /* INIT */
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
     private static final int DESIRED_TAG_ID = 24;//RED //20;//BLUE//24;// -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
@@ -200,7 +200,9 @@ public class BlueAutoNEAR extends LinearOpMode {
                 // Optionally log something
                 packet.put("PowerShooterAction", "Power shooter to power = 0.9");
                 //set the shooter power to 0.9
-                shooter.setVelocity(4800);
+                //shooter.setVelocity(5400);
+                shooter.setVelocity(SHOOTER_VELOCITY);
+                //shooter.setPower(0.95);
                 //sleep(500);
                 initialized = true;
             }
@@ -316,7 +318,7 @@ public class BlueAutoNEAR extends LinearOpMode {
                             drive.actionBuilder(shootPose)
                                     .setTangent(Math.toRadians(-45))
                                     .splineToLinearHeading(new Pose2d(-27, -38,  Math.toRadians(-45)), Math.toRadians(-45)) //go into
-                                    .splineToLinearHeading(new Pose2d(-11, -58,  Math.toRadians(-95)), Math.toRadians(-90)) //go into
+                                    .splineToLinearHeading(new Pose2d(-5, -62,  Math.toRadians(-95)), Math.toRadians(-90)) //go into
                                     .setTangent(Math.toRadians(90))
                                     .splineToLinearHeading(shootPose, Math.toRadians(-225)) //go into
                                     .build(),
@@ -328,7 +330,7 @@ public class BlueAutoNEAR extends LinearOpMode {
                             drive.actionBuilder(shootPose)
                                     .setTangent(Math.toRadians(-15))
                                     .splineToLinearHeading(new Pose2d(2, -38,  Math.toRadians(-45)), Math.toRadians(-30)) //go into
-                                    .splineToLinearHeading(new Pose2d(4, -60,  Math.toRadians(-115)), Math.toRadians(-95)) //go into
+                                    .splineToLinearHeading(new Pose2d(4, -62,  Math.toRadians(-115)), Math.toRadians(-95)) //go into
                                     .setTangent(Math.toRadians(90))
                                     .splineToLinearHeading(shootPose, Math.toRadians(-200)) //go into
                                     .build(),

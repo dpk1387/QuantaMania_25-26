@@ -63,6 +63,7 @@ public class BlueAutoFAR extends LinearOpMode {
     final private double CAMERASERVO_HIGH = 0.55;
     final private double CAMERASERVO_LOW = 0.68;
     final private double SHOOTER_VELOCITY = 4800;
+    final private int startDelay = 8;
     /* INIT */
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
     private static final int DESIRED_TAG_ID = 24;//RED //20;//BLUE//24;// -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
@@ -305,6 +306,11 @@ public class BlueAutoFAR extends LinearOpMode {
         });
 
         waitForStart();
+        if (startDelay >= 24) {
+            sleep(24000);
+        } else {
+            sleep(startDelay * 1000);
+        }
         //make sure the gate is closed
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         runtime.reset();
@@ -313,6 +319,7 @@ public class BlueAutoFAR extends LinearOpMode {
         //initialize shooting position on field
         //double shootX = -9, shootY = 11, shootYaw = 132;//135;
         double shootX = -6, shootY = -13, shootYaw = 220;//135;
+        //double shootX = 46, shootY = -10, shootYaw = -154;
         //intake the set of balls closest to the right
         //double intakeX = 35, intakeY = 30, intakeYaw = 90;
         //double pastIntakeY = 62; //this y value is up higher, closer to the goal
@@ -355,6 +362,25 @@ public class BlueAutoFAR extends LinearOpMode {
                             closeGate(), //make sure gate is closed
 
                             //3rd. intake balls from red alliance human player side
+                            drive.actionBuilder(shootPose)
+                                    .setTangent(Math.toRadians(0))
+                                    //go to intake the 3rd set of balls
+                                    .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(-135)),Math.toRadians(0))
+                                    //strafe forwards to intake
+                                    .splineToLinearHeading(new Pose2d(inX, inY, Math.toRadians(-90)),Math.toRadians(-90))
+                                    .turn(Math.toRadians(-45))
+                                    //.turn(Math.toRadians(45))
+                                    //.strafeTo(new Vector2d(inX + 2, inY+4))
+                                    //go back
+                                    .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(-135)),Math.toRadians(90))
+                                    .setTangent(Math.toRadians(180))
+                                    //go to shoot
+                                    .splineToLinearHeading(new Pose2d(shootX, shootY,  Math.toRadians(shootYaw)), Math.toRadians(180)) //go into
+                                    .build(),
+                            shootAll(), //shoot
+                            closeGate(),
+
+                            //4th set of artifacts
                             drive.actionBuilder(shootPose)
                                     .setTangent(Math.toRadians(0))
                                     //go to intake the 3rd set of balls

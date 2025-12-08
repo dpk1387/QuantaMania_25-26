@@ -131,7 +131,7 @@ public class TeleOpRed extends LinearOpMode
     final private double CAMERASERVO_HIGH = 0.49;//0.55;
     //private double CAMERASERVO_LOW = 0.72;
     final private double CAMERASERVO_LOW = 0.68;
-    final private double SHOOTER_VELOCITY = 4800;//4800;//5000;
+    final private double SHOOTER_VELOCITY = 6400;//4800;//5000;
     private DistanceSensor leftDist;
     private DistanceSensor rightDist;
 
@@ -408,7 +408,7 @@ public class TeleOpRed extends LinearOpMode
         //2. start the shooter
         //shooter.setPower(0.95);
         shooter.setVelocity(SHOOTER_VELOCITY);
-        sleep(200);
+        sleep(4000);
 
         //3. set stage power
         stage1.setPower(1.0); //keep stage1 as intake
@@ -416,8 +416,9 @@ public class TeleOpRed extends LinearOpMode
         stage2.setPower(-0.4); //use stage 2 as the second gate
         stage3.setPower(-0.3);
         sleep(110);
-        stage3.setPower(1); //accelate stage3
+        stage3.setPower(1); //accelerate stage3
         //open the gate so that the ball can go through
+        sleep(100);
         blockShooter.setPosition(OPENSHOOTER_OPEN);
         sleep(200); //250//300
         //4. close the gate
