@@ -111,9 +111,9 @@ public class TeleOpRed extends LinearOpMode
     final double STRAFE_GAIN =  0.03;//0.015 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
     final double TURN_GAIN   =  0.03;//0.04;//0.02  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
-    final double MAX_AUTO_SPEED = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
-    final double MAX_AUTO_STRAFE= 0.8;   //  Clip the strafing speed to this max value (adjust for your robot)
-    final double MAX_AUTO_TURN  = 0.8;   //  Clip the turn speed to this max value (adjust for your robot)
+    final double MAX_AUTO_SPEED = 0.9;//0.8;   //  Clip the approach speed to this max value (adjust for your robot)
+    final double MAX_AUTO_STRAFE= 0.9;//0.8;   //  Clip the strafing speed to this max value (adjust for your robot)
+    final double MAX_AUTO_TURN  = 0.9; //0.8;   //  Clip the turn speed to this max value (adjust for your robot)
 
     private DcMotor frontLeftDrive = null;  //  Used to control the left front drive wheel
     private DcMotor frontRightDrive = null;  //  Used to control the right front drive wheel
@@ -131,7 +131,7 @@ public class TeleOpRed extends LinearOpMode
     final private double CAMERASERVO_HIGH = 0.49;//0.55;
     //private double CAMERASERVO_LOW = 0.72;
     final private double CAMERASERVO_LOW = 0.68;
-    final private double SHOOTER_VELOCITY = 4800;//4800;//5000;
+    final private double SHOOTER_VELOCITY = 4500;//4800;//5000;
     private DistanceSensor leftDist;
     private DistanceSensor rightDist;
 
@@ -156,8 +156,7 @@ public class TeleOpRed extends LinearOpMode
     private boolean prevB = false;
     private double dodgeDirection = 0.0;   // -1 = left, +1 = right, 0 = no dodge
 
-    @Override public void runOpMode()
-    {
+    @Override public void runOpMode(){
         /*MORE PARAMETER SETTINGS*/
         //desired shoot location, when tag view is not available - ie. robot will blindly aim to return to this location
         double desired_x, desired_y, desired_yaw; // FIELD: x=right, y=forward, deg (0°=+Y)
@@ -168,11 +167,11 @@ public class TeleOpRed extends LinearOpMode
             desired_x = -32; desired_y =  32; desired_yaw =  135; //corresonpindng do DESIRED DISTANCE 50 -- NEED TO CHeck the yaw
             latch_x = 0; latch_y = 46; latch_yaw = 90; //0, 50, 90
             park_x = 38.5; park_y = -35; park_yaw = 90;
-        } else {
-            //desired_x = -30; desired_y = -30; desired_yaw = 135;
-            desired_x = -32; desired_y = -32; desired_yaw = 225;
-            latch_x = 0; latch_y = -46; latch_yaw = -90; //0, 50
-            park_x = 38.5; park_y = 35; park_yaw = -90;
+//        } else {
+//            //desired_x = -30; desired_y = -30; desired_yaw = 135;
+//            desired_x = -32; desired_y = -32; desired_yaw = 225;
+//            latch_x = 0; latch_y = -46; latch_yaw = -90; //0, 50
+//            park_x = 38.5; park_y = 35; park_yaw = -90;
         }
 
         boolean targetFound     = false;    // Set to true when an AprilTag target is detected
@@ -192,8 +191,9 @@ public class TeleOpRed extends LinearOpMode
         //init wheel
         initDriveMotors();
 
-        if (USE_WEBCAM)
+        if (USE_WEBCAM) {
             setManualExposure(6, 250);  // Use low exposure time to reduce motion blur
+        }
 
         // Wait for driver to press start
         telemetry.addData("Camera preview on/off", "3 dots, Camera Stream");
@@ -211,8 +211,7 @@ public class TeleOpRed extends LinearOpMode
 
         double pos= CAMERASERVO_LOW;//TEST
 
-        while (opModeIsActive())
-        {
+        while (opModeIsActive()) {
             /*
             //TEST CODE -- Test servo -- open it to fine turn servo
 
@@ -237,13 +236,16 @@ public class TeleOpRed extends LinearOpMode
                 setBlobExposureAuto();
             }
             //set camera position
-            if (gamepad1.left_bumper) cameraServo.setPosition(CAMERASERVO_HIGH);
+            if (gamepad1.left_bumper){
+                cameraServo.setPosition(CAMERASERVO_HIGH);
+            }
+
             if (gamepad1.right_trigger > 0.5) {
                 cameraServo.setPosition(CAMERASERVO_LOW);
             }
             /**************************************************************************************/
             targetFound = false;
-            desiredTag  = null;
+            desiredTag = null;
             // Step through the list of detected tags and look for a matching tag
             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
             for (AprilTagDetection detection : currentDetections) {
@@ -254,69 +256,73 @@ public class TeleOpRed extends LinearOpMode
                         targetFound = true;                         // Yes, we want to use this tag.
                         desiredTag = detection;
                         break;  // don't look any further.
-                    }else
+                    } else {
                         telemetry.addData("Skipping", "Tag ID %d is not desired", detection.id);
+                    }
                 }
             }
             /**************************************************************************************/
             // Tell the driver what we see, and what to do.
             if (targetFound) {
-                telemetry.addData("\n>","HOLD Left-Bumper to Drive to Target\n");
+                telemetry.addData("\n>", "HOLD Left-Bumper to Drive to Target\n");
                 telemetry.addData("Found", "ID %d (%s)", desiredTag.id, desiredTag.metadata.name);
-                telemetry.addData("Range",  "%5.1f inches", desiredTag.ftcPose.range);
-                telemetry.addData("Bearing","%3.0f degrees", desiredTag.ftcPose.bearing);
-                telemetry.addData("Yaw","%3.0f degrees", desiredTag.ftcPose.yaw);
-                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", desiredTag.robotPose.getPosition().x, desiredTag.robotPose.getPosition().y,desiredTag.robotPose.getPosition().z));
+                telemetry.addData("Range", "%5.1f inches", desiredTag.ftcPose.range);
+                telemetry.addData("Bearing", "%3.0f degrees", desiredTag.ftcPose.bearing);
+                telemetry.addData("Yaw", "%3.0f degrees", desiredTag.ftcPose.yaw);
+                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", desiredTag.robotPose.getPosition().x, desiredTag.robotPose.getPosition().y, desiredTag.robotPose.getPosition().z));
             } else {
-                telemetry.addData("\n>","Drive using joysticks to find valid target\n");
+                telemetry.addData("\n>", "Drive using joysticks to find valid target\n");
             }
             /**************************************************************************************/
             // If Left Bumper is being pressed, AND we have found the desired target, Drive to target Automatically .
             if (gamepad1.left_bumper) {
                 if (targetFound) {
                     // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-                    double rangeError   = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
+                    double rangeError = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
                     double headingError = desiredTag.ftcPose.bearing;
-                    double yawError     = desiredTag.ftcPose.yaw;
+                    double yawError = desiredTag.ftcPose.yaw;
                     // Use the speed and turn "gains" to calculate how we want the robot to move.
-                    drive   = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-                    turn    = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-                    strafe  = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+                    drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+                    turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
+                    strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
                     telemetry.addData("Auto", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
                     // Update robot location according to tag - reset pinpoint position
                     if ((yawError < 15) && (rangeError < 70)) {
                         // update the position according to localization, based on tag -- this is field coordinate
                         Position rp = desiredTag.robotPose.getPosition();
                         YawPitchRollAngles ro = desiredTag.robotPose.getOrientation();
-                        double x_fwd    = fieldX_to_pfwd(rp.x, rp.y);
-                        double y_left   = fieldY_to_pleft(rp.x, rp.y);
-                        double h_rr     = ro.getYaw(AngleUnit.DEGREES);//heading_field_to_rr(ro.getYaw(AngleUnit.DEGREES));
+                        double x_fwd = fieldX_to_pfwd(rp.x, rp.y);
+                        double y_left = fieldY_to_pleft(rp.x, rp.y);
+                        double h_rr = ro.getYaw(AngleUnit.DEGREES);//heading_field_to_rr(ro.getYaw(AngleUnit.DEGREES));
                         pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, x_fwd, y_left, AngleUnit.DEGREES, h_rr));
                         telemetry.addData("UPDATE pinpoint from", "rp_x %5.2f, rp_y %5.2f, ro_yaw %5.2f ", rp.x, rp.y, ro.getYaw(AngleUnit.DEGREES));
                     }
-                } else {
+                }
+                else {
                     // if left bumper is pressed, but no tag in sight -- then move according to localization
-                    DriveCommand cmd = drivePinpoint( desired_x, desired_y, desired_yaw); //result always valid
+                    DriveCommand cmd = drivePinpoint(desired_x, desired_y, desired_yaw); //result always valid
                     drive = cmd.drive;
                     strafe = cmd.strafe;
                     turn = cmd.turn;
                 }
-            } else
+            }
+            else{
                 //if right bumper is pressed -> go to the location to release the latch
-                if (gamepad1.right_bumper){
-                    DriveCommand cmd = drivePinpoint( latch_x, latch_y, latch_yaw); //result always valid
+                if (gamepad1.right_bumper) {
+                    DriveCommand cmd = drivePinpoint(latch_x, latch_y, latch_yaw); //result always valid
                     drive = cmd.drive;
                     strafe = cmd.strafe;
                     turn = cmd.turn;
-                } else
+                }
+                else {
                     //if lef trigger is press and final 20 second
-                    if (gamepad1.left_trigger > 0.5){
-                        DriveCommand cmd = drivePinpoint( park_x, park_y, park_yaw); //result always valid
+                    if (gamepad1.left_trigger > 0.5) {
+                        DriveCommand cmd = drivePinpoint(park_x, park_y, park_yaw); //result always valid
                         drive = cmd.drive;
                         strafe = cmd.strafe;
                         turn = cmd.turn;
                     }
-                    else{
+                    else {
                         // LB released → reset for next run
                         lbState = LbState.IDLE;
                         yawStableCount = 0;
@@ -326,9 +332,10 @@ public class TeleOpRed extends LinearOpMode
                         turn = -gamepad1.right_stick_x / 2.0;  // Reduce turn rate to 33%.
 
 
-
                         telemetry.addData("Manual", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
                     }
+                }
+            }
             // if right bumper is press -> and there is purple ball in sights -> turn and drive toward it
             if (gamepad1.right_trigger > 0.5) {
                 DriveCommand cmd = autoAcquirePurple();
@@ -353,7 +360,8 @@ public class TeleOpRed extends LinearOpMode
                 drive = 0.0;
                 strafe = dodgeDirection * DODGE_STRAFE_POWER;
                 turn = 0.0;
-            }else{
+            }
+            else{
                 dodgeDirection = 0.0;
             }
             /**************************************************************************************/
@@ -362,15 +370,17 @@ public class TeleOpRed extends LinearOpMode
 //            telemetry.addLine(String.format("PINPOINT -- XY-yaw %6.1f %6.1f %6.1f  (inch)", pose2D.getX(DistanceUnit.INCH), pose2D.getY(DistanceUnit.INCH), pose2D.getHeading(AngleUnit.DEGREES)));
             telemetry.update();
             /**************************************************************************************/
-            if (gamepad2.y && !lastYState)
+            if (gamepad2.y && !lastYState) {
                 intakeMode = !intakeMode;
+            }
             lastYState = gamepad2.y;
             if(intakeMode){
                 //turn on intake power
                 stage1_power = 1.0;//0.6;
                 stage2_power = 0.3;//0.5;
                 stage3_power = 0;//0.5;
-            }else{
+            }
+            else{
                 stage1_power = 0;
                 stage2_power = 0;
                 stage3_power = 0;
@@ -429,6 +439,7 @@ public class TeleOpRed extends LinearOpMode
         stage2.setPower(0);
     }
 
+    //fix
     public void shootThree(){
         shootOnce();
         shootOnce();
@@ -637,8 +648,7 @@ public class TeleOpRed extends LinearOpMode
         }
 
         // Set camera controls unless we are stopping.
-        if (!isStopRequested())
-        {
+        if (!isStopRequested()){
             ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
             if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
                 exposureControl.setMode(ExposureControl.Mode.Manual);
@@ -652,7 +662,9 @@ public class TeleOpRed extends LinearOpMode
         }
     }
     private void setBlobExposureAuto() {
-        if (visionPortal == null) return;
+        if (visionPortal == null){
+            return;
+        }
 
         ExposureControl exposureControl =
                 visionPortal.getCameraControl(ExposureControl.class);
@@ -785,6 +797,8 @@ public class TeleOpRed extends LinearOpMode
         }
         if (lbState == LbState.ALIGN) {
             // Spin in place to desired yaw
+
+
             turn = Range.clip(TURN_GAIN * yawErr, -MAX_AUTO_TURN, MAX_AUTO_TURN);
             // gate translation during alignment
             drive = 0;
@@ -797,7 +811,8 @@ public class TeleOpRed extends LinearOpMode
                 if (++yawStableCount >= YAW_STABLE_LOOPS) {
                     lbState = LbState.TRANSLATE;  // yaw locked
                 }
-            } else {
+            }
+            else{
                 yawStableCount = 0;
             }
         } else { // TRANSLATE
@@ -959,7 +974,8 @@ public class TeleOpRed extends LinearOpMode
 
                     telemetry.addLine("Partial blob: turning only");
                     telemetry.addData("AngleError", "%.1f", angleErrDeg);
-                } else {
+                }
+                else {
                     // Full blob in view -> estimate distance from radius
                     double rangeIn = FX * ARTIFACT_RADIUS_IN / radius_px;
                     double rangeError = rangeIn - TARGET_RANGE_IN;
@@ -976,10 +992,12 @@ public class TeleOpRed extends LinearOpMode
                     telemetry.addData("RangeError", "%.1f", rangeError);
                     telemetry.addData("AngleError", "%.1f", angleErrDeg);
                 }
-            } else {
+            }
+            else {
                 telemetry.addLine("Blob found, but no circle fit");
             }
-        } else {
+        }
+        else {
             telemetry.addLine("No purple blob detected");
         }
 
@@ -1004,8 +1022,8 @@ public class TeleOpRed extends LinearOpMode
         double leftIn  = leftDist.getDistance(DistanceUnit.INCH);
         double rightIn = rightDist.getDistance(DistanceUnit.INCH);
 
-        if (Double.isNaN(leftIn) || Double.isInfinite(leftIn))  leftIn  = 1000;
-        if (Double.isNaN(rightIn) || Double.isInfinite(rightIn)) rightIn = 1000;
+        if (Double.isNaN(leftIn) || Double.isInfinite(leftIn)){  leftIn  = 1000;}
+        if (Double.isNaN(rightIn) || Double.isInfinite(rightIn)){ rightIn = 1000;}
 
         telemetry.addData("Dodge leftIn",  "%.1f", leftIn);
         telemetry.addData("Dodge rightIn", "%.1f", rightIn);
@@ -1021,18 +1039,22 @@ public class TeleOpRed extends LinearOpMode
         if (leftNear && !rightNear) {
             telemetry.addLine("Dodge dir chosen: RIGHT (obstacle left)");
             return +1.0;
-        } else if (rightNear && !leftNear) {
+        }
+        else if (rightNear && !leftNear) {
             telemetry.addLine("Dodge dir chosen: LEFT (obstacle right)");
             return -1.0;
-        } else if (leftNear && rightNear) {
+        }
+        else if (leftNear && rightNear) {
             if (leftIn > rightIn) {
                 telemetry.addLine("Dodge dir chosen: LEFT (more room left)");
                 return -1.0;
-            } else {
+            }
+            else {
                 telemetry.addLine("Dodge dir chosen: RIGHT (more room right)");
                 return +1.0;
             }
-        } else {
+        }
+        else {
             telemetry.addLine("Dodge dir chosen: NONE (no close obstacle)");
             return 0.0;
         }

@@ -111,9 +111,9 @@ public class TeleOpBlue extends LinearOpMode
     final double STRAFE_GAIN =  0.03;//0.015 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
     final double TURN_GAIN   =  0.03;//0.04;//0.02  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
-    final double MAX_AUTO_SPEED = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
-    final double MAX_AUTO_STRAFE= 0.8;   //  Clip the strafing speed to this max value (adjust for your robot)
-    final double MAX_AUTO_TURN  = 0.8;   //  Clip the turn speed to this max value (adjust for your robot)
+    final double MAX_AUTO_SPEED = 0.9;//0.8;   //  Clip the approach speed to this max value (adjust for your robot)
+    final double MAX_AUTO_STRAFE= 0.9;//0.8;   //  Clip the strafing speed to this max value (adjust for your robot)
+    final double MAX_AUTO_TURN  = 0.9;//0.8;   //  Clip the turn speed to this max value (adjust for your robot)
 
     private DcMotor frontLeftDrive = null;  //  Used to control the left front drive wheel
     private DcMotor frontRightDrive = null;  //  Used to control the right front drive wheel
@@ -136,7 +136,7 @@ public class TeleOpBlue extends LinearOpMode
     private DistanceSensor rightDist;
 
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
-    private static final int DESIRED_TAG_ID = 24;//20;//24;// -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
+    private static final int DESIRED_TAG_ID = 20;//20;//24;// -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
     private VisionPortal visionPortal;               // Used to manage the video source.
     private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
     private AprilTagDetection desiredTag = null;     // Used to hold the data for a detected AprilTag
@@ -165,14 +165,14 @@ public class TeleOpBlue extends LinearOpMode
         double park_x, park_y, park_yaw;
         if (DESIRED_TAG_ID == 20) {
             //desired_x = -30; desired_y =  30; desired_yaw =  45;
-            desired_x = -32; desired_y =  -32; desired_yaw =  135; //corresponding do DESIRED DISTANCE 50 -- NEED TO CHeck the yaw
+            desired_x = -32; desired_y =  -32; desired_yaw =  225; //corresponding do DESIRED DISTANCE 50 -- NEED TO CHeck the yaw
             latch_x = 0; latch_y = 46; latch_yaw = 90; //0, 50, 90
             park_x = 38.5; park_y = -35; park_yaw = 90;
-        } else {
-            //desired_x = -30; desired_y = -30; desired_yaw = 135;
-            desired_x = -32; desired_y = -32; desired_yaw = 225;
-            latch_x = 0; latch_y = -46; latch_yaw = -90; //0, 50
-            park_x = 38.5; park_y = 35; park_yaw = -90;
+//        } else {
+//            //desired_x = -30; desired_y = -30; desired_yaw = 135;
+//            desired_x = -32; desired_y = -32; desired_yaw = 225;
+//            latch_x = 0; latch_y = -46; latch_yaw = -90; //0, 50
+//            park_x = 38.5; park_y = 35; park_yaw = -90;
         }
 
         boolean targetFound     = false;    // Set to true when an AprilTag target is detected
@@ -192,8 +192,9 @@ public class TeleOpBlue extends LinearOpMode
         //init wheel
         initDriveMotors();
 
-        if (USE_WEBCAM)
+        if (USE_WEBCAM) {
             setManualExposure(6, 250);  // Use low exposure time to reduce motion blur
+        }
 
         // Wait for driver to press start
         telemetry.addData("Camera preview on/off", "3 dots, Camera Stream");
@@ -211,8 +212,7 @@ public class TeleOpBlue extends LinearOpMode
 
         double pos= CAMERASERVO_LOW;//TEST
 
-        while (opModeIsActive())
-        {
+        while (opModeIsActive()) {
             /*
             //TEST CODE -- Test servo -- open it to fine turn servo
 
@@ -237,7 +237,7 @@ public class TeleOpBlue extends LinearOpMode
                 setBlobExposureAuto();
             }
             //set camera position
-            if (gamepad1.left_bumper) cameraServo.setPosition(CAMERASERVO_HIGH);
+            if (gamepad1.left_bumper) {cameraServo.setPosition(CAMERASERVO_HIGH);}
             if (gamepad1.right_trigger > 0.5) {
                 cameraServo.setPosition(CAMERASERVO_LOW);
             }
@@ -294,29 +294,31 @@ public class TeleOpBlue extends LinearOpMode
                         pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, x_fwd, y_left, AngleUnit.DEGREES, h_rr));
                         telemetry.addData("UPDATE pinpoint from", "rp_x %5.2f, rp_y %5.2f, ro_yaw %5.2f ", rp.x, rp.y, ro.getYaw(AngleUnit.DEGREES));
                     }
-                } else {
+                }
+                else {
                     // if left bumper is pressed, but no tag in sight -- then move according to localization
                     DriveCommand cmd = drivePinpoint( desired_x, desired_y, desired_yaw); //result always valid
                     drive = cmd.drive;
                     strafe = cmd.strafe;
                     turn = cmd.turn;
                 }
-            } else
+            } else {
                 //if right bumper is pressed -> go to the location to release the latch
-                if (gamepad1.right_bumper){
-                    DriveCommand cmd = drivePinpoint( latch_x, latch_y, latch_yaw); //result always valid
+                if (gamepad1.right_bumper) {
+                    DriveCommand cmd = drivePinpoint(latch_x, latch_y, latch_yaw); //result always valid
                     drive = cmd.drive;
                     strafe = cmd.strafe;
                     turn = cmd.turn;
-                } else
+                }
+                else {
                     //if lef trigger is press and final 20 second
-                    if (gamepad1.left_trigger > 0.5){
-                        DriveCommand cmd = drivePinpoint( park_x, park_y, park_yaw); //result always valid
+                    if (gamepad1.left_trigger > 0.5) {
+                        DriveCommand cmd = drivePinpoint(park_x, park_y, park_yaw); //result always valid
                         drive = cmd.drive;
                         strafe = cmd.strafe;
                         turn = cmd.turn;
                     }
-                    else{
+                    else {
                         // LB released → reset for next run
                         lbState = LbState.IDLE;
                         yawStableCount = 0;
@@ -326,9 +328,11 @@ public class TeleOpBlue extends LinearOpMode
                         turn = -gamepad1.right_stick_x / 2.0;  // Reduce turn rate to 33%.
 
 
-
                         telemetry.addData("Manual", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
                     }
+                }
+            }
+
             // if right bumper is press -> and there is purple ball in sights -> turn and drive toward it
             if (gamepad1.right_trigger > 0.5) {
                 DriveCommand cmd = autoAcquirePurple();
@@ -353,7 +357,8 @@ public class TeleOpBlue extends LinearOpMode
                 drive = 0.0;
                 strafe = dodgeDirection * DODGE_STRAFE_POWER;
                 turn = 0.0;
-            }else{
+            }
+            else{
                 dodgeDirection = 0.0;
             }
             /**************************************************************************************/
@@ -362,15 +367,17 @@ public class TeleOpBlue extends LinearOpMode
 //            telemetry.addLine(String.format("PINPOINT -- XY-yaw %6.1f %6.1f %6.1f  (inch)", pose2D.getX(DistanceUnit.INCH), pose2D.getY(DistanceUnit.INCH), pose2D.getHeading(AngleUnit.DEGREES)));
             telemetry.update();
             /**************************************************************************************/
-            if (gamepad2.y && !lastYState)
+            if (gamepad2.y && !lastYState) {
                 intakeMode = !intakeMode;
+            }
             lastYState = gamepad2.y;
             if(intakeMode){
                 //turn on intake power
                 stage1_power = 1.0;//0.6;
                 stage2_power = 0.3;//0.5;
                 stage3_power = 0;//0.5;
-            }else{
+            }
+            else{
                 stage1_power = 0;
                 stage2_power = 0;
                 stage3_power = 0;
@@ -429,6 +436,7 @@ public class TeleOpBlue extends LinearOpMode
         stage2.setPower(0);
     }
 
+    //fix later
     public void shootThree(){
         shootOnce();
         shootOnce();
@@ -608,7 +616,8 @@ public class TeleOpBlue extends LinearOpMode
                     .addProcessor(aprilTag)
                     .addProcessor(colorLocator)
                     .build();
-        } else {
+        }
+        else {
             visionPortal = new VisionPortal.Builder()
                     .setCamera(BuiltinCameraDirection.BACK)
                     .setCameraResolution(new Size(640, 480))
@@ -637,8 +646,7 @@ public class TeleOpBlue extends LinearOpMode
         }
 
         // Set camera controls unless we are stopping.
-        if (!isStopRequested())
-        {
+        if (!isStopRequested()){
             ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
             if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
                 exposureControl.setMode(ExposureControl.Mode.Manual);
@@ -652,7 +660,7 @@ public class TeleOpBlue extends LinearOpMode
         }
     }
     private void setBlobExposureAuto() {
-        if (visionPortal == null) return;
+        if (visionPortal == null) {return;}
 
         ExposureControl exposureControl =
                 visionPortal.getCameraControl(ExposureControl.class);
@@ -797,10 +805,13 @@ public class TeleOpBlue extends LinearOpMode
                 if (++yawStableCount >= YAW_STABLE_LOOPS) {
                     lbState = LbState.TRANSLATE;  // yaw locked
                 }
-            } else {
+            }
+            else {
                 yawStableCount = 0;
             }
-        } else { // TRANSLATE
+        }
+        else {
+            // TRANSLATE
             // Hold yaw fixed: no more turning
             turn = 0;
             // ---- Option B: decompose motion along robot axes toward the target ----
@@ -976,10 +987,12 @@ public class TeleOpBlue extends LinearOpMode
                     telemetry.addData("RangeError", "%.1f", rangeError);
                     telemetry.addData("AngleError", "%.1f", angleErrDeg);
                 }
-            } else {
+            }
+            else {
                 telemetry.addLine("Blob found, but no circle fit");
             }
-        } else {
+        }
+        else {
             telemetry.addLine("No purple blob detected");
         }
 
