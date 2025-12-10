@@ -17,7 +17,8 @@ public class MeepMeepTestingFAR {
                 //.setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .setConstraints(55, 55, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
-        double shootX = -6, shootY = 13, shootYaw = 140;//135;
+        //double shootX = -6, shootY = 13, shootYaw = 140;//135;
+        double shootX = 44, shootY = 6, shootYaw = 155;
         Pose2d shootPose = new Pose2d(shootX, shootY,  Math.toRadians(shootYaw));
         double inX = 54, inY = 58;
         double turnX = inX - 8, turnY = 11;
@@ -38,8 +39,8 @@ public class MeepMeepTestingFAR {
                 //.strafeTo(new Vector2d(inX + 2, inY+4))
                 //go back
                 .setTangent(Math.toRadians(-90))
-                .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(125)),Math.toRadians(-135))
-                .setTangent(Math.toRadians(180))
+                //.splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(125)),Math.toRadians(-135))
+                //.setTangent(Math.toRadians(180))
                 //go to shoot
                 .splineToLinearHeading(new Pose2d(shootX, shootY,  Math.toRadians(shootYaw)), Math.toRadians(180)) //go into
                 .waitSeconds(3) //to shoot
@@ -55,8 +56,25 @@ public class MeepMeepTestingFAR {
                 //.strafeTo(new Vector2d(inX + 2, inY+4))
                 //go back
                 .setTangent(Math.toRadians(-90))
-                .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(125)),Math.toRadians(-135))
-                .setTangent(Math.toRadians(180))
+                //.splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(125)),Math.toRadians(-135))
+                //.setTangent(Math.toRadians(180))
+                //go to shoot
+                .splineToLinearHeading(new Pose2d(shootX, shootY,  Math.toRadians(shootYaw)), Math.toRadians(180)) //go into
+                .waitSeconds(3) //to shoot
+
+                .setTangent(Math.toRadians(0))
+                //go to intake the 3rd set of balls
+                .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(90)),Math.toRadians(0))
+                //strafe forwards to intake
+                .setTangent(Math.toRadians(45))
+                .splineToLinearHeading(new Pose2d(inX, inY, Math.toRadians(90)),Math.toRadians(90))
+                .turn(Math.toRadians(-45))
+                //.turn(Math.toRadians(45))
+                //.strafeTo(new Vector2d(inX + 2, inY+4))
+                //go back
+                .setTangent(Math.toRadians(-90))
+                //.splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(125)),Math.toRadians(-135))
+                //.setTangent(Math.toRadians(180))
                 //go to shoot
                 .splineToLinearHeading(new Pose2d(shootX, shootY,  Math.toRadians(shootYaw)), Math.toRadians(180)) //go into
                 .waitSeconds(3) //to shoot
