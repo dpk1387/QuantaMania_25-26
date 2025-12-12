@@ -13,7 +13,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
-@Autonomous(name = "Blue Long Auto", group = "Autonomous")
+@Autonomous(name = "Red Against Wall", group = "Autonomous")
 @Config
 public class Red_Againstwall extends LinearOpMode {
 

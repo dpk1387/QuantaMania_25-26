@@ -131,7 +131,7 @@ public class TeleOpRed extends LinearOpMode
     final private double CAMERASERVO_HIGH = 0.49;//0.55;
     //private double CAMERASERVO_LOW = 0.72;
     final private double CAMERASERVO_LOW = 0.68;
-    final private double SHOOTER_VELOCITY = 4800;//4800;//5000;
+    final private double SHOOTER_VELOCITY = 4500;//4800;//5000;
     private DistanceSensor leftDist;
     private DistanceSensor rightDist;
 
@@ -308,15 +308,14 @@ public class TeleOpRed extends LinearOpMode
                     drive = cmd.drive;
                     strafe = cmd.strafe;
                     turn = cmd.turn;
-                } else
+                } else {
                     //if lef trigger is press and final 20 second
-                    if (gamepad1.left_trigger > 0.5){
-                        DriveCommand cmd = drivePinpoint( park_x, park_y, park_yaw); //result always valid
+                    if (gamepad1.left_trigger > 0.5) {
+                        DriveCommand cmd = drivePinpoint(park_x, park_y, park_yaw); //result always valid
                         drive = cmd.drive;
                         strafe = cmd.strafe;
                         turn = cmd.turn;
-                    }
-                    else{
+                    } else {
                         // LB released → reset for next run
                         lbState = LbState.IDLE;
                         yawStableCount = 0;
@@ -326,9 +325,9 @@ public class TeleOpRed extends LinearOpMode
                         turn = -gamepad1.right_stick_x / 2.0;  // Reduce turn rate to 33%.
 
 
-
                         telemetry.addData("Manual", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
                     }
+                }
             // if right bumper is press -> and there is purple ball in sights -> turn and drive toward it
             if (gamepad1.right_trigger > 0.5) {
                 DriveCommand cmd = autoAcquirePurple();
@@ -785,6 +784,8 @@ public class TeleOpRed extends LinearOpMode
         }
         if (lbState == LbState.ALIGN) {
             // Spin in place to desired yaw
+
+
             turn = Range.clip(TURN_GAIN * yawErr, -MAX_AUTO_TURN, MAX_AUTO_TURN);
             // gate translation during alignment
             drive = 0;

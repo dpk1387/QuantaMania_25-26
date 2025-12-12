@@ -45,7 +45,7 @@ import org.firstinspires.ftc.vision.opencv.ColorRange;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-@Autonomous(name = "RedAutoFAR", group = "Autonomous")
+@Autonomous(name = "BlueAutoFAR", group = "Autonomous")
 @Config
 public class BlueAutoFAR extends LinearOpMode {
     /* HARDWARE */
