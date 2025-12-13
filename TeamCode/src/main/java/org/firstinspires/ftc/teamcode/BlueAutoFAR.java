@@ -63,7 +63,7 @@ public class BlueAutoFAR extends LinearOpMode {
     final private double CAMERASERVO_HIGH = 0.55;
     final private double CAMERASERVO_LOW = 0.68;
     final private double SHOOTER_VELOCITY = 4800;
-    final private int startDelay = 8;
+    final private int startDelay = 0;
     /* INIT */
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
     private static final int DESIRED_TAG_ID = 24;//RED //20;//BLUE//24;// -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
@@ -311,6 +311,7 @@ public class BlueAutoFAR extends LinearOpMode {
         });
 
         waitForStart();
+        sleep(1000 * startDelay);
 
         //make sure the gate is closed
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
