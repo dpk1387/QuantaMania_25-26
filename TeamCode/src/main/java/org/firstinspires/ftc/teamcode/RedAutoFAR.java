@@ -627,7 +627,7 @@ public class RedAutoFAR extends LinearOpMode {
             //sleep(200);
             //3. set stage power
             stage1.setPower(1.0); //keep stage1 as intake
-            sleep(150);
+            //sleep(150);
             stage2.setPower(-0.4); //use stage 2 as the second gate
             stage3.setPower(-0.3);
             sleep(110);
@@ -639,7 +639,7 @@ public class RedAutoFAR extends LinearOpMode {
             blockShooter.setPosition(OPENSHOOTER_CLOSED);
             stage3.setPower(0);
             stage2.setPower(0.8);
-            sleep(300);//150
+            sleep(200);//150
 
             stage2.setPower(0);
 

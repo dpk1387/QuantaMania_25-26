@@ -102,7 +102,7 @@ import java.util.concurrent.TimeUnit;
 public class TeleOpRed extends LinearOpMode
 {
     // Adjust these numbers to suit your robot. Should be from 30 - 55 inches
-    final double DESIRED_DISTANCE = 35;//45;//12.0; //  this is how close the camera should get to the target (inches)
+    final double DESIRED_DISTANCE = 40;//35;//45;//12.0; //  this is how close the camera should get to the target (inches)
 
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
@@ -407,12 +407,12 @@ public class TeleOpRed extends LinearOpMode
         //2. start the shooter
         shooter.setPower(0.95);
         //shooter.setVelocity(SHOOTER_VELOCITY);
-        sleep(200);
+        //sleep(200);
 
         //3. set stage power
         stage1.setPower(1.0); //keep stage1 as intake
         sleep(100);
-        stage2.setPower(-0.4); //use stage 2 as the second gate
+        stage2.setPower(-0.3); //use stage 2 as the second gate
         stage3.setPower(-0.3);
         sleep(110);
         stage3.setPower(1); //accelate stage3

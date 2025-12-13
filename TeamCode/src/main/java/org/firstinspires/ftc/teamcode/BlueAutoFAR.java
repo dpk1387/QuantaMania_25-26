@@ -209,7 +209,8 @@ public class BlueAutoFAR extends LinearOpMode {
                 // Optionally log something
                 packet.put("PowerShooterAction", "Power shooter to velocity = 4800");
                 //set the shooter power to 0.9
-                shooter.setVelocity(SHOOTER_VELOCITY);
+                //shooter.setVelocity(SHOOTER_VELOCITY);
+                shooter.setPower(0.95);
                 //sleep(500);
                 initialized = true;
             }
@@ -245,15 +246,18 @@ public class BlueAutoFAR extends LinearOpMode {
     public Action closeGate() {
         return new moveGate();
     }
+
     //run the intake
     public class startIntakeAction implements Action {
         private boolean initialized = false;
         private double s1, s2, s3;
-        public startIntakeAction(double s1_in, double s2_in, double s3_in){
+
+        public startIntakeAction(double s1_in, double s2_in, double s3_in) {
             s1 = s1_in;
             s2 = s2_in;
             s3 = s3_in;
         }
+
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
@@ -267,6 +271,7 @@ public class BlueAutoFAR extends LinearOpMode {
             return false;
         }
     }
+
     public Action startIntake(double s1, double s2, double s3) {
         return new startIntakeAction(s1, s2, s3);
     }
@@ -315,7 +320,7 @@ public class BlueAutoFAR extends LinearOpMode {
         //initialize shooting position on field
         //double shootX = -9, shootY = 11, shootYaw = 132;//135;
         //double shootX = -6, shootY = -13, shootYaw = 220;//135;
-        double shootX = -11, shootY = -13, shootYaw = 225;
+        double shootX = -13.5, shootY = -13, shootYaw = 225;
 
         //double shootX = 46, shootY = -10, shootYaw = -154;
         //intake the set of balls closest to the right
@@ -337,7 +342,6 @@ public class BlueAutoFAR extends LinearOpMode {
                                     .build(),
                             shootAll(), //shoot
                             closeGate(), //make sure the gate is actually closed
-                            startIntake(1.0, 0.3, 0),
 
                             //2nd set of balls
                             startIntake(1.0, 0.3, 0),
@@ -368,7 +372,7 @@ public class BlueAutoFAR extends LinearOpMode {
                                     .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(-135)),Math.toRadians(0))
                                     //strafe forwards to intake
                                     .splineToLinearHeading(new Pose2d(inX, inY, Math.toRadians(-90)),Math.toRadians(-90))
-                                    .turn(Math.toRadians(-45))
+                                    .turn(Math.toRadians(45))
                                     //.turn(Math.toRadians(45))
                                     //.strafeTo(new Vector2d(inX + 2, inY+4))
                                     //go back
@@ -388,7 +392,7 @@ public class BlueAutoFAR extends LinearOpMode {
                                     .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(-135)),Math.toRadians(0))
                                     //strafe forwards to intake
                                     .splineToLinearHeading(new Pose2d(inX, inY, Math.toRadians(-90)),Math.toRadians(-90))
-                                    .turn(Math.toRadians(-45))
+                                    .turn(Math.toRadians(45))
                                     //.turn(Math.toRadians(45))
                                     //.strafeTo(new Vector2d(inX + 2, inY+4))
                                     //go back
@@ -621,10 +625,10 @@ public class BlueAutoFAR extends LinearOpMode {
         //sleep(200);
         //3. set stage power
         stage1.setPower(1.0); //keep stage1 as intake
-        sleep(100);
+        //sleep(100);
         stage2.setPower(-0.4); //use stage 2 as the second gate
         stage3.setPower(-0.3);
-        sleep(100);
+        sleep(110);
         stage3.setPower(1); //accelate stage3
         //open the gate so that the ball can go through
         blockShooter.setPosition(OPENSHOOTER_OPEN);
