@@ -331,7 +331,8 @@ public class BlueAutoFAR extends LinearOpMode {
         //shooting position
         Pose2d shootPose = new Pose2d(shootX, shootY,  Math.toRadians(shootYaw));
         double inX = 58, inY = -58;
-        double turnX = inX - 8, turnY = -11;
+        //double turnX = inX - 8, turnY = -11;
+        double turnX = inX - 10, turnY = -11;
         Pose2d intakePose = new Pose2d(inX, inY, Math.toRadians(-90));//
         try {
             Actions.runBlocking(
@@ -638,7 +639,7 @@ public class BlueAutoFAR extends LinearOpMode {
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         stage3.setPower(0);
         stage2.setPower(0.8);
-        sleep(200);//150
+        sleep(250);//150
 
         stage2.setPower(0);
 
