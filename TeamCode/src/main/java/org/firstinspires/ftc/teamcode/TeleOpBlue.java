@@ -413,8 +413,8 @@ public class TeleOpBlue extends LinearOpMode
     public void shootOnce(){
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         //2. start the shooter
-        //shooter.setPower(0.95);
-        shooter.setVelocity(SHOOTER_VELOCITY);
+        shooter.setPower(0.95);
+        //shooter.setVelocity(SHOOTER_VELOCITY);
         sleep(200);
 
         //3. set stage power
@@ -510,8 +510,8 @@ public class TeleOpBlue extends LinearOpMode
         stage3.setDirection(DcMotor.Direction.REVERSE);
         blockShooter.setDirection(Servo.Direction.REVERSE); //Do we really need this?
 
-        //shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
     //Initialize the AprilTag processor.
     private void initAprilTagAndColorBlob() {

@@ -306,11 +306,7 @@ public class BlueAutoFAR extends LinearOpMode {
         });
 
         waitForStart();
-        if (startDelay >= 24) {
-            sleep(24000);
-        } else {
-            sleep(startDelay * 1000);
-        }
+
         //make sure the gate is closed
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         runtime.reset();
@@ -318,7 +314,9 @@ public class BlueAutoFAR extends LinearOpMode {
 
         //initialize shooting position on field
         //double shootX = -9, shootY = 11, shootYaw = 132;//135;
-        double shootX = -6, shootY = -13, shootYaw = 220;//135;
+        //double shootX = -6, shootY = -13, shootYaw = 220;//135;
+        double shootX = -11, shootY = -13, shootYaw = 225;
+
         //double shootX = 46, shootY = -10, shootYaw = -154;
         //intake the set of balls closest to the right
         //double intakeX = 35, intakeY = 30, intakeYaw = 90;
@@ -339,6 +337,7 @@ public class BlueAutoFAR extends LinearOpMode {
                                     .build(),
                             shootAll(), //shoot
                             closeGate(), //make sure the gate is actually closed
+                            startIntake(1.0, 0.3, 0),
 
                             //2nd set of balls
                             startIntake(1.0, 0.3, 0),
@@ -360,6 +359,7 @@ public class BlueAutoFAR extends LinearOpMode {
                             //startShooter(),
                             shootAll(), //shoot
                             closeGate(), //make sure gate is closed
+                            startIntake(1.0, 0.3, 0),
 
                             //3rd. intake balls from red alliance human player side
                             drive.actionBuilder(shootPose)
@@ -379,6 +379,7 @@ public class BlueAutoFAR extends LinearOpMode {
                                     .build(),
                             shootAll(), //shoot
                             closeGate(),
+                            startIntake(1.0, 0.3, 0),
 
                             //4th set of artifacts
                             drive.actionBuilder(shootPose)
@@ -615,8 +616,8 @@ public class BlueAutoFAR extends LinearOpMode {
         //1. make sure the gate is closed
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         //2. start the shooter
-        shooter.setVelocity(SHOOTER_VELOCITY);
-        // shooter.setPower(0.95);
+        //shooter.setVelocity(SHOOTER_VELOCITY);
+        shooter.setPower(0.95);
         //sleep(200);
         //3. set stage power
         stage1.setPower(1.0); //keep stage1 as intake

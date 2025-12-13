@@ -4,6 +4,7 @@ import android.util.Size;
 import java.util.Locale;
 
 //import necessary android and ftc sdk classes
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -18,6 +19,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.List; //used to store lists of detections
 
 @TeleOp //marks program as teleop
+@Disabled
 public class AprilTag extends LinearOpMode {
 
     @Override //main method that runs once the OpMode started
