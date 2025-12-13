@@ -55,7 +55,7 @@ public class RedAutoNEAR extends LinearOpMode {
     final private double OPENSHOOTER_CLOSED = OPENSHOOTER_OPEN + 28;//0.55
     final private double CAMERASERVO_HIGH = 0.55;
     final private double CAMERASERVO_LOW = 0.68;
-    final private double SHOOTER_VELOCITY = 4800;//5000;
+    final private double SHOOTER_VELOCITY = 4000;//4200;//4800;//5000;
     /* INIT */
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
     private static final int DESIRED_TAG_ID = 24;//RED //20;//BLUE//24;// -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
@@ -201,8 +201,8 @@ public class RedAutoNEAR extends LinearOpMode {
                 packet.put("PowerShooterAction", "Power shooter to power = 0.9");
                 //set the shooter power to 0.9
                 //shooter.setVelocity(5400);
-                shooter.setVelocity(SHOOTER_VELOCITY);
-                //shooter.setPower(0.95);
+                //shooter.setVelocity(SHOOTER_VELOCITY);
+                shooter.setPower(0.95);
                 //sleep(500);
                 initialized = true;
             }
@@ -386,7 +386,8 @@ public class RedAutoNEAR extends LinearOpMode {
         stage3.setDirection(DcMotor.Direction.REVERSE);
         blockShooter.setDirection(Servo.Direction.REVERSE); //Do we really need this?
 
-        shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
     //Initialize the AprilTag processor.
     private void initAprilTagAndColorBlob() {
@@ -554,13 +555,13 @@ public class RedAutoNEAR extends LinearOpMode {
         //1. make sure the gate is closed
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         //2. start the shooter
-        shooter.setVelocity(SHOOTER_VELOCITY); //max RPM * 0.9
-        //shooter.setPower(0.95);
+        //shooter.setVelocity(SHOOTER_VELOCITY); //max RPM * 0.9
+        shooter.setPower(0.95);
         //sleep(200);
 
         //3. set stage power
         stage1.setPower(1.0); //keep stage1 as intake
-        sleep(100);
+        sleep(150);
         stage2.setPower(-0.4); //use stage 2 as the second gate
         stage3.setPower(-0.3);
         sleep(110);
@@ -572,7 +573,7 @@ public class RedAutoNEAR extends LinearOpMode {
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         stage3.setPower(0);
         stage2.setPower(0.8);
-        sleep(200);//150
+        sleep(300);//150
 
         stage2.setPower(0);
         /*

@@ -201,8 +201,8 @@ public class BlueAutoNEAR extends LinearOpMode {
                 packet.put("PowerShooterAction", "Power shooter to power = 0.9");
                 //set the shooter power to 0.9
                 //shooter.setVelocity(5400);
-                shooter.setVelocity(SHOOTER_VELOCITY);
-                //shooter.setPower(0.95);
+                //shooter.setVelocity(SHOOTER_VELOCITY);
+                shooter.setPower(0.95);
                 //sleep(500);
                 initialized = true;
             }
@@ -554,13 +554,13 @@ public class BlueAutoNEAR extends LinearOpMode {
         //1. make sure the gate is closed
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         //2. start the shooter
-        shooter.setVelocity(SHOOTER_VELOCITY); //max RPM * 0.9
-        //shooter.setPower(0.95);
+        //shooter.setVelocity(SHOOTER_VELOCITY); //max RPM * 0.9
+        shooter.setPower(0.95);
         //sleep(200);
 
         //3. set stage power
         stage1.setPower(1.0); //keep stage1 as intake
-        sleep(100);
+        sleep(150);
         stage2.setPower(-0.4); //use stage 2 as the second gate
         stage3.setPower(-0.3);
         sleep(110);
@@ -572,7 +572,7 @@ public class BlueAutoNEAR extends LinearOpMode {
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         stage3.setPower(0);
         stage2.setPower(0.8);
-        sleep(200);//150
+        sleep(300);//150
 
         stage2.setPower(0);
         /*

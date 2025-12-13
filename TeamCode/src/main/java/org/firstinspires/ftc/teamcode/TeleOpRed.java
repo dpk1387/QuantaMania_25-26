@@ -108,7 +108,7 @@ public class TeleOpRed extends LinearOpMode
     //  applied to the drive motors to correct the error.
     //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
     final double SPEED_GAIN  =  0.04;//0.02  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-    final double STRAFE_GAIN =  0.03;//0.015 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
+    final double STRAFE_GAIN = 0.03;//0.015 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
     final double TURN_GAIN   =  0.03;//0.04;//0.02  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
     final double MAX_AUTO_SPEED = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
@@ -131,7 +131,7 @@ public class TeleOpRed extends LinearOpMode
     final private double CAMERASERVO_HIGH = 0.49;//0.55;
     //private double CAMERASERVO_LOW = 0.72;
     final private double CAMERASERVO_LOW = 0.68;
-    final private double SHOOTER_VELOCITY = 6400;//4800;//5000;
+    final private double SHOOTER_VELOCITY = 4500;//4800;//5000;
     private DistanceSensor leftDist;
     private DistanceSensor rightDist;
 
@@ -307,15 +307,14 @@ public class TeleOpRed extends LinearOpMode
                     drive = cmd.drive;
                     strafe = cmd.strafe;
                     turn = cmd.turn;
-                } else
+                } else {
                     //if lef trigger is press and final 20 second
-                    if (gamepad1.left_trigger > 0.5){
-                        DriveCommand cmd = drivePinpoint( park_x, park_y, park_yaw); //result always valid
+                    if (gamepad1.left_trigger > 0.5) {
+                        DriveCommand cmd = drivePinpoint(park_x, park_y, park_yaw); //result always valid
                         drive = cmd.drive;
                         strafe = cmd.strafe;
                         turn = cmd.turn;
-                    }
-                    else{
+                    } else {
                         // LB released → reset for next run
                         lbState = LbState.IDLE;
                         yawStableCount = 0;
@@ -325,9 +324,9 @@ public class TeleOpRed extends LinearOpMode
                         turn = -gamepad1.right_stick_x / 2.0;  // Reduce turn rate to 33%.
 
 
-
                         telemetry.addData("Manual", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
                     }
+                }
             // if right bumper is press -> and there is purple ball in sights -> turn and drive toward it
             if (gamepad1.right_trigger > 0.5) {
                 DriveCommand cmd = autoAcquirePurple();
@@ -405,9 +404,9 @@ public class TeleOpRed extends LinearOpMode
     public void shootOnce(){
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         //2. start the shooter
-        //shooter.setPower(0.95);
-        shooter.setVelocity(SHOOTER_VELOCITY);
-        sleep(4000);
+        shooter.setPower(0.95);
+        //shooter.setVelocity(SHOOTER_VELOCITY);
+        sleep(200);
 
         //3. set stage power
         stage1.setPower(1.0); //keep stage1 as intake
@@ -415,9 +414,8 @@ public class TeleOpRed extends LinearOpMode
         stage2.setPower(-0.4); //use stage 2 as the second gate
         stage3.setPower(-0.3);
         sleep(110);
-        stage3.setPower(1); //accelerate stage3
+        stage3.setPower(1); //accelate stage3
         //open the gate so that the ball can go through
-        sleep(100);
         blockShooter.setPosition(OPENSHOOTER_OPEN);
         sleep(200); //250//300
         //4. close the gate
@@ -502,8 +500,8 @@ public class TeleOpRed extends LinearOpMode
         stage3.setDirection(DcMotor.Direction.REVERSE);
         blockShooter.setDirection(Servo.Direction.REVERSE); //Do we really need this?
 
-        //shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
     //Initialize the AprilTag processor.
     private void initAprilTagAndColorBlob() {
@@ -785,6 +783,8 @@ public class TeleOpRed extends LinearOpMode
         }
         if (lbState == LbState.ALIGN) {
             // Spin in place to desired yaw
+
+
             turn = Range.clip(TURN_GAIN * yawErr, -MAX_AUTO_TURN, MAX_AUTO_TURN);
             // gate translation during alignment
             drive = 0;

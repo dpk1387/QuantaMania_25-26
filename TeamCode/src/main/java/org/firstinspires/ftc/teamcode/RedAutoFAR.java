@@ -56,7 +56,7 @@ public class RedAutoFAR extends LinearOpMode {
     final private double OPENSHOOTER_CLOSED = 1;
     final private double CAMERASERVO_HIGH = 0.55;
     final private double CAMERASERVO_LOW = 0.68;
-    final private double SHOOTER_VELOCITY = 4800;
+    final private double SHOOTER_VELOCITY = 3500;//4000;//4200;//4700;
     final private long startDelay = 10; // avoid auto interference
     /* INIT */
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
@@ -203,7 +203,8 @@ public class RedAutoFAR extends LinearOpMode {
                 // Optionally log something
                 packet.put("PowerShooterAction", "Power shooter to velocity = 4800");
                 //set the shooter power to 0.9
-                shooter.setVelocity(SHOOTER_VELOCITY);
+                //shooter.setVelocity(SHOOTER_VELOCITY);
+                shooter.setPower(0.95);
                 //sleep(500);
                 initialized = true;
             }
@@ -304,11 +305,13 @@ public class RedAutoFAR extends LinearOpMode {
             });
 
             waitForStart();
-            if (startDelay >= 24) {
-                sleep(24000);
-            } else {
-                sleep(startDelay * 1000);
-            }
+
+//            if (startDelay >= 24) {
+//                sleep(24000);
+//            } else {
+//                sleep(startDelay * 1000);
+//            }
+//
             //make sure the gate is closed
             blockShooter.setPosition(OPENSHOOTER_CLOSED);
             runtime.reset();
@@ -316,7 +319,7 @@ public class RedAutoFAR extends LinearOpMode {
 
             //initialize shooting position on field
             //double shootX = -9, shootY = 11, shootYaw = 132;//135;
-            double shootX = -6, shootY = 13, shootYaw = 140;//135;
+            double shootX = -13.5, shootY = 13, shootYaw = 135;
             //double shootX = 46, shootY = 10, shootYaw = 150;
             //intake the set of balls closest to the right
             //double intakeX = 35, intakeY = 30, intakeYaw = 90;
@@ -358,6 +361,7 @@ public class RedAutoFAR extends LinearOpMode {
                                 //startShooter(),
                                 shootAll(), //shoot
                                 closeGate(), //make sure gate is closed
+                                startIntake(1.0, 0.3, 0),
 
                                 //3rd. intake balls from blue alliance human player side
                                 drive.actionBuilder(shootPose)
@@ -377,6 +381,7 @@ public class RedAutoFAR extends LinearOpMode {
                                         .build(),
                                 shootAll(), //shoot
                                 closeGate(),
+                                startIntake(1.0, 0.3, 0),
 
                                 //4th set of artifacts
                                 drive.actionBuilder(shootPose)
@@ -446,7 +451,8 @@ public class RedAutoFAR extends LinearOpMode {
             stage3.setDirection(DcMotor.Direction.REVERSE);
             blockShooter.setDirection(Servo.Direction.REVERSE); //Do we really need this?
 
-            shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            //shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
 
         //Initialize the AprilTag processor.
@@ -616,15 +622,15 @@ public class RedAutoFAR extends LinearOpMode {
             //1. make sure the gate is closed
             blockShooter.setPosition(OPENSHOOTER_CLOSED);
             //2. start the shooter
-            shooter.setVelocity(SHOOTER_VELOCITY);
-            // shooter.setPower(0.95);
+            //shooter.setVelocity(SHOOTER_VELOCITY);
+            shooter.setPower(0.95);
             //sleep(200);
             //3. set stage power
             stage1.setPower(1.0); //keep stage1 as intake
-            sleep(100);
+            sleep(150);
             stage2.setPower(-0.4); //use stage 2 as the second gate
             stage3.setPower(-0.3);
-            sleep(100);
+            sleep(110);
             stage3.setPower(1); //accelerate stage3
             //open the gate so that the ball can go through
             blockShooter.setPosition(OPENSHOOTER_OPEN);
@@ -632,8 +638,8 @@ public class RedAutoFAR extends LinearOpMode {
             //4. close the gate
             blockShooter.setPosition(OPENSHOOTER_CLOSED);
             stage3.setPower(0);
-            stage2.setPower(0.7);
-            sleep(350);//150
+            stage2.setPower(0.8);
+            sleep(300);//150
 
             stage2.setPower(0);
 
