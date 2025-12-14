@@ -204,7 +204,7 @@ public class RedAutoFAR extends LinearOpMode {
                 packet.put("PowerShooterAction", "Power shooter to velocity = 4800");
                 //set the shooter power to 0.9
                 //shooter.setVelocity(SHOOTER_VELOCITY);
-                shooter.setPower(0.95);
+                shooter.setPower(0.90);
                 //sleep(500);
                 initialized = true;
             }
@@ -623,7 +623,7 @@ public class RedAutoFAR extends LinearOpMode {
             blockShooter.setPosition(OPENSHOOTER_CLOSED);
             //2. start the shooter
             //shooter.setVelocity(SHOOTER_VELOCITY);
-            shooter.setPower(0.95);
+            shooter.setPower(0.90);
             //sleep(200);
             //3. set stage power
             stage1.setPower(1.0); //keep stage1 as intake

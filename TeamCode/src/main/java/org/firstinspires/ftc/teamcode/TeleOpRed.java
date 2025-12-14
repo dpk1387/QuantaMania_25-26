@@ -369,10 +369,12 @@ public class TeleOpRed extends LinearOpMode
                 stage1_power = 1.0;//0.6;
                 stage2_power = 0.3;//0.5;
                 stage3_power = 0;//0.5;
+                shooter.setPower(0.90);
             }else{
                 stage1_power = 0;
                 stage2_power = 0;
                 stage3_power = 0;
+                shooter.setPower(0.0);
             }
             if (gamepad2.left_bumper && !shooting){
                 shootOnce();
@@ -389,6 +391,7 @@ public class TeleOpRed extends LinearOpMode
                 stage1_power = 0;
                 stage2_power = 0;
                 stage3_power = 0;
+                shooter.setPower(0.0);
 
             }
 

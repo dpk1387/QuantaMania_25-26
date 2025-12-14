@@ -332,7 +332,7 @@ public class BlueAutoFAR extends LinearOpMode {
         Pose2d shootPose = new Pose2d(shootX, shootY,  Math.toRadians(shootYaw));
         double inX = 58, inY = -58;
         //double turnX = inX - 8, turnY = -11;
-        double turnX = inX - 10, turnY = -11;
+        double turnX = inX - 10, turnY = -13;
         Pose2d intakePose = new Pose2d(inX, inY, Math.toRadians(-90));//
         try {
             Actions.runBlocking(
