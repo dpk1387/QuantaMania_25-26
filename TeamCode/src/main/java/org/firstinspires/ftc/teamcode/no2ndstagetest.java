@@ -434,6 +434,7 @@ public class no2ndstagetest extends LinearOpMode
 //        stage2.setPower(0);
     }
 
+    //not used
     public void shootThree(){
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         //2. start the shooter
@@ -465,8 +466,6 @@ public class no2ndstagetest extends LinearOpMode
 //        shootOnce();
 
     }
-
-
 
     public void shootN(int count) {
         final double targetVel = 2200;//close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
