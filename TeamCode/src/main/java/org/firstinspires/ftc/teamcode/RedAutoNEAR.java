@@ -173,9 +173,7 @@ public class RedAutoNEAR extends LinearOpMode {
                 // Optionally log something
                 packet.put("ShootAllAction", "Firing 3 shots");
                 // Fire three balls in sequence (blocking, similar to SleepAction(3))
-                shootOnce();
-                shootOnce();
-                shootOnce();
+                shootN(6);
                 //sleep(500); //sleep before moving to next position
 
                 initialized = true;
@@ -574,35 +572,55 @@ public class RedAutoNEAR extends LinearOpMode {
         stage3.setPower(0);
         // stage2.setPower(0.8);
         sleep(200);//300 //150
+    }
 
-        // stage2.setPower(0);
-        /*
-        //1. make sure the gate is closed
-        blockShooter.setPosition(OPENSHOOTER_CLOSED);
-        //2. start the shooter
-        // shooter.setPower(1);
-        // sleep(500);
-        //3. set stage power
-        // stage1.setPower(0.8); //keep stage1 as intake
-        // stage3.setPower(1); //accelate stage3
-        // stage2.setPower(-0.4); //use stage 2 as the second gate
+    public void shootN(int count) {
+        final double targetVel = 2200;//close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
+        final double dropMargin = 100;         // tune
+        final double recoverMargin = 200; //100;      // tune (smaller than dropMargin)
+        final double stage3FeedPower = 0.6;    // tune down if multiple balls sneak
+        final double stage3HoldPower = 0.0;
 
+        final double GATE_HOLD = OPENSHOOTER_CLOSED;   // you may want a slightly-open "hold" instead
+        final double GATE_PULSE_OPEN = OPENSHOOTER_OPEN; // tune so 1 ball passes, not 2
 
-        //run intakes before hand
-        runIntake(0.8, -0.4, 1);
-        sleep(300); //wait for them to be full speed
+        final int pulseMs = 200;//130;              // tune: shorter = fewer double-feeds
+        final int stableMs = 120;             // require speed stable before feeding next ball
+        final int loopSleepMs = 15;
 
-        //open the gate so that the ball can go through
-        blockShooter.setPosition(OPENSHOOTER_OPEN);
-        sleep(300); //wait until the ball go through
+        // Spin up
+        blockShooter.setPosition(GATE_HOLD);
+        shooter.setVelocity(targetVel);
 
-        //4. close the gate
-        blockShooter.setPosition(OPENSHOOTER_CLOSED);
-        sleep(300);
-        //shooter.setPower(0);
-        runIntake(1, 1, 0.6); //kick the next balls up
-        sleep(200);
-         */
+        //stage1.setPower(0.6);  //0.6, 1.0       // intake
+        stage3.setPower(stage3HoldPower);
+
+        sleep(600);
+        ElapsedTime time_pass = new ElapsedTime();
+        time_pass.reset();
+
+        while(time_pass.milliseconds() <= 1500){
+            stage3.setPower(stage3FeedPower);
+            blockShooter.setPosition(GATE_PULSE_OPEN);
+            sleep(pulseMs);
+
+            // 3) Immediately block the next ball
+            blockShooter.setPosition(GATE_HOLD);
+            //stage3.setPower(stage3HoldPower);
+
+            // 4) Wait for recovery enough to avoid weak 2nd/3rd shots
+            while (opModeIsActive() && shooter.getVelocity() < targetVel - recoverMargin) {
+                telemetry.addData("Shooter Vel", "%5.2f", shooter.getVelocity());
+                telemetry.update();
+                sleep(loopSleepMs);
+                idle();
+            }
+        }
+
+        // Stop / reset
+        stage3.setPower(0);
+        blockShooter.setPosition(GATE_HOLD);
+        shooter.setVelocity(0);
     }
 
     //running intake
