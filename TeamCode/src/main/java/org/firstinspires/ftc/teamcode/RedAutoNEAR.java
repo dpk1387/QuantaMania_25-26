@@ -44,12 +44,12 @@ public class RedAutoNEAR extends LinearOpMode {
     /* HARDWARE */
     private DcMotorEx shooter = null;
     private DcMotor stage1 = null;
-    private DcMotor stage2 = null;
+    // private DcMotor stage2 = null;
     private DcMotor stage3 = null;
     private Servo blockShooter = null;
     private Servo cameraServo = null;
-    private DistanceSensor leftDist = null;
-    private DistanceSensor rightDist = null;
+    //private DistanceSensor leftDist = null;
+    //private DistanceSensor rightDist = null;
     GoBildaPinpointDriver pinpoint = null;
     final private double OPENSHOOTER_OPEN = 0.19;//0.3;
     final private double OPENSHOOTER_CLOSED = OPENSHOOTER_OPEN + 28;//0.55
@@ -173,9 +173,7 @@ public class RedAutoNEAR extends LinearOpMode {
                 // Optionally log something
                 packet.put("ShootAllAction", "Firing 3 shots");
                 // Fire three balls in sequence (blocking, similar to SleepAction(3))
-                shootOnce();
-                shootOnce();
-                shootOnce();
+                shootN(6);
                 //sleep(500); //sleep before moving to next position
 
                 initialized = true;
@@ -318,7 +316,7 @@ public class RedAutoNEAR extends LinearOpMode {
                             drive.actionBuilder(shootPose)
                                     .setTangent(Math.toRadians(45))
                                     .splineToLinearHeading(new Pose2d(-24, 38,  Math.toRadians(45)), Math.toRadians(45)) //go into
-                                    .splineToLinearHeading(new Pose2d(-6, 58,  Math.toRadians(95)), Math.toRadians(90)) //go into
+                                    .splineToLinearHeading(new Pose2d(-6, 60,  Math.toRadians(95)), Math.toRadians(90)) //go into
                                     .setTangent(Math.toRadians(-90))
                                     .splineToLinearHeading(shootPose, Math.toRadians(225)) //go into
                                     .build(),
@@ -330,7 +328,7 @@ public class RedAutoNEAR extends LinearOpMode {
                             drive.actionBuilder(shootPose)
                                     .setTangent(Math.toRadians(15))
                                     .splineToLinearHeading(new Pose2d(2, 38,  Math.toRadians(45)), Math.toRadians(30)) //go into
-                                    .splineToLinearHeading(new Pose2d(4, 60,  Math.toRadians(115)), Math.toRadians(95)) //go into
+                                    .splineToLinearHeading(new Pose2d(4, 62,  Math.toRadians(115)), Math.toRadians(95)) //go into
                                     .setTangent(Math.toRadians(-90))
                                     .splineToLinearHeading(shootPose, Math.toRadians(200)) //go into
                                     .build(),
@@ -342,7 +340,7 @@ public class RedAutoNEAR extends LinearOpMode {
                             drive.actionBuilder(shootPose)
                                     .setTangent(Math.toRadians(10))
                                     .splineToLinearHeading(new Pose2d(26, 35,  Math.toRadians(45)), Math.toRadians(0)) //go into
-                                    .splineToLinearHeading(new Pose2d(33, 58,  Math.toRadians(135)), Math.toRadians(135)) //go into
+                                    .splineToLinearHeading(new Pose2d(33, 62,  Math.toRadians(135)), Math.toRadians(135)) //go into
                                     .setTangent(Math.toRadians(200))
                                     .splineToLinearHeading(shootPose, Math.toRadians(200)) //go into
                                     .build(),
@@ -361,13 +359,13 @@ public class RedAutoNEAR extends LinearOpMode {
         // step (using the FTC Robot Controller app on the phone).
 
         cameraServo = hardwareMap.get(Servo.class, "cameraServo");
-        leftDist  = hardwareMap.get(DistanceSensor.class, "leftDistanceSensor");
-        rightDist = hardwareMap.get(DistanceSensor.class, "rightDistanceSensor");
+        // leftDist  = hardwareMap.get(DistanceSensor.class, "leftDistanceSensor");
+        // rightDist = hardwareMap.get(DistanceSensor.class, "rightDistanceSensor");
 
         //1. need initial the shooter, stage1, 2, 3, servo
         shooter = hardwareMap.get(DcMotorEx.class, "shooter");
         stage1 = hardwareMap.get(DcMotor.class, "stage1");
-        stage2 = hardwareMap.get(DcMotor.class, "stage2");
+        // stage2 = hardwareMap.get(DcMotor.class, "stage2");
         stage3 = hardwareMap.get(DcMotor.class, "stage3");
         blockShooter = hardwareMap.get(Servo.class, "blockShooter");
 
@@ -382,7 +380,7 @@ public class RedAutoNEAR extends LinearOpMode {
 
         shooter.setDirection(DcMotorEx.Direction.REVERSE);
         stage1.setDirection(DcMotor.Direction.REVERSE);
-        stage2.setDirection(DcMotor.Direction.REVERSE);
+        // stage2.setDirection(DcMotor.Direction.REVERSE);
         stage3.setDirection(DcMotor.Direction.REVERSE);
         blockShooter.setDirection(Servo.Direction.REVERSE); //Do we really need this?
 
@@ -560,9 +558,9 @@ public class RedAutoNEAR extends LinearOpMode {
         //sleep(200);
 
         //3. set stage power
-        stage1.setPower(1.0); //keep stage1 as intake
-        sleep(150);
-        stage2.setPower(-0.4); //use stage 2 as the second gate
+        stage1.setPower(0.6); //1.0 //keep stage1 as intake
+        sleep(100);
+        // stage2.setPower(-0.4); //use stage 2 as the second gate
         stage3.setPower(-0.3);
         sleep(110);
         stage3.setPower(1); //accelate stage3
@@ -572,43 +570,63 @@ public class RedAutoNEAR extends LinearOpMode {
         //4. close the gate
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         stage3.setPower(0);
-        stage2.setPower(0.8);
-        sleep(300);//150
+        // stage2.setPower(0.8);
+        sleep(200);//300 //150
+    }
 
-        stage2.setPower(0);
-        /*
-        //1. make sure the gate is closed
-        blockShooter.setPosition(OPENSHOOTER_CLOSED);
-        //2. start the shooter
-        // shooter.setPower(1);
-        // sleep(500);
-        //3. set stage power
-        // stage1.setPower(0.8); //keep stage1 as intake
-        // stage3.setPower(1); //accelate stage3
-        // stage2.setPower(-0.4); //use stage 2 as the second gate
+    public void shootN(int count) {
+        final double targetVel = 2200;//close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
+        final double dropMargin = 100;         // tune
+        final double recoverMargin = 200; //100;      // tune (smaller than dropMargin)
+        final double stage3FeedPower = 0.6;    // tune down if multiple balls sneak
+        final double stage3HoldPower = 0.0;
 
+        final double GATE_HOLD = OPENSHOOTER_CLOSED;   // you may want a slightly-open "hold" instead
+        final double GATE_PULSE_OPEN = OPENSHOOTER_OPEN; // tune so 1 ball passes, not 2
 
-        //run intakes before hand
-        runIntake(0.8, -0.4, 1);
-        sleep(300); //wait for them to be full speed
+        final int pulseMs = 200;//130;              // tune: shorter = fewer double-feeds
+        final int stableMs = 120;             // require speed stable before feeding next ball
+        final int loopSleepMs = 15;
 
-        //open the gate so that the ball can go through
-        blockShooter.setPosition(OPENSHOOTER_OPEN);
-        sleep(300); //wait until the ball go through
+        // Spin up
+        blockShooter.setPosition(GATE_HOLD);
+        shooter.setVelocity(targetVel);
 
-        //4. close the gate
-        blockShooter.setPosition(OPENSHOOTER_CLOSED);
-        sleep(300);
-        //shooter.setPower(0);
-        runIntake(1, 1, 0.6); //kick the next balls up
-        sleep(200);
-         */
+        //stage1.setPower(0.6);  //0.6, 1.0       // intake
+        stage3.setPower(stage3HoldPower);
+
+        sleep(600);
+        ElapsedTime time_pass = new ElapsedTime();
+        time_pass.reset();
+
+        while(time_pass.milliseconds() <= 1500){
+            stage3.setPower(stage3FeedPower);
+            blockShooter.setPosition(GATE_PULSE_OPEN);
+            sleep(pulseMs);
+
+            // 3) Immediately block the next ball
+            blockShooter.setPosition(GATE_HOLD);
+            //stage3.setPower(stage3HoldPower);
+
+            // 4) Wait for recovery enough to avoid weak 2nd/3rd shots
+            while (opModeIsActive() && shooter.getVelocity() < targetVel - recoverMargin) {
+                telemetry.addData("Shooter Vel", "%5.2f", shooter.getVelocity());
+                telemetry.update();
+                sleep(loopSleepMs);
+                idle();
+            }
+        }
+
+        // Stop / reset
+        stage3.setPower(0);
+        blockShooter.setPosition(GATE_HOLD);
+        shooter.setVelocity(0);
     }
 
     //running intake
     public void runIntake(double s1, double s2, double s3) {
         stage1.setPower(s1);
-        stage2.setPower(s2);
+        // stage2.setPower(s2);
         stage3.setPower(s3);
     }
 }
