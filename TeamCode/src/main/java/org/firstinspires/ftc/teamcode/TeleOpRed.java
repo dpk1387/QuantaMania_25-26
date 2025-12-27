@@ -132,8 +132,8 @@ public class TeleOpRed extends LinearOpMode
     //private double CAMERASERVO_LOW = 0.72;
     final private double CAMERASERVO_LOW = 0.68;
     final private double SHOOTER_VELOCITY = 4500;//4800;//5000;
-    private DistanceSensor leftDist;
-    private DistanceSensor rightDist;
+    //private DistanceSensor leftDist;
+    //private DistanceSensor rightDist;
 
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
     private static final int DESIRED_TAG_ID = 24;//20;//24;// -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
@@ -343,7 +343,7 @@ public class TeleOpRed extends LinearOpMode
             // Detect rising edge of B
             boolean curB = gamepad1.b;
             if (curB && !prevB) {// B was just pressed: decide dodge direction ONCE
-                dodgeDirection = -chooseDodgeDirectionOnce();
+                //dodgeDirection = -chooseDodgeDirectionOnce();
             }
             prevB = curB;
 
@@ -475,8 +475,8 @@ public class TeleOpRed extends LinearOpMode
         backRightDrive = hardwareMap.get(DcMotor.class, "backRightWheel");//backRightWheel
 
         cameraServo = hardwareMap.get(Servo.class, "cameraServo");
-        leftDist  = hardwareMap.get(DistanceSensor.class, "leftDistanceSensor");
-        rightDist = hardwareMap.get(DistanceSensor.class, "rightDistanceSensor");
+        //leftDist  = hardwareMap.get(DistanceSensor.class, "leftDistanceSensor");
+        //rightDist = hardwareMap.get(DistanceSensor.class, "rightDistanceSensor");
 
         //1. need initial the shooter, stage1, 2, 3, servo
         shooter = hardwareMap.get(DcMotorEx.class, "shooter");
@@ -1002,8 +1002,8 @@ public class TeleOpRed extends LinearOpMode
      * Decide initial dodge direction based on current distances.
      * Returns -1 for strafe left, +1 for strafe right, or 0 for no dodge.
      */
-    private double chooseDodgeDirectionOnce() {
-        /* LOGIC HERE IS REVERSED!!!!!*/
+    /*private double chooseDodgeDirectionOnce() {
+         LOGIC HERE IS REVERSED!!!!!
         final double NEAR_THRESHOLD_IN = 18.0;  // tune as needed
         double leftIn  = leftDist.getDistance(DistanceUnit.INCH);
         double rightIn = rightDist.getDistance(DistanceUnit.INCH);
@@ -1040,7 +1040,7 @@ public class TeleOpRed extends LinearOpMode
             telemetry.addLine("Dodge dir chosen: NONE (no close obstacle)");
             return 0.0;
         }
-    }
+    } */
     /**************************************************************************************/
     //INTAKE
     public void runIntake(double stage1_power, double stage2_power, double stage3_power){

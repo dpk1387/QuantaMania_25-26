@@ -370,7 +370,7 @@ public class no2ndstagetest extends LinearOpMode
                 stage1_power = 0.6;
 //                stage2_power = 0.3;//0.5;
                 stage3_power = 0.3;//0.5;
-                //shooter.setPower(0.90);
+                shooter.setPower(0.0);
             }else{
                 stage1_power = 0;
 //                stage2_power = 0;

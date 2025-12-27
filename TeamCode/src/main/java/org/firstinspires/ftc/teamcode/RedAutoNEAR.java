@@ -51,11 +51,11 @@ public class RedAutoNEAR extends LinearOpMode {
     //private DistanceSensor leftDist = null;
     //private DistanceSensor rightDist = null;
     GoBildaPinpointDriver pinpoint = null;
-    final private double OPENSHOOTER_OPEN = 0.19;//0.3;
-    final private double OPENSHOOTER_CLOSED = OPENSHOOTER_OPEN + 28;//0.55
+    final private double OPENSHOOTER_OPEN = 0.8; //0.19 //0.3;
+    final private double OPENSHOOTER_CLOSED = 1.0; // OPENSHOOTER_OPEN + 28//0.55
     final private double CAMERASERVO_HIGH = 0.55;
     final private double CAMERASERVO_LOW = 0.68;
-    final private double SHOOTER_VELOCITY = 4000;//4200;//4800;//5000;
+    final private double SHOOTER_VELOCITY = 2100; //4000//4200;//4800;//5000;
     /* INIT */
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
     private static final int DESIRED_TAG_ID = 24;//RED //20;//BLUE//24;// -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
@@ -199,8 +199,8 @@ public class RedAutoNEAR extends LinearOpMode {
                 packet.put("PowerShooterAction", "Power shooter to power = 0.9");
                 //set the shooter power to 0.9
                 //shooter.setVelocity(5400);
-                //shooter.setVelocity(SHOOTER_VELOCITY);
-                shooter.setPower(0.90);
+                shooter.setVelocity(SHOOTER_VELOCITY);
+                //shooter.setPower(0.90);
                 //sleep(500);
                 initialized = true;
             }
@@ -262,6 +262,31 @@ public class RedAutoNEAR extends LinearOpMode {
         return new startIntakeAction(s1, s2, s3);
     }
 
+    public class delay implements Action {
+        private boolean initialized = false;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            long wait = 150;
+            if (!initialized) {
+                // Optionally log something
+                packet.put("Delay", "");
+                // Fire three balls in sequence (blocking, similar to SleepAction(3))
+                sleep(wait);
+                //sleep(500); //sleep before moving to next position
+
+                initialized = true;
+            }
+            // Returning false tells Road Runner this action is finished
+            return false;
+        }
+    }
+
+    // Convenience factory so you can just write shootAll() in your SequentialAction
+    public Action shooterWait() {
+        return new delay();
+    }
+
     /// ***********************************************************************************
     @Override
     public void runOpMode() {
@@ -297,20 +322,22 @@ public class RedAutoNEAR extends LinearOpMode {
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         runtime.reset();
         telemetryThread.start();
-        double shootX = -32, shootY = 32; //30, 30
+        double shootX = -28, shootY = 28; //30, 30
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(135));
 
         try {
             Actions.runBlocking(
                     new SequentialAction(
                             startShooter(),
+                            startIntake(1.0, 0.0, 0.3),
                             //1. Go to shooting place
                             drive.actionBuilder(startPose)
                                     .strafeTo(new Vector2d(shootX, shootY))
                                     .build(),
+                            shooterWait(),
                             shootAll(),
                             closeGate(),
-                            startIntake(1.0, 0.3, 0),
+                            startIntake(1.0, 0.3, 0.3),
 
                             //3. get the inner most 3 balls
                             drive.actionBuilder(shootPose)
@@ -322,19 +349,21 @@ public class RedAutoNEAR extends LinearOpMode {
                                     .build(),
                             shootAll(),
                             closeGate(),
-                            startIntake(1.0, 0.3, 0),
+                            startIntake(1.0, 0.3, 0.3),
 
                             //4. get the middle row balls
                             drive.actionBuilder(shootPose)
                                     .setTangent(Math.toRadians(15))
                                     .splineToLinearHeading(new Pose2d(2, 38,  Math.toRadians(45)), Math.toRadians(30)) //go into
-                                    .splineToLinearHeading(new Pose2d(4, 62,  Math.toRadians(115)), Math.toRadians(95)) //go into
+                                    .splineToLinearHeading(new Pose2d(4+2, 62,  Math.toRadians(115)), Math.toRadians(95)) //go into
+                                    //turn back to guide balls going out of the classifier
+                                    // face 90 degrees forward
                                     .setTangent(Math.toRadians(-90))
                                     .splineToLinearHeading(shootPose, Math.toRadians(200)) //go into
                                     .build(),
                             shootAll(),
                             closeGate(),
-                            startIntake(1.0, 0.3, 0),
+                            startIntake(1.0, 0.3, 0.3),
 
                             //5. get the outermost row balls
                             drive.actionBuilder(shootPose)
@@ -553,8 +582,8 @@ public class RedAutoNEAR extends LinearOpMode {
         //1. make sure the gate is closed
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         //2. start the shooter
-        //shooter.setVelocity(SHOOTER_VELOCITY); //max RPM * 0.9
-        shooter.setPower(0.90);
+        shooter.setVelocity(SHOOTER_VELOCITY); //max RPM * 0.9
+        //shooter.setPower(0.90);
         //sleep(200);
 
         //3. set stage power
@@ -575,9 +604,9 @@ public class RedAutoNEAR extends LinearOpMode {
     }
 
     public void shootN(int count) {
-        final double targetVel = 2200;//close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
+        final double targetVel = SHOOTER_VELOCITY + 100; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
         final double dropMargin = 100;         // tune
-        final double recoverMargin = 200; //100;      // tune (smaller than dropMargin)
+        final double recoverMargin = 100; //100;      // tune (smaller than dropMargin)
         final double stage3FeedPower = 0.6;    // tune down if multiple balls sneak
         final double stage3HoldPower = 0.0;
 
