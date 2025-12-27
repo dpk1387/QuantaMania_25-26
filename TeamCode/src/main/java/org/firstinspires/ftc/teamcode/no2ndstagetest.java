@@ -470,6 +470,7 @@ public class no2ndstagetest extends LinearOpMode
         ElapsedTime time_pass = new ElapsedTime();
         time_pass.reset();
         boolean high = true;
+
         while(time_pass.milliseconds() <= 1500){
         //for (int k = 0; k < count && opModeIsActive(); k++) {
 
@@ -485,7 +486,6 @@ public class no2ndstagetest extends LinearOpMode
 //                stage1.setPower(0.4);
 //                high = true;
 //            }
-
             stage2.setPower(stage2FeedPower);
             blockShooter.setPosition(GATE_PULSE_OPEN);
             sleep(pulseMs);
