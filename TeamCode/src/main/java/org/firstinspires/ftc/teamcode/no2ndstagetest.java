@@ -109,7 +109,7 @@ public class no2ndstagetest extends LinearOpMode
     //  applied to the drive motors to correct the error.
     //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
     final double SPEED_GAIN  =  0.04;//0.02  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-    final double STRAFE_GAIN = 0.03;//0.015 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
+    final double STRAFE_GAIN = 0.03; //0.03;//0.015 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
     final double TURN_GAIN   =  0.03;//0.04;//0.02  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
     final double MAX_AUTO_SPEED = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
@@ -340,22 +340,22 @@ public class no2ndstagetest extends LinearOpMode
             }
             /**************************************************************************************/
             /// THIS IS OPTIONAL --  to disentangle the robot from clutter
-            final double DODGE_STRAFE_POWER = 0.6;
-            // Detect rising edge of B
-            boolean curB = gamepad1.b;
-//            if (curB && !prevB) {// B was just pressed: decide dodge direction ONCE
-//                dodgeDirection = -chooseDodgeDirectionOnce();
+//            final double DODGE_STRAFE_POWER = 0.6;
+//            // Detect rising edge of B
+//            boolean curB = gamepad1.b;
+////            if (curB && !prevB) {// B was just pressed: decide dodge direction ONCE
+////                dodgeDirection = -chooseDodgeDirectionOnce();
+////            }
+//            prevB = curB;
+//
+//            if (gamepad1.b && dodgeDirection != 0.0) {
+//                // While B is held, keep strafing in the chosen direction.
+//                drive = 0.0;
+//                strafe = dodgeDirection * DODGE_STRAFE_POWER;
+//                turn = 0.0;
+//            }else{
+//                dodgeDirection = 0.0;
 //            }
-            prevB = curB;
-
-            if (gamepad1.b && dodgeDirection != 0.0) {
-                // While B is held, keep strafing in the chosen direction.
-                drive = 0.0;
-                strafe = dodgeDirection * DODGE_STRAFE_POWER;
-                turn = 0.0;
-            }else{
-                dodgeDirection = 0.0;
-            }
             /**************************************************************************************/
 //            pinpoint.update();
 //            pose2D = pinpoint.getPosition();
@@ -367,7 +367,7 @@ public class no2ndstagetest extends LinearOpMode
             lastYState = gamepad2.y;
             if(intakeMode){
                 //turn on intake power
-                stage1_power = 1.0;//0.6;
+                stage1_power = 0.6;
 //                stage2_power = 0.3;//0.5;
                 stage3_power = 0.3;//0.5;
                 //shooter.setPower(0.90);
@@ -407,6 +407,7 @@ public class no2ndstagetest extends LinearOpMode
     }
     /**************************************************************************************/
     //Move robot according to desired axes motions: Positive X is forward,  Positive Y is strafe left, Positive Yaw is counter-clockwise
+    //not used
     public void shootOnce(){
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         //2. start the shooter
@@ -434,6 +435,7 @@ public class no2ndstagetest extends LinearOpMode
 //        stage2.setPower(0);
     }
 
+    //not used
     public void shootThree(){
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         //2. start the shooter
@@ -465,8 +467,6 @@ public class no2ndstagetest extends LinearOpMode
 //        shootOnce();
 
     }
-
-
 
     public void shootN(int count) {
         final double targetVel = 2200;//close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
@@ -535,6 +535,7 @@ public class no2ndstagetest extends LinearOpMode
         intakeMode = true;
     }
 
+    //not used
     private void waitAtSpeed(double targetVel, double margin, int stableMs, int loopSleepMs) {
         ElapsedTime stable = new ElapsedTime();
         stable.reset();

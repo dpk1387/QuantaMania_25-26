@@ -320,8 +320,8 @@ public class TeleOpRed extends LinearOpMode
                         lbState = LbState.IDLE;
                         yawStableCount = 0;
                         // drive using manual POV Joystick mode.  Slow things down to make the robot more controlable.
-                        drive = -gamepad1.left_stick_y / 1.5;  // Reduce drive rate to 50%.
-                        strafe = -gamepad1.left_stick_x / 1.5;  // Reduce strafe rate to 50%.
+                        drive = -gamepad1.left_stick_y / 1.2;  // Reduce drive rate to 50%.
+                        strafe = -gamepad1.left_stick_x / 1.2;  // Reduce strafe rate to 50%.
                         turn = -gamepad1.right_stick_x / 2.0;  // Reduce turn rate to 33%.
 
 

@@ -44,12 +44,12 @@ public class RedAutoNEAR extends LinearOpMode {
     /* HARDWARE */
     private DcMotorEx shooter = null;
     private DcMotor stage1 = null;
-    private DcMotor stage2 = null;
+    // private DcMotor stage2 = null;
     private DcMotor stage3 = null;
     private Servo blockShooter = null;
     private Servo cameraServo = null;
-    private DistanceSensor leftDist = null;
-    private DistanceSensor rightDist = null;
+    //private DistanceSensor leftDist = null;
+    //private DistanceSensor rightDist = null;
     GoBildaPinpointDriver pinpoint = null;
     final private double OPENSHOOTER_OPEN = 0.19;//0.3;
     final private double OPENSHOOTER_CLOSED = OPENSHOOTER_OPEN + 28;//0.55
@@ -318,7 +318,7 @@ public class RedAutoNEAR extends LinearOpMode {
                             drive.actionBuilder(shootPose)
                                     .setTangent(Math.toRadians(45))
                                     .splineToLinearHeading(new Pose2d(-24, 38,  Math.toRadians(45)), Math.toRadians(45)) //go into
-                                    .splineToLinearHeading(new Pose2d(-6, 58,  Math.toRadians(95)), Math.toRadians(90)) //go into
+                                    .splineToLinearHeading(new Pose2d(-6, 60,  Math.toRadians(95)), Math.toRadians(90)) //go into
                                     .setTangent(Math.toRadians(-90))
                                     .splineToLinearHeading(shootPose, Math.toRadians(225)) //go into
                                     .build(),
@@ -330,7 +330,7 @@ public class RedAutoNEAR extends LinearOpMode {
                             drive.actionBuilder(shootPose)
                                     .setTangent(Math.toRadians(15))
                                     .splineToLinearHeading(new Pose2d(2, 38,  Math.toRadians(45)), Math.toRadians(30)) //go into
-                                    .splineToLinearHeading(new Pose2d(4, 60,  Math.toRadians(115)), Math.toRadians(95)) //go into
+                                    .splineToLinearHeading(new Pose2d(4, 62,  Math.toRadians(115)), Math.toRadians(95)) //go into
                                     .setTangent(Math.toRadians(-90))
                                     .splineToLinearHeading(shootPose, Math.toRadians(200)) //go into
                                     .build(),
@@ -342,7 +342,7 @@ public class RedAutoNEAR extends LinearOpMode {
                             drive.actionBuilder(shootPose)
                                     .setTangent(Math.toRadians(10))
                                     .splineToLinearHeading(new Pose2d(26, 35,  Math.toRadians(45)), Math.toRadians(0)) //go into
-                                    .splineToLinearHeading(new Pose2d(33, 58,  Math.toRadians(135)), Math.toRadians(135)) //go into
+                                    .splineToLinearHeading(new Pose2d(33, 62,  Math.toRadians(135)), Math.toRadians(135)) //go into
                                     .setTangent(Math.toRadians(200))
                                     .splineToLinearHeading(shootPose, Math.toRadians(200)) //go into
                                     .build(),
@@ -361,13 +361,13 @@ public class RedAutoNEAR extends LinearOpMode {
         // step (using the FTC Robot Controller app on the phone).
 
         cameraServo = hardwareMap.get(Servo.class, "cameraServo");
-        leftDist  = hardwareMap.get(DistanceSensor.class, "leftDistanceSensor");
-        rightDist = hardwareMap.get(DistanceSensor.class, "rightDistanceSensor");
+        // leftDist  = hardwareMap.get(DistanceSensor.class, "leftDistanceSensor");
+        // rightDist = hardwareMap.get(DistanceSensor.class, "rightDistanceSensor");
 
         //1. need initial the shooter, stage1, 2, 3, servo
         shooter = hardwareMap.get(DcMotorEx.class, "shooter");
         stage1 = hardwareMap.get(DcMotor.class, "stage1");
-        stage2 = hardwareMap.get(DcMotor.class, "stage2");
+        // stage2 = hardwareMap.get(DcMotor.class, "stage2");
         stage3 = hardwareMap.get(DcMotor.class, "stage3");
         blockShooter = hardwareMap.get(Servo.class, "blockShooter");
 
@@ -382,7 +382,7 @@ public class RedAutoNEAR extends LinearOpMode {
 
         shooter.setDirection(DcMotorEx.Direction.REVERSE);
         stage1.setDirection(DcMotor.Direction.REVERSE);
-        stage2.setDirection(DcMotor.Direction.REVERSE);
+        // stage2.setDirection(DcMotor.Direction.REVERSE);
         stage3.setDirection(DcMotor.Direction.REVERSE);
         blockShooter.setDirection(Servo.Direction.REVERSE); //Do we really need this?
 
@@ -560,9 +560,9 @@ public class RedAutoNEAR extends LinearOpMode {
         //sleep(200);
 
         //3. set stage power
-        stage1.setPower(1.0); //keep stage1 as intake
-        sleep(150);
-        stage2.setPower(-0.4); //use stage 2 as the second gate
+        stage1.setPower(0.6); //1.0 //keep stage1 as intake
+        sleep(100);
+        // stage2.setPower(-0.4); //use stage 2 as the second gate
         stage3.setPower(-0.3);
         sleep(110);
         stage3.setPower(1); //accelate stage3
@@ -572,10 +572,10 @@ public class RedAutoNEAR extends LinearOpMode {
         //4. close the gate
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         stage3.setPower(0);
-        stage2.setPower(0.8);
-        sleep(300);//150
+        // stage2.setPower(0.8);
+        sleep(200);//300 //150
 
-        stage2.setPower(0);
+        // stage2.setPower(0);
         /*
         //1. make sure the gate is closed
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
@@ -608,7 +608,7 @@ public class RedAutoNEAR extends LinearOpMode {
     //running intake
     public void runIntake(double s1, double s2, double s3) {
         stage1.setPower(s1);
-        stage2.setPower(s2);
+        // stage2.setPower(s2);
         stage3.setPower(s3);
     }
 }
