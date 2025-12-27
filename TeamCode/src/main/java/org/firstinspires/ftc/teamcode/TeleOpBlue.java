@@ -102,7 +102,7 @@ import java.util.concurrent.TimeUnit;
 public class TeleOpBlue extends LinearOpMode
 {
     // Adjust these numbers to suit your robot. Should be from 30 - 55 inches
-    final double DESIRED_DISTANCE = 35;//45;//12.0; //  this is how close the camera should get to the target (inches)
+    final double DESIRED_DISTANCE = 40;//35;//45;//12.0; //  this is how close the camera should get to the target (inches)
 
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
@@ -111,9 +111,9 @@ public class TeleOpBlue extends LinearOpMode
     final double STRAFE_GAIN =  0.03;//0.015 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
     final double TURN_GAIN   =  0.03;//0.04;//0.02  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
-    final double MAX_AUTO_SPEED = 0.9;//0.8;   //  Clip the approach speed to this max value (adjust for your robot)
-    final double MAX_AUTO_STRAFE= 0.9;//0.8;   //  Clip the strafing speed to this max value (adjust for your robot)
-    final double MAX_AUTO_TURN  = 0.9;//0.8;   //  Clip the turn speed to this max value (adjust for your robot)
+    final double MAX_AUTO_SPEED = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
+    final double MAX_AUTO_STRAFE= 0.8;   //  Clip the strafing speed to this max value (adjust for your robot)
+    final double MAX_AUTO_TURN  = 0.8;   //  Clip the turn speed to this max value (adjust for your robot)
 
     private DcMotor frontLeftDrive = null;  //  Used to control the left front drive wheel
     private DcMotor frontRightDrive = null;  //  Used to control the right front drive wheel
@@ -163,16 +163,16 @@ public class TeleOpBlue extends LinearOpMode
         double desired_x, desired_y, desired_yaw; // FIELD: x=right, y=forward, deg (0°=+Y)
         double latch_x, latch_y, latch_yaw; //0, 50
         double park_x, park_y, park_yaw;
-        if (DESIRED_TAG_ID == 20) {
+        if (DESIRED_TAG_ID == 24) {
             //desired_x = -30; desired_y =  30; desired_yaw =  45;
             desired_x = -32; desired_y =  -32; desired_yaw =  225; //corresponding do DESIRED DISTANCE 50 -- NEED TO CHeck the yaw
             latch_x = 0; latch_y = 46; latch_yaw = 90; //0, 50, 90
             park_x = 38.5; park_y = -35; park_yaw = 90;
-//        } else {
-//            //desired_x = -30; desired_y = -30; desired_yaw = 135;
-//            desired_x = -32; desired_y = -32; desired_yaw = 225;
-//            latch_x = 0; latch_y = -46; latch_yaw = -90; //0, 50
-//            park_x = 38.5; park_y = 35; park_yaw = -90;
+        } else {
+            //desired_x = -30; desired_y = -30; desired_yaw = 135;
+            desired_x = -32; desired_y = -32; desired_yaw = 225;
+            latch_x = 0; latch_y = -46; latch_yaw = -90; //0, 50
+            park_x = 38.5; park_y = 35; park_yaw = -90;
         }
 
         boolean targetFound     = false;    // Set to true when an AprilTag target is detected
@@ -376,11 +376,13 @@ public class TeleOpBlue extends LinearOpMode
                 stage1_power = 1.0;//0.6;
                 stage2_power = 0.3;//0.5;
                 stage3_power = 0;//0.5;
+                shooter.setPower(0.90);
             }
             else{
                 stage1_power = 0;
                 stage2_power = 0;
                 stage3_power = 0;
+                shooter.setPower(0);
             }
             if (gamepad2.left_bumper && !shooting){
                 shootOnce();
@@ -397,6 +399,7 @@ public class TeleOpBlue extends LinearOpMode
                 stage1_power = 0;
                 stage2_power = 0;
                 stage3_power = 0;
+                shooter.setPower(0);
 
             }
 
@@ -415,12 +418,12 @@ public class TeleOpBlue extends LinearOpMode
         //2. start the shooter
         shooter.setPower(0.95);
         //shooter.setVelocity(SHOOTER_VELOCITY);
-        sleep(200);
+        //sleep(200);
 
         //3. set stage power
         stage1.setPower(1.0); //keep stage1 as intake
         sleep(100);
-        stage2.setPower(-0.4); //use stage 2 as the second gate
+        stage2.setPower(-0.3); //use stage 2 as the second gate
         stage3.setPower(-0.3);
         sleep(110);
         stage3.setPower(1); //accelate stage3

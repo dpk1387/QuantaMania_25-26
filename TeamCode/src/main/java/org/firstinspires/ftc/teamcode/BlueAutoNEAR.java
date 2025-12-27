@@ -202,7 +202,7 @@ public class BlueAutoNEAR extends LinearOpMode {
                 //set the shooter power to 0.9
                 //shooter.setVelocity(5400);
                 //shooter.setVelocity(SHOOTER_VELOCITY);
-                shooter.setPower(0.95);
+                shooter.setPower(0.9);
                 //sleep(500);
                 initialized = true;
             }
@@ -300,6 +300,7 @@ public class BlueAutoNEAR extends LinearOpMode {
         runtime.reset();
         telemetryThread.start();
         double shootX = -32, shootY = -32; //30, 30
+        //double shootX = -30, shootY = -30; //30, 30
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(-135));
 
         try {
@@ -317,8 +318,8 @@ public class BlueAutoNEAR extends LinearOpMode {
                             //3. get the inner most 3 balls
                             drive.actionBuilder(shootPose)
                                     .setTangent(Math.toRadians(-45))
-                                    .splineToLinearHeading(new Pose2d(-27, -38,  Math.toRadians(-45)), Math.toRadians(-45)) //go into
-                                    .splineToLinearHeading(new Pose2d(-5, -62,  Math.toRadians(-95)), Math.toRadians(-90)) //go into
+                                    .splineToLinearHeading(new Pose2d(-28, -37,  Math.toRadians(-45)), Math.toRadians(-45)) //go into
+                                    .splineToLinearHeading(new Pose2d(-8, -60,  Math.toRadians(-85)), Math.toRadians(-90)) //go into
                                     .setTangent(Math.toRadians(90))
                                     .splineToLinearHeading(shootPose, Math.toRadians(-225)) //go into
                                     .build(),
@@ -341,7 +342,7 @@ public class BlueAutoNEAR extends LinearOpMode {
                             //5. get the outermost row balls
                             drive.actionBuilder(shootPose)
                                     .setTangent(Math.toRadians(-10))
-                                    .splineToLinearHeading(new Pose2d(23, -35,  Math.toRadians(-45)), Math.toRadians(-0)) //go into
+                                    .splineToLinearHeading(new Pose2d(26, -35,  Math.toRadians(-45)), Math.toRadians(-0)) //go into
                                     .splineToLinearHeading(new Pose2d(33, -58,  Math.toRadians(-135)), Math.toRadians(-135)) //go into
                                     .setTangent(Math.toRadians(-200))
                                     .splineToLinearHeading(shootPose, Math.toRadians(-200)) //go into
@@ -555,13 +556,13 @@ public class BlueAutoNEAR extends LinearOpMode {
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         //2. start the shooter
         //shooter.setVelocity(SHOOTER_VELOCITY); //max RPM * 0.9
-        shooter.setPower(0.95);
+        shooter.setPower(0.90);
         //sleep(200);
 
         //3. set stage power
         stage1.setPower(1.0); //keep stage1 as intake
-        sleep(150);
-        stage2.setPower(-0.4); //use stage 2 as the second gate
+        sleep(100);
+        stage2.setPower(-0.3); //use stage 2 as the second gate
         stage3.setPower(-0.3);
         sleep(110);
         stage3.setPower(1); //accelate stage3
