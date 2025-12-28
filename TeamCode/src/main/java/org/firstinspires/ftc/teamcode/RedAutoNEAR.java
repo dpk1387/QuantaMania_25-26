@@ -271,6 +271,7 @@ public class RedAutoNEAR extends LinearOpMode {
                 // Optionally log something
                 packet.put("Delay", "");
                 // Fire three balls in sequence (blocking, similar to SleepAction(3))
+                shooter.setVelocity(SHOOTER_VELOCITY);
                 sleep(wait);
                 //sleep(500); //sleep before moving to next position
 
@@ -623,7 +624,7 @@ public class RedAutoNEAR extends LinearOpMode {
         //stage1.setPower(0.6);  //0.6, 1.0       // intake
         stage3.setPower(stage3HoldPower);
 
-        sleep(600);
+        // sleep(600);
         ElapsedTime time_pass = new ElapsedTime();
         time_pass.reset();
 
@@ -648,7 +649,6 @@ public class RedAutoNEAR extends LinearOpMode {
         // Stop / reset
         stage3.setPower(0);
         blockShooter.setPosition(GATE_HOLD);
-        shooter.setVelocity(0);
     }
 
     //running intake
