@@ -239,10 +239,9 @@ public class RedAutoNEAR extends LinearOpMode {
     //run the intake
     public class startIntakeAction implements Action {
         private boolean initialized = false;
-        private double s1, s2, s3;
-        public startIntakeAction(double s1_in, double s2_in, double s3_in){
+        private double s1, s3;
+        public startIntakeAction(double s1_in, double s3_in){
             s1 = s1_in;
-            s2 = s2_in;
             s3 = s3_in;
         }
         @Override
@@ -251,15 +250,15 @@ public class RedAutoNEAR extends LinearOpMode {
                 // Optionally log something
                 packet.put("Action", "Closing gate");
                 //runIntake(0, 0.7, 1.0);
-                runIntake(s1, s2, s3);
+                runIntake(s1, s3);
                 initialized = true;
             }
             // Returning false tells Road Runner this action is finished
             return false;
         }
     }
-    public Action startIntake(double s1, double s2, double s3) {
-        return new startIntakeAction(s1, s2, s3);
+    public Action startIntake(double s1, double s3) {
+        return new startIntakeAction(s1, s3);
     }
 
     public class delay implements Action {
@@ -329,7 +328,7 @@ public class RedAutoNEAR extends LinearOpMode {
             Actions.runBlocking(
                     new SequentialAction(
                             startShooter(),
-                            startIntake(1.0, 0.0, 0.3),
+                            startIntake(1.0, 0.3),
                             //1. Go to shooting place
                             drive.actionBuilder(startPose)
                                     .strafeTo(new Vector2d(shootX, shootY))
@@ -337,7 +336,7 @@ public class RedAutoNEAR extends LinearOpMode {
                             shooterWait(),
                             shootAll(),
                             closeGate(),
-                            startIntake(1.0, 0.3, 0.3),
+                            startIntake(1.0, 0.3),
 
                             //3. get the inner most 3 balls
                             drive.actionBuilder(shootPose)
@@ -349,13 +348,13 @@ public class RedAutoNEAR extends LinearOpMode {
                                     .build(),
                             shootAll(),
                             closeGate(),
-                            startIntake(1.0, 0.3, 0.3),
+                            startIntake(1.0, 0.3),
 
                             //4. get the middle row balls
                             drive.actionBuilder(shootPose)
                                     .setTangent(Math.toRadians(15))
                                     .splineToLinearHeading(new Pose2d(2, 38,  Math.toRadians(45)), Math.toRadians(30)) //go into
-                                    .splineToLinearHeading(new Pose2d(4+2, 62,  Math.toRadians(115)), Math.toRadians(95)) //go into
+                                    .splineToLinearHeading(new Pose2d(4, 62,  Math.toRadians(110)), Math.toRadians(95)) //go into
                                     //turn back to guide balls going out of the classifier
                                     // face 90 degrees forward
                                     .setTangent(Math.toRadians(-90))
@@ -363,7 +362,7 @@ public class RedAutoNEAR extends LinearOpMode {
                                     .build(),
                             shootAll(),
                             closeGate(),
-                            startIntake(1.0, 0.3, 0.3),
+                            startIntake(1.0, 0.3),
 
                             //5. get the outermost row balls
                             drive.actionBuilder(shootPose)
@@ -653,7 +652,7 @@ public class RedAutoNEAR extends LinearOpMode {
     }
 
     //running intake
-    public void runIntake(double s1, double s2, double s3) {
+    public void runIntake(double s1, double s3) {
         stage1.setPower(s1);
         // stage2.setPower(s2);
         stage3.setPower(s3);
