@@ -350,7 +350,7 @@ public class RedGATENEAR extends LinearOpMode {
         telemetryThread.start();
         double shootX = -28, shootY = 28; //30, 30
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(135));
-        Pose2d classifierPose = new Pose2d(4, 62,  Math.toRadians(115));
+        Pose2d classifierPose = new Pose2d(7.5, 62,  Math.toRadians(120));
 
         try {
             Actions.runBlocking(
@@ -398,19 +398,20 @@ public class RedGATENEAR extends LinearOpMode {
                             //get balls from classifier
                             drive.actionBuilder(shootPose)
                                     .setTangent(Math.toRadians(15))
-                                    .splineToLinearHeading(new Pose2d(4, 62,  Math.toRadians(110)), Math.toRadians(95)) //go into
+                                    .splineToLinearHeading(classifierPose, Math.toRadians(95)) //go into
 //                                    .setTangent(Math.toRadians(-90))
 //                                    .splineToLinearHeading(shootPose, Math.toRadians(200)) //go into
                                     .build(),
+                            //wait at the classifier to intake balls
                             intakeWait(),
-
-                            drive.actionBuilder(shootPose)
+                            //go to shoot
+                            drive.actionBuilder(classifierPose)
                                     .setTangent(Math.toRadians(-90))
                                     .splineToLinearHeading(shootPose, Math.toRadians(200)) //go into
                                     .build(),
-                            shootAll(),
+                            shootAll(), //shoot all
                             closeGate(),
-                            startIntake(1.0, 0.3)
+                            startIntake(1.0, 0.3) //intake again if time
 
                             )
             );
