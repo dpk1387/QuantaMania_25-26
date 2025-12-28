@@ -21,10 +21,10 @@ import android.util.Size;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
+//import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.Range;
-import com.qualcomm.robotcore.util.SortOrder;
+//import com.qualcomm.robotcore.util.Range;
+//import com.qualcomm.robotcore.util.SortOrder;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -38,11 +38,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
-import org.firstinspires.ftc.vision.opencv.Circle;
+//import org.firstinspires.ftc.vision.opencv.Circle;
 import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
 import org.firstinspires.ftc.vision.opencv.ColorRange;
 
-import java.util.List;
+//import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Autonomous(name = "BlueAutoFAR", group = "Autonomous")
@@ -54,15 +54,15 @@ public class BlueAutoFAR extends LinearOpMode {
 //    private DcMotor stage2 = null;
     private DcMotor stage3 = null;
     private Servo blockShooter = null;
-    private Servo cameraServo = null;
+//    private Servo cameraServo = null;
 //    private DistanceSensor leftDist = null;
 //    private DistanceSensor rightDist = null;
     GoBildaPinpointDriver pinpoint = null;
-    final private double OPENSHOOTER_OPEN = 0.5;
+    final private double OPENSHOOTER_OPEN = 0.8;//0.5;
     final private double OPENSHOOTER_CLOSED = 1;
-    final private double CAMERASERVO_HIGH = 0.55;
-    final private double CAMERASERVO_LOW = 0.68;
-    final private double SHOOTER_VELOCITY = 4800;
+//    final private double CAMERASERVO_HIGH = 0.55;
+//    final private double CAMERASERVO_LOW = 0.68;
+//    final private double SHOOTER_VELOCITY = 4800;
     final private int startDelay = 0;
     /* INIT */
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
@@ -426,7 +426,7 @@ public class BlueAutoFAR extends LinearOpMode {
         // to 'get' must match the names assigned during the robot configuration.
         // step (using the FTC Robot Controller app on the phone).
 
-        cameraServo = hardwareMap.get(Servo.class, "cameraServo");
+//        cameraServo = hardwareMap.get(Servo.class, "cameraServo");
 //        leftDist  = hardwareMap.get(DistanceSensor.class, "leftDistanceSensor");
 //        rightDist = hardwareMap.get(DistanceSensor.class, "rightDistanceSensor");
 
@@ -557,7 +557,8 @@ public class BlueAutoFAR extends LinearOpMode {
                     .addProcessor(aprilTag)
                     .addProcessor(colorLocator)
                     .build();
-        } else {
+        }
+        else {
             visionPortal = new VisionPortal.Builder()
                     .setCamera(BuiltinCameraDirection.BACK)
                     .setCameraResolution(new Size(640, 480))
@@ -741,15 +742,15 @@ public class BlueAutoFAR extends LinearOpMode {
         }
 
         // Stop / reset
-        stage3.setPower(0);
+        stage3.setPower(0.3);
         blockShooter.setPosition(GATE_HOLD);
         shooter.setVelocity(0);
+        stage1.setPower(1.0);
     }
 
     //running intake
     public void runIntake(double s1, double s2, double s3) {
         stage1.setPower(s1);
-//        stage2.setPower(s2);
         stage3.setPower(s3);
     }
 }

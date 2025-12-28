@@ -51,8 +51,8 @@ public class BlueAutoNEAR extends LinearOpMode {
 //    private DistanceSensor leftDist = null;
 //    private DistanceSensor rightDist = null;
     GoBildaPinpointDriver pinpoint = null;
-    final private double OPENSHOOTER_OPEN = 0.19;//0.3;
-    final private double OPENSHOOTER_CLOSED = OPENSHOOTER_OPEN + 28;//0.55
+    final private double OPENSHOOTER_OPEN = 0.8;//0.19;//0.3;
+    final private double OPENSHOOTER_CLOSED = 1.0;//OPENSHOOTER_OPEN + 28;//0.55
     final private double CAMERASERVO_HIGH = 0.55;
     final private double CAMERASERVO_LOW = 0.68;
     final private double SHOOTER_VELOCITY = 4800;//5000;
@@ -188,6 +188,29 @@ public class BlueAutoNEAR extends LinearOpMode {
         return new ShootAllAction();
     }
 
+    public class sleep200 implements Action {
+        private boolean initialized = false;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (!initialized) {
+                // Optionally log something
+                packet.put("sleep", "sleeping for x milliseconds");
+                // Fire three balls in sequence (blocking, similar to SleepAction(3))
+                sleep(200); //sleep before moving to next position
+
+                initialized = true;
+            }
+            // Returning false tells Road Runner this action is finished
+            return false;
+        }
+    }
+
+    public Action sleepBeforeShoot(){
+        return new sleep200();
+    }
+
+
     //START THE SHOOTER/POWER THE SHOOTER
     public class PowerShooter implements Action {
         private boolean initialized = false;
@@ -198,9 +221,9 @@ public class BlueAutoNEAR extends LinearOpMode {
                 // Optionally log something
                 packet.put("PowerShooterAction", "Power shooter to power = 0.9");
                 //set the shooter power to 0.9
-                //shooter.setVelocity(5400);
+                shooter.setVelocity(2200);
                 //shooter.setVelocity(SHOOTER_VELOCITY);
-                shooter.setPower(0.9);
+                //shooter.setPower(0.9);
                 //sleep(500);
                 initialized = true;
             }
@@ -309,9 +332,10 @@ public class BlueAutoNEAR extends LinearOpMode {
                             drive.actionBuilder(startPose)
                                     .strafeTo(new Vector2d(shootX, shootY))
                                     .build(),
+                            sleepBeforeShoot(),
                             shootAll(),
                             closeGate(),
-                            startIntake(1.0, 0.3, 0),
+                            startIntake(1.0, 0.3, 0.5),
 
                             //3. get the inner most 3 balls
                             drive.actionBuilder(shootPose)
@@ -323,19 +347,20 @@ public class BlueAutoNEAR extends LinearOpMode {
                                     .build(),
                             shootAll(),
                             closeGate(),
-                            startIntake(1.0, 0.3, 0),
+                            startIntake(1.0, 0.3, 0.5),
 
                             //4. get the middle row balls
                             drive.actionBuilder(shootPose)
                                     .setTangent(Math.toRadians(-15))
                                     .splineToLinearHeading(new Pose2d(2, -38,  Math.toRadians(-45)), Math.toRadians(-30)) //go into
-                                    .splineToLinearHeading(new Pose2d(4, -62,  Math.toRadians(-115)), Math.toRadians(-95)) //go into
+                                    .splineToLinearHeading(new Pose2d(4, -62,  Math.toRadians(-110)), Math.toRadians(-95)) //go into
+                                    //                                                                          -115
                                     .setTangent(Math.toRadians(90))
                                     .splineToLinearHeading(shootPose, Math.toRadians(-200)) //go into
                                     .build(),
                             shootAll(),
                             closeGate(),
-                            startIntake(1.0, 0.3, 0),
+                            startIntake(1.0, 0.3, 0.5),
 
                             //5. get the outermost row balls
                             drive.actionBuilder(shootPose)
@@ -549,31 +574,6 @@ public class BlueAutoNEAR extends LinearOpMode {
         // if (gainControl != null) { gainControl.setGain(someMaxValue); }
     }
 
-    public void shootOnce(){
-        //1. make sure the gate is closed
-        blockShooter.setPosition(OPENSHOOTER_CLOSED);
-        //2. start the shooter
-        //shooter.setVelocity(SHOOTER_VELOCITY); //max RPM * 0.9
-        shooter.setPower(0.90);
-        //sleep(200);
-
-        //3. set stage power
-        stage1.setPower(1.0); //keep stage1 as intake
-        sleep(100);
-//        stage2.setPower(-0.3); //use stage 2 as the second gate
-        stage3.setPower(-0.3);
-        sleep(110);
-        stage3.setPower(1); //accelate stage3
-        //open the gate so that the ball can go through
-        blockShooter.setPosition(OPENSHOOTER_OPEN);
-        sleep(200); //250//300
-        //4. close the gate
-        blockShooter.setPosition(OPENSHOOTER_CLOSED);
-        stage3.setPower(0);
-//        stage2.setPower(0.8);
-        sleep(300);//150
-    }
-
     public void shootN(int count) {
         final double targetVel = 2200;//close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
         final double dropMargin = 100;         // tune
@@ -618,9 +618,10 @@ public class BlueAutoNEAR extends LinearOpMode {
         }
 
         // Stop / reset
-        stage3.setPower(0);
+        stage3.setPower(0.3);
         blockShooter.setPosition(GATE_HOLD);
         shooter.setVelocity(0);
+        stage1.setPower(1);
     }
     //running intake
     public void runIntake(double s1, double s2, double s3) {

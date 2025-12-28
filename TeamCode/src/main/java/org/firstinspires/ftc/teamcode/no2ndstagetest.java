@@ -846,7 +846,6 @@ public class no2ndstagetest extends LinearOpMode
         if (a < 0) a += 360.0;
         return a - 180.0;
     }
-    /**************************************************************************************/
     // BLOB related
     // Put this inside your OpMode class (but outside any methods)
     private static class DriveCommand {
@@ -861,7 +860,6 @@ public class no2ndstagetest extends LinearOpMode
             this.validBlob = v;
         }
     }
-
     private DriveCommand drivePinpoint(double desired_x, double desired_y, double desired_yaw){
         double  drive           = 0;        // Desired forward power/speed (-1 to +1)
         double  strafe          = 0;        // Desired strafe power/speed (-1 to +1)
@@ -1110,12 +1108,11 @@ public class no2ndstagetest extends LinearOpMode
      * Uses two REV 2M distance sensors at 45° left/right.
      * Returns DriveCommand(drive=0, strafe, turn=0).
      * When both sides are clear, returns near-zero strafe so caller can resume “home”.
-     */
-    /**************************************************************************************/
     /**
      * Decide initial dodge direction based on current distances.
      * Returns -1 for strafe left, +1 for strafe right, or 0 for no dodge.
      */
+
 //    private double chooseDodgeDirectionOnce() {
 //        /* LOGIC HERE IS REVERSED!!!!!*/
 //        final double NEAR_THRESHOLD_IN = 18.0;  // tune as needed
