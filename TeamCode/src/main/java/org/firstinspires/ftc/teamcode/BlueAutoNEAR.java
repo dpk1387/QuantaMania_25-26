@@ -323,7 +323,7 @@ public class BlueAutoNEAR extends LinearOpMode {
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         runtime.reset();
         telemetryThread.start();
-        double shootX = -32, shootY = -32; //30, 30
+        double shootX = -28, shootY = -28; //-32, -32//30, 30
         //double shootX = -30, shootY = -30; //30, 30
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(-135));
 
@@ -374,7 +374,12 @@ public class BlueAutoNEAR extends LinearOpMode {
                                     .splineToLinearHeading(shootPose, Math.toRadians(-200)) //go into
                                     .build(),
                             shootAll(),
-                            closeGate()
+                            closeGate(),
+                            startIntake(1.0, 0.3)
+
+                            /*drive.actionBuilder(shootPose)
+                                    .setTangent(Math.toRadians(-45))*/
+
                     )
             );
             telemetry.addData("Trajectory", "Executed Successfully");
