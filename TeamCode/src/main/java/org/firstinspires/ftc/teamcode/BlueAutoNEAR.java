@@ -55,7 +55,7 @@ public class BlueAutoNEAR extends LinearOpMode {
     final private double OPENSHOOTER_CLOSED = 1.0;//OPENSHOOTER_OPEN + 28;//0.55
     final private double CAMERASERVO_HIGH = 0.55;
     final private double CAMERASERVO_LOW = 0.68;
-    final private double SHOOTER_VELOCITY = 4800;//5000;
+    final private double SHOOTER_VELOCITY = 2100;//5000;
     /* INIT */
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
     private static final int DESIRED_TAG_ID = 24;//RED //20;//BLUE//24;// -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
@@ -210,7 +210,6 @@ public class BlueAutoNEAR extends LinearOpMode {
         return new sleep200();
     }
 
-
     //START THE SHOOTER/POWER THE SHOOTER
     public class PowerShooter implements Action {
         private boolean initialized = false;
@@ -221,8 +220,7 @@ public class BlueAutoNEAR extends LinearOpMode {
                 // Optionally log something
                 packet.put("PowerShooterAction", "Power shooter to power = 0.9");
                 //set the shooter power to 0.9
-                shooter.setVelocity(2200);
-                //shooter.setVelocity(SHOOTER_VELOCITY);
+                shooter.setVelocity(SHOOTER_VELOCITY);
                 //shooter.setPower(0.9);
                 //sleep(500);
                 initialized = true;
@@ -235,6 +233,32 @@ public class BlueAutoNEAR extends LinearOpMode {
     // Convenience factory so you can just write startShooter() in your SequentialAction
     public Action startShooter() {
         return new PowerShooter();
+    }
+
+    public class delay implements Action {
+        private boolean initialized = false;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            long wait = 150;
+            if (!initialized) {
+                // Optionally log something
+                packet.put("Delay", "");
+                // Fire three balls in sequence (blocking, similar to SleepAction(3))
+                shooter.setVelocity(SHOOTER_VELOCITY);
+                sleep(wait);
+                //sleep(500); //sleep before moving to next position
+
+                initialized = true;
+            }
+            // Returning false tells Road Runner this action is finished
+            return false;
+        }
+    }
+
+    // Convenience factory so you can just write shootAll() in your SequentialAction
+    public Action shooterWait() {
+        return new delay();
     }
 
     //closes the shooter gate
@@ -575,9 +599,9 @@ public class BlueAutoNEAR extends LinearOpMode {
     }
 
     public void shootN(int count) {
-        final double targetVel = 2200;//close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
+        final double targetVel = SHOOTER_VELOCITY + 100;//close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
         final double dropMargin = 100;         // tune
-        final double recoverMargin = 200; //100;      // tune (smaller than dropMargin)
+        final double recoverMargin = 100;      // tune (smaller than dropMargin)
         final double stage3FeedPower = 0.6;    // tune down if multiple balls sneak
         final double stage3HoldPower = 0.0;
 
@@ -595,7 +619,7 @@ public class BlueAutoNEAR extends LinearOpMode {
         //stage1.setPower(0.6);  //0.6, 1.0       // intake
         stage3.setPower(stage3HoldPower);
 
-        sleep(600);
+        //sleep(600);
         ElapsedTime time_pass = new ElapsedTime();
         time_pass.reset();
 
@@ -618,10 +642,8 @@ public class BlueAutoNEAR extends LinearOpMode {
         }
 
         // Stop / reset
-        stage3.setPower(0.3);
+        stage3.setPower(0);
         blockShooter.setPosition(GATE_HOLD);
-        shooter.setVelocity(0);
-        stage1.setPower(1);
     }
     //running intake
     public void runIntake(double s1, double s2, double s3) {
