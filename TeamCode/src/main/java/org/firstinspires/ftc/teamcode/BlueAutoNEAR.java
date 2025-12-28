@@ -345,7 +345,7 @@ public class BlueAutoNEAR extends LinearOpMode {
                             drive.actionBuilder(shootPose)
                                     .setTangent(Math.toRadians(-45))
                                     .splineToLinearHeading(new Pose2d(-28, -37,  Math.toRadians(-45)), Math.toRadians(-45)) //go into
-                                    .splineToLinearHeading(new Pose2d(-8, -60,  Math.toRadians(-85)), Math.toRadians(-90)) //go into
+                                    .splineToLinearHeading(new Pose2d(-8, -60,  Math.toRadians(-95)), Math.toRadians(-90)) //go into
                                     .setTangent(Math.toRadians(90))
                                     .splineToLinearHeading(shootPose, Math.toRadians(-225)) //go into
                                     .build(),
@@ -375,12 +375,13 @@ public class BlueAutoNEAR extends LinearOpMode {
                                     .build(),
                             shootAll(),
                             closeGate(),
-                            startIntake(1.0, 0.3)
+                            startIntake(1.0, 0.3),
 
-                            /*drive.actionBuilder(shootPose)
-                                    .setTangent(Math.toRadians(-45))*/
-
-                    )
+                            drive.actionBuilder(shootPose)
+                                    .setTangent(Math.toRadians(-15))
+                                    .splineToLinearHeading(new Pose2d(4, -52,  Math.toRadians(-110)), Math.toRadians(-95)) //go into
+                                    .build()
+                            )
             );
             telemetry.addData("Trajectory", "Executed Successfully");
         } catch (Exception e) {
