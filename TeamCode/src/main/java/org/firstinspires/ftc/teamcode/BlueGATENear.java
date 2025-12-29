@@ -353,7 +353,7 @@ public class BlueGATENear extends LinearOpMode {
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(-135));
 
         double classifierX = 7.5, classifierY = -64, classifierYaw = Math.toRadians(-120);
-        Pose2d classifierPose = new Pose2d(classifierX,classifierY, Math.toRadians(classifierYaw));
+        Pose2d classifierPose = new Pose2d(classifierX,classifierY, (classifierYaw));
 
         double readyX = 0, readyY = -30, readyYaw = Math.toRadians(-135);
         Pose2d readyPose = new Pose2d(readyX, readyY, readyYaw);
