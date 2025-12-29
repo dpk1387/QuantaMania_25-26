@@ -328,6 +328,7 @@ public class RedAutoNEAR extends LinearOpMode {
         try {
             Actions.runBlocking(
                     new SequentialAction(
+                            /* Preload */
                             startShooter(),
                             startIntake(1.0, 0.3),
                             //1. Go to shooting place

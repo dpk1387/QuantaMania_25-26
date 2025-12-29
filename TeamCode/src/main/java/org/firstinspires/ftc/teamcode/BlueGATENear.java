@@ -38,17 +38,17 @@ import org.firstinspires.ftc.vision.opencv.ColorRange;
 
 import java.util.concurrent.TimeUnit;
 
-@Autonomous(name = "BlueAutoNEAR", group = "Autonomous")
+@Autonomous(name = "BlueGATENEAR", group = "Autonomous")
 @Config
-public class BlueAutoNEAR extends LinearOpMode {
+public class BlueGATENear extends LinearOpMode {
     /* HARDWARE */
     private DcMotorEx shooter = null;
     private DcMotor stage1 = null;
-//    private DcMotor stage2 = null;
+    //    private DcMotor stage2 = null;
     private DcMotor stage3 = null;
     private Servo blockShooter = null;
     private Servo cameraServo = null;
-//    private DistanceSensor leftDist = null;
+    //    private DistanceSensor leftDist = null;
 //    private DistanceSensor rightDist = null;
     GoBildaPinpointDriver pinpoint = null;
     final private double OPENSHOOTER_OPEN = 0.8;//0.19;//0.3;
@@ -284,7 +284,7 @@ public class BlueAutoNEAR extends LinearOpMode {
 
     // Convenience factory so you can just write shootAll() in your SequentialAction
     public Action shooterWait() {
-        return new BlueAutoNEAR.delay();
+        return new delay();
     }
 
     public class intakeDelay implements Action {
@@ -292,7 +292,7 @@ public class BlueAutoNEAR extends LinearOpMode {
 
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            long wait = 3000;
+            long wait = 1500;
             if (!initialized) {
                 // Optionally log something
                 packet.put("Delay", "");
@@ -352,15 +352,18 @@ public class BlueAutoNEAR extends LinearOpMode {
         //double shootX = -30, shootY = -30; //30, 30
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(-135));
 
-        double classifierX = 7.5, classifierY = -62, classifierYaw = -120;
-        Pose2d classifierPose = new Pose2d(classifierX,classifierY,classifierYaw);
+        double classifierX = 7.5, classifierY = -64, classifierYaw = Math.toRadians(-120);
+        Pose2d classifierPose = new Pose2d(classifierX,classifierY, Math.toRadians(classifierYaw));
+
+        double readyX = 0, readyY = -30, readyYaw = Math.toRadians(-135);
+        Pose2d readyPose = new Pose2d(readyX, readyY, readyYaw);
 
         try {
             Actions.runBlocking(
                     new SequentialAction(
                             startShooter(),
                             startIntake(1.0,0.3),
-                            //1. Go to shooting place
+                            //1. preload artifacts
                             drive.actionBuilder(startPose)
                                     .strafeTo(new Vector2d(shootX, shootY))
                                     .build(),
@@ -369,7 +372,56 @@ public class BlueAutoNEAR extends LinearOpMode {
                             closeGate(),
                             startIntake(1.0, 0.3),
 
-                            //3. get the inner most 3 balls
+                            // get the middle row balls
+                            drive.actionBuilder(shootPose)
+                                    .setTangent(Math.toRadians(-15))
+                                    .splineToLinearHeading(new Pose2d(2, -38,  Math.toRadians(-45)), Math.toRadians(-30)) //go into
+                                    .splineToLinearHeading(new Pose2d(4, -62,  Math.toRadians(-110)), Math.toRadians(-95)) //go into
+                                    .setTangent(Math.toRadians(90))
+                                    .splineToLinearHeading(readyPose, Math.toRadians(-200)) //go into
+                                    .splineToLinearHeading(shootPose, Math.toRadians(-200)) //go into
+                                    .build(),
+                            shootAll(),
+                            closeGate(),
+                            startIntake(1.0, 0.3),
+
+                            // get balls from classifier (1)
+                            drive.actionBuilder(shootPose)
+                                    .setTangent(Math.toRadians(-60)) //15
+                                    // .splineToLinearHeading(readyPose, Math.toRadians(-135))
+                                    .splineToLinearHeading(classifierPose, Math.toRadians(-60)) //-95 //go into
+                                    .build(),
+                            //wait at the classifier to intake balls
+                            intakeWait(),
+                            //go to shoot
+                            drive.actionBuilder(classifierPose)
+                                    // .splineToLinearHeading(readyPose, Math.toRadians(-95))
+                                    .setTangent(Math.toRadians(60)) //-95
+                                    .splineToLinearHeading(shootPose, Math.toRadians(135)) //200 //go into
+                                    .build(),
+                            shootAll(), //shoot all
+                            closeGate(),
+                            startIntake(1.0, 0.3),
+
+                            // get balls from classifier (2)
+                            drive.actionBuilder(shootPose)
+                                    .setTangent(Math.toRadians(-15))
+                                    .splineToLinearHeading(readyPose, Math.toRadians(-135))
+                                    .splineToLinearHeading(classifierPose, Math.toRadians(-95)) //go into
+                                    .build(),
+                            //wait at the classifier to intake balls
+                            intakeWait(),
+                            //go to shoot
+                            drive.actionBuilder(classifierPose)
+                                    .splineToLinearHeading(readyPose, Math.toRadians(-95))
+                                    .setTangent(Math.toRadians(-90))
+                                    .splineToLinearHeading(shootPose, Math.toRadians(200)) //go into
+                                    .build(),
+                            shootAll(), //shoot all
+                            closeGate(),
+                            startIntake(1.0, 0.3),
+
+                            // inner most 3 balls
                             drive.actionBuilder(shootPose)
                                     .setTangent(Math.toRadians(-45))
                                     .splineToLinearHeading(new Pose2d(-24, -37,  Math.toRadians(-45)), Math.toRadians(-45)) //go into
@@ -379,21 +431,9 @@ public class BlueAutoNEAR extends LinearOpMode {
                                     .build(),
                             shootAll(),
                             closeGate(),
-                            startIntake(1.0, 0.3),
+                            startIntake(1.0, 0.3)
 
-                            //4. get the middle row balls
-                            drive.actionBuilder(shootPose)
-                                    .setTangent(Math.toRadians(-15))
-                                    .splineToLinearHeading(new Pose2d(2, -38,  Math.toRadians(-45)), Math.toRadians(-30)) //go into
-                                    .splineToLinearHeading(new Pose2d(4, -62,  Math.toRadians(-110)), Math.toRadians(-95)) //go into
-                                    .setTangent(Math.toRadians(90))
-                                    .splineToLinearHeading(shootPose, Math.toRadians(-200)) //go into
-                                    .build(),
-                            shootAll(),
-                            closeGate(),
-                            startIntake(1.0, 0.3),
-
-                            //5. get the outermost row balls
+                            /*5. get the outermost row balls
                             drive.actionBuilder(shootPose)
                                     .setTangent(Math.toRadians(-10))
                                     .splineToLinearHeading(new Pose2d(26, -35,  Math.toRadians(-45)), Math.toRadians(-0)) //go into
@@ -408,8 +448,8 @@ public class BlueAutoNEAR extends LinearOpMode {
                             drive.actionBuilder(shootPose)
                                     .setTangent(Math.toRadians(-15))
                                     .splineToLinearHeading(new Pose2d(4, -52,  Math.toRadians(-110)), Math.toRadians(-95)) //go into
-                                    .build()
-                            )
+                                    .build()*/
+                    )
             );
             telemetry.addData("Trajectory", "Executed Successfully");
         } catch (Exception e) {
