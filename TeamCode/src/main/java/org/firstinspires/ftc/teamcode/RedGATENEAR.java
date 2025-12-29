@@ -352,6 +352,7 @@ public class RedGATENEAR extends LinearOpMode {
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(135));
         Pose2d classifierPose = new Pose2d(7.5, 62,  Math.toRadians(120));
 
+        Pose2d readyPose = new Pose2d(0, -30, Math.toRadians(135));
         try {
             Actions.runBlocking(
                     new SequentialAction(
@@ -374,6 +375,7 @@ public class RedGATENEAR extends LinearOpMode {
                                     //intake them all and get
                                     .splineToLinearHeading(new Pose2d(4, 62,  Math.toRadians(110)), Math.toRadians(95)) //go into
                                     .setTangent(Math.toRadians(-90))
+                                    .splineToLinearHeading(readyPose, Math.toRadians(200))
                                     .splineToLinearHeading(shootPose, Math.toRadians(200)) //go into
                                     .build(),
                             shootAll(),
@@ -403,6 +405,7 @@ public class RedGATENEAR extends LinearOpMode {
                             //--------SECOND TIME
                             drive.actionBuilder(shootPose)
                                     .setTangent(Math.toRadians(15))
+                                    .splineToLinearHeading(readyPose, Math.toRadians(135))
                                     .splineToLinearHeading(classifierPose, Math.toRadians(95)) //go into
 //                                    .setTangent(Math.toRadians(-90))
 //                                    .splineToLinearHeading(shootPose, Math.toRadians(200)) //go into
@@ -411,6 +414,7 @@ public class RedGATENEAR extends LinearOpMode {
                             intakeWait(),
                             //go to shoot
                             drive.actionBuilder(classifierPose)
+                                    .splineToLinearHeading(readyPose, Math.toRadians(95))
                                     .setTangent(Math.toRadians(-90))
                                     .splineToLinearHeading(shootPose, Math.toRadians(200)) //go into
                                     .build(),
