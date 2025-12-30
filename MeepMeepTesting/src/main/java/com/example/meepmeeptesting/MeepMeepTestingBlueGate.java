@@ -34,7 +34,7 @@ public class MeepMeepTestingBlueGate {
                 // middle row of artifacts
                 .setTangent(Math.toRadians(5))
                 //.splineToLinearHeading(readyPose, Math.toRadians(-30)) //go into
-                .splineToLinearHeading(new Pose2d(4, -54, Math.toRadians(-110)), Math.toRadians(-95)) //go into
+                .splineToLinearHeading(new Pose2d(12, -58, Math.toRadians(-110)), Math.toRadians(-95)) //go into
                 .setTangent(Math.toRadians(100))
                 .splineToLinearHeading(newShootPose, Math.toRadians(160)) //145 //go into
                 .waitSeconds(2)
@@ -58,9 +58,9 @@ public class MeepMeepTestingBlueGate {
                 .waitSeconds(2)
 
                 // first line of artifacts
-                .setTangent(Math.toRadians(-45))
-                .splineToLinearHeading(new Pose2d(-24, -38,  Math.toRadians(-45)), Math.toRadians(-45)) //go into
-                .splineToLinearHeading(new Pose2d(-6, -58,  Math.toRadians(-95)), Math.toRadians(-90)) //go into
+                .setTangent(Math.toRadians(-80))
+                //.splineToLinearHeading(new Pose2d(-24, -38,  Math.toRadians(-45)), Math.toRadians(-45)) //go into
+                .splineToLinearHeading(new Pose2d(-11, -58,  Math.toRadians(-95)), Math.toRadians(-90)) //go into
                 .setTangent(Math.toRadians(90))
                 .splineToLinearHeading(shootPose, Math.toRadians(-225)) //go into
                 .waitSeconds(2)
