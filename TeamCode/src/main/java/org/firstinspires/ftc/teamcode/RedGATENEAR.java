@@ -55,7 +55,7 @@ public class RedGATENEAR extends LinearOpMode {
     final private double OPENSHOOTER_CLOSED = 1.0; // OPENSHOOTER_OPEN + 28//0.55
     final private double CAMERASERVO_HIGH = 0.55;
     final private double CAMERASERVO_LOW = 0.68;
-    final private double SHOOTER_VELOCITY = 2100; //4000//4200;//4800;//5000;
+    final private double SHOOTER_VELOCITY = 2150; //4000//4200;//4800;//5000;
     /* INIT */
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
     private static final int DESIRED_TAG_ID = 24;//RED //20;//BLUE//24;// -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
@@ -293,13 +293,11 @@ public class RedGATENEAR extends LinearOpMode {
 
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            long wait = 150;
             if (!initialized) {
                 // Optionally log something
                 packet.put("intake Delay", "");
                 // Fire three balls in sequence (blocking, similar to SleepAction(3))
                 sleep(1500);
-                //sleep(500); //sleep before moving to next position
 
                 initialized = true;
             }
@@ -349,13 +347,12 @@ public class RedGATENEAR extends LinearOpMode {
         runtime.reset();
         telemetryThread.start();
         double shootX = -28, shootY = 28; //30, 30
-        double newShootX = -13, newShootY = 13; //-13, 13
+        double newShootX = -16, newShootY = 16; //-13, 13
 
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(135));
         Pose2d newShootPose = new Pose2d(newShootX, newShootY, Math.toRadians(135));
 
-        Pose2d classifierPose = new Pose2d(7.5, 62,  Math.toRadians(120));
-
+        Pose2d classifierPose = new Pose2d(9.5, 62,  Math.toRadians(115)); //120
         Pose2d readyPose = new Pose2d(0, 30, Math.toRadians(135));
         try {
             Actions.runBlocking(
@@ -384,7 +381,7 @@ public class RedGATENEAR extends LinearOpMode {
 
                                     //UPDATE: FROM MEEPMEEP:
                                     //go to intake balls and clear classifier
-                                    .splineToSplineHeading(new Pose2d(10, 58, Math.toRadians(110)), Math.toRadians(110)) //_, _,_, 95
+                                    .splineToSplineHeading(new Pose2d(10, 52, Math.toRadians(110)), Math.toRadians(110)) //_, _,_, 95
 
                                     //go to shoot
                                     .setTangent(Math.toRadians(-100))
@@ -714,8 +711,8 @@ public class RedGATENEAR extends LinearOpMode {
             blockShooter.setPosition(GATE_HOLD);
             //stage3.setPower(stage3HoldPower);
 
-            // 4) Wait for recovery enough to avoid weak 2nd/3rd shots
-            while (opModeIsActive() && shooter.getVelocity() < targetVel - recoverMargin) {
+            // 4) Wait for recovery enough to avoid weak/overpowered 2nd/3rd shots
+            while (opModeIsActive() && shooter.getVelocity() >= targetVel - recoverMargin) {
                 telemetry.addData("Shooter Vel", "%5.2f", shooter.getVelocity());
                 telemetry.update();
                 sleep(loopSleepMs);
