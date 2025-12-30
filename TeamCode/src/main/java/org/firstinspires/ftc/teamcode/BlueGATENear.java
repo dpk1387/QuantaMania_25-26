@@ -349,8 +349,10 @@ public class BlueGATENear extends LinearOpMode {
         runtime.reset();
         telemetryThread.start();
         double shootX = -28, shootY = -28; //-32, -32//30, 30
+        double newShootX = -16, newShootY = -16;
         //double shootX = -30, shootY = -30; //30, 30
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(-135));
+        Pose2d newShootPose = new Pose2d(newShootX, newShootY, Math.toRadians(-135));
 
         double classifierX = 7.5, classifierY = -64, classifierYaw = Math.toRadians(-120);
         Pose2d classifierPose = new Pose2d(classifierX,classifierY, (classifierYaw));
