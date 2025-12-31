@@ -353,7 +353,7 @@ public class RedGATENEAR extends LinearOpMode {
         Pose2d newShootPose = new Pose2d(newShootX, newShootY, Math.toRadians(135));
 
         Pose2d classifierPose = new Pose2d(9.5, 62,  Math.toRadians(115)); //120
-        Pose2d readyPose = new Pose2d(0, 30, Math.toRadians(135));
+        //Pose2d readyPose = new Pose2d(0, 30, Math.toRadians(135));
         try {
             Actions.runBlocking(
                     new SequentialAction(
@@ -712,7 +712,7 @@ public class RedGATENEAR extends LinearOpMode {
             //stage3.setPower(stage3HoldPower);
 
             // 4) Wait for recovery enough to avoid weak/overpowered 2nd/3rd shots
-            while (opModeIsActive() && shooter.getVelocity() >= targetVel - recoverMargin) {
+            while (opModeIsActive() && shooter.getVelocity() < targetVel - recoverMargin) {
                 telemetry.addData("Shooter Vel", "%5.2f", shooter.getVelocity());
                 telemetry.update();
                 sleep(loopSleepMs);
