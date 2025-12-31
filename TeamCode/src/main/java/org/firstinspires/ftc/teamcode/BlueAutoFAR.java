@@ -375,15 +375,14 @@ public class BlueAutoFAR extends LinearOpMode {
                             drive.actionBuilder(shootPose)
                                     .setTangent(Math.toRadians(0))
                                     //go to intake the 3rd set of balls
-                                    .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(-90)),Math.toRadians(0))
+                                    .splineToSplineHeading(new Pose2d(turnX, turnY, Math.toRadians(-90)),Math.toRadians(-10))
                                     //strafe forwards to intake
                                     .splineToLinearHeading(new Pose2d(inX, inY, Math.toRadians(-90)),Math.toRadians(-90))
                                     .turn(Math.toRadians(45))
                                     //.turn(Math.toRadians(45))
                                     //.strafeTo(new Vector2d(inX + 2, inY+4))
                                     //go back
-                                    .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(-90)),Math.toRadians(-90))
-                                    .setTangent(Math.toRadians(180))
+                                    .splineToSplineHeading(new Pose2d(turnX, turnY, Math.toRadians(shootYaw)),Math.toRadians(170))
                                     //go to shoot
                                     .splineToLinearHeading(new Pose2d(shootX, shootY,  Math.toRadians(shootYaw)), Math.toRadians(180)) //go into
                                     .build(),
@@ -396,15 +395,14 @@ public class BlueAutoFAR extends LinearOpMode {
                             drive.actionBuilder(shootPose)
                                     .setTangent(Math.toRadians(0))
                                     //go to intake the 3rd set of balls
-                                    .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(-135)),Math.toRadians(0))
+                                    .splineToSplineHeading(new Pose2d(turnX, turnY, Math.toRadians(-135)),Math.toRadians(-27))
                                     //strafe forwards to intake
                                     .splineToLinearHeading(new Pose2d(inX, inY, Math.toRadians(-90)),Math.toRadians(-90))
                                     .turn(Math.toRadians(45))
                                     //.turn(Math.toRadians(45))
                                     //.strafeTo(new Vector2d(inX + 2, inY+4))
                                     //go back
-                                    .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(-135)),Math.toRadians(90))
-                                    .setTangent(Math.toRadians(180))
+                                    .splineToSplineHeading(new Pose2d(turnX, turnY, Math.toRadians(-135)),Math.toRadians(100))
                                     //go to shoot
                                     .splineToLinearHeading(new Pose2d(shootX, shootY,  Math.toRadians(shootYaw)), Math.toRadians(180)) //go into
                                     .build(),
@@ -416,14 +414,14 @@ public class BlueAutoFAR extends LinearOpMode {
                             drive.actionBuilder(shootPose)
                                     .setTangent(Math.toRadians(0))
                                     //go to intake the 3rd set of balls
-                                    .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(-135)),Math.toRadians(0))
+                                    .splineToSplineHeading(new Pose2d(turnX, turnY, Math.toRadians(-135)),Math.toRadians(-27))
                                     //strafe forwards to intake
                                     .splineToLinearHeading(new Pose2d(inX, inY, Math.toRadians(-90)),Math.toRadians(-90))
                                     .turn(Math.toRadians(45))
                                     //.turn(Math.toRadians(45))
                                     //.strafeTo(new Vector2d(inX + 2, inY+4))
                                     //go back
-                                    .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(-135)),Math.toRadians(90))
+                                    .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(-135)),Math.toRadians(100))
                                     .setTangent(Math.toRadians(180))
                                     //go to shoot
                                     .splineToLinearHeading(new Pose2d(shootX, shootY,  Math.toRadians(shootYaw)), Math.toRadians(180)) //go into
