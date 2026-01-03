@@ -17,7 +17,7 @@ public class MeepMeepTestingBlueGate {
                 .build();
         double shootX = -28, shootY = -28, shootYaw = Math.toRadians(-135);
         Pose2d shootPose = new Pose2d(shootX, shootY, shootYaw);
-        double newShootX = -16, newShootY = -16;
+        double newShootX = -16, newShootY = -16; //-22, -22
         Pose2d newShootPose = new Pose2d(newShootX, newShootY, Math.toRadians(-135));
         Pose2d startPose = new Pose2d(-54, -54, Math.toRadians(-135));
         Pose2d classifierPose = new Pose2d(7.5, -64, Math.toRadians(-120));

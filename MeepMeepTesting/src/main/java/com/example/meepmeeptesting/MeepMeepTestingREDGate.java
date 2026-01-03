@@ -20,7 +20,7 @@ public class MeepMeepTestingREDGate {
 
         //longer shot
         //shorter movement to classifier
-        double newShootX = -16, newShootY = 16;
+        double newShootX = -16, newShootY = 16; // -22, 22
         Pose2d newShootPose = new Pose2d(newShootX, newShootY, Math.toRadians(135));
 
         Pose2d startPose = new Pose2d(-54, 54, Math.toRadians(135));
