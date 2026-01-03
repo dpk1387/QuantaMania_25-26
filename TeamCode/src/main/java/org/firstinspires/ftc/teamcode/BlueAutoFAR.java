@@ -346,7 +346,7 @@ public class BlueAutoFAR extends LinearOpMode {
         //initialize shooting position on field
         //double shootX = -9, shootY = 11, shootYaw = 132;//135;
         //double shootX = -6, shootY = -13, shootYaw = 220;//135;
-        double shootX = -13.5, shootY = -13, shootYaw = 225;
+        double shootX = -13.5, shootY = -13, shootYaw = Math.toRadians(225);
 
         //double shootX = 46, shootY = -10, shootYaw = -154;
         //intake the set of balls closest to the right
@@ -354,81 +354,63 @@ public class BlueAutoFAR extends LinearOpMode {
         //double pastIntakeY = 62; //this y value is up higher, closer to the goal
 
         //shooting position
-        Pose2d shootPose = new Pose2d(shootX, shootY,  Math.toRadians(shootYaw));
+        Pose2d shootPose = new Pose2d(shootX, shootY,  shootYaw);
         double inX = 58, inY = -58;
-        //double turnX = inX - 8, turnY = -11;
-        double turnX = inX - 10, turnY = -13;
-        Pose2d intakePose = new Pose2d(inX, inY, Math.toRadians(-90));//
-        try {
-            Actions.runBlocking(
-                    new SequentialAction(
-                            startShooter(),
-                            //1. Go to shooting place
-                            drive.actionBuilder(startPose)
-                                    .splineToLinearHeading(shootPose, Math.toRadians(180))
-                                    .build(),
-                            shootAll(), //shoot
-                            closeGate(), //make sure the gate is actually closed
+        double turnX = inX - 10, turnY = -30;
+        double turnX2 = inX - 8, turnY2 = -16;
+        try{
+            Actions.runBlocking(new SequentialAction(
+//                1. Go to shooting place
+                        drive.actionBuilder(startPose)
+                                .splineToLinearHeading(shootPose, Math.toRadians(180))
+                                .build(),
 
-                            //2nd set of balls
-                            startIntake(1.0, 0.3, 0),
-                            drive.actionBuilder(shootPose)
-                                    .setTangent(Math.toRadians(0))
-                                    //go to intake the 3rd set of balls
-                                    .splineToSplineHeading(new Pose2d(turnX, turnY, Math.toRadians(-90)),Math.toRadians(-10))
-                                    //strafe forwards to intake
-                                    .splineToLinearHeading(new Pose2d(inX, inY, Math.toRadians(-90)),Math.toRadians(-90))
-                                    .turn(Math.toRadians(45))
-                                    //.turn(Math.toRadians(45))
-                                    //.strafeTo(new Vector2d(inX + 2, inY+4))
-                                    //go back
-                                    .splineToSplineHeading(new Pose2d(turnX, turnY, Math.toRadians(shootYaw)),Math.toRadians(170))
-                                    //go to shoot
-                                    .splineToLinearHeading(new Pose2d(shootX, shootY,  Math.toRadians(shootYaw)), Math.toRadians(180)) //go into
-                                    .build(),
-                            //startShooter(),
-                            shootAll(), //shoot
-                            closeGate(), //make sure gate is closed
-                            startIntake(1.0, 0.3, 0),
+                        //2nd set of balls
+                        drive.actionBuilder(shootPose)
+                                .setTangent(Math.toRadians(0))
+                                //go to intake the 3rd set of balls
+                                .splineToSplineHeading(new Pose2d(turnX, turnY, Math.toRadians(256)),Math.toRadians(-10))
+                                //strafe forwards to intake
+                                .splineToLinearHeading(new Pose2d(inX, inY, Math.toRadians(270)),Math.toRadians(-90))
+                                .turn(Math.toRadians(45))
+                                //go back
+                                .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(270)),Math.toRadians(170))
+                                //go to shoot
+                                .splineToSplineHeading(new Pose2d(shootX, shootY, shootYaw), Math.toRadians(180)) //go into
+                                .build(),
 
-                            //3rd. intake balls from red alliance human player side
-                            drive.actionBuilder(shootPose)
-                                    .setTangent(Math.toRadians(0))
-                                    //go to intake the 3rd set of balls
-                                    .splineToSplineHeading(new Pose2d(turnX, turnY, Math.toRadians(-135)),Math.toRadians(-27))
-                                    //strafe forwards to intake
-                                    .splineToLinearHeading(new Pose2d(inX, inY, Math.toRadians(-90)),Math.toRadians(-90))
-                                    .turn(Math.toRadians(45))
-                                    //.turn(Math.toRadians(45))
-                                    //.strafeTo(new Vector2d(inX + 2, inY+4))
-                                    //go back
-                                    .splineToSplineHeading(new Pose2d(turnX, turnY, Math.toRadians(-135)),Math.toRadians(100))
-                                    //go to shoot
-                                    .splineToLinearHeading(new Pose2d(shootX, shootY,  Math.toRadians(shootYaw)), Math.toRadians(180)) //go into
-                                    .build(),
-                            shootAll(), //shoot
-                            closeGate(),
-                            startIntake(1.0, 0.3, 0),
+                        //3rd. intake balls from red alliance human player side
+                        drive.actionBuilder(shootPose)
+                                .setTangent(Math.toRadians(0))
+                                //go to intake the 3rd set of balls
+                                .splineToSplineHeading(new Pose2d(turnX2-3, turnY2-8, Math.toRadians(250)),Math.toRadians(-35))
+                                //strafe forwards to intake
+                                .splineToLinearHeading(new Pose2d(inX, inY, Math.toRadians(-90)),Math.toRadians(-90))
+                                .turn(Math.toRadians(45))
+                                //.turn(Math.toRadians(45))
+                                //.strafeTo(new Vector2d(inX + 2, inY+4))
+                                //go back
+                                .splineToSplineHeading(new Pose2d(turnX2, turnY2-20, Math.toRadians(270)),Math.toRadians(100))
+                                //go to shoot
+                                .splineToLinearHeading(new Pose2d(shootX, shootY, shootYaw), Math.toRadians(180)) //go into
+                                .build(),
 
-                            //4th set of artifacts
-                            drive.actionBuilder(shootPose)
-                                    .setTangent(Math.toRadians(0))
-                                    //go to intake the 3rd set of balls
-                                    .splineToSplineHeading(new Pose2d(turnX, turnY, Math.toRadians(-135)),Math.toRadians(-27))
-                                    //strafe forwards to intake
-                                    .splineToLinearHeading(new Pose2d(inX, inY, Math.toRadians(-90)),Math.toRadians(-90))
-                                    .turn(Math.toRadians(45))
-                                    //.turn(Math.toRadians(45))
-                                    //.strafeTo(new Vector2d(inX + 2, inY+4))
-                                    //go back
-                                    .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(-135)),Math.toRadians(100))
-                                    .setTangent(Math.toRadians(180))
-                                    //go to shoot
-                                    .splineToLinearHeading(new Pose2d(shootX, shootY,  Math.toRadians(shootYaw)), Math.toRadians(180)) //go into
-                                    .build(),
-                            shootAll(), //shoot
-                            closeGate()
-                    )
+                        //4th set of artifacts
+                        drive.actionBuilder(shootPose)
+                                .setTangent(Math.toRadians(0))
+                                //go to intake the 3rd set of balls
+                                .splineToSplineHeading(new Pose2d(turnX2-3, turnY2-8, Math.toRadians(250)),Math.toRadians(-35))
+                                //strafe forwards to intake
+                                .splineToLinearHeading(new Pose2d(inX, inY, Math.toRadians(-90)),Math.toRadians(-90))
+                                .turn(Math.toRadians(45))
+                                //.turn(Math.toRadians(45))
+                                //.strafeTo(new Vector2d(inX + 2, inY+4))
+                                //go back
+                                .splineToSplineHeading(new Pose2d(turnX2, turnY2-20, Math.toRadians(270)),Math.toRadians(100))
+                                //go to shoot
+                                .splineToLinearHeading(new Pose2d(shootX, shootY, shootYaw), Math.toRadians(180)) //go into
+                                .build()
+                )
             );
             telemetry.addData("Trajectory", "Executed Successfully");
         } catch (Exception e) {
