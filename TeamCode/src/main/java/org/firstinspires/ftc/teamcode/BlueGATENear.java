@@ -355,8 +355,7 @@ public class BlueGATENear extends LinearOpMode {
         Pose2d newShootPose = new Pose2d(newShootX, newShootY, shootYaw);
         
         Pose2d classifierPose = new Pose2d(7.5, -64, Math.toRadians(-120));
-        double readyX = 4, readyY = -30, readyYaw = Math.toRadians(-45);
-        Pose2d readyPose = new Pose2d(readyX, readyY, readyYaw);
+
         try{
             Actions.runBlocking(
                     drive.actionBuilder(startPose)
@@ -366,9 +365,8 @@ public class BlueGATENear extends LinearOpMode {
                         .waitSeconds(2) //to shoot
 
 //                      middle row of artifacts
-                        .setTangent(Math.toRadians(-25))
-                        .splineToSplineHeading(new Pose2d(12.5, -44, Math.toRadians(-83)), Math.toRadians(-80))
-//                        .setTangent(Math.toRadians(100))
+                        .setTangent(Math.toRadians(-32))
+                        .splineToSplineHeading(new Pose2d(12, -42, Math.toRadians(-90)), Math.toRadians(-90))
                         .splineToLinearHeading(newShootPose, Math.toRadians(160))
                         .waitSeconds(2)
 
@@ -391,10 +389,9 @@ public class BlueGATENear extends LinearOpMode {
                         .waitSeconds(2)
 
                         // first line of artifacts
-                        .setTangent(Math.toRadians(-54))
-                        .splineToSplineHeading(new Pose2d(-8, -47,  Math.toRadians(-115)), Math.toRadians(-90)) //go into
-//                        .setTangent(Math.toRadians(90))
-                        .splineToLinearHeading(shootPose, Math.toRadians(-225)) //go into
+                        .setTangent(Math.toRadians(-60))
+                        .splineToSplineHeading(new Pose2d(-12, -44,  Math.toRadians(-90)), Math.toRadians(-100)) //go into
+                        .splineToLinearHeading(shootPose, Math.toRadians(135)) //go into
                         .waitSeconds(2)
                         .build()
             );

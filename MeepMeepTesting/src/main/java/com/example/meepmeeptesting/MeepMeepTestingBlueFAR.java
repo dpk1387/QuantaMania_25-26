@@ -9,7 +9,7 @@ import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 /*
 * THis version for autonomous far stating point
 * */
-public class MeepMeepTestingFAR {
+public class MeepMeepTestingBlueFAR {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(800);
 
@@ -39,9 +39,8 @@ public class MeepMeepTestingFAR {
                         //strafe forwards to intake
                         .splineToSplineHeading(new Pose2d(inX, inY, Math.toRadians(270)),Math.toRadians(-90))
                         //go back
-                        .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(240)),Math.toRadians(150))
+                        .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(270)),Math.toRadians(150))
                         //go to shoot
-//                        .setTangent(-45)
                         .splineToSplineHeading(shootPose, Math.toRadians(165)) //go into
                         .build(),
 
@@ -53,7 +52,7 @@ public class MeepMeepTestingFAR {
                         //strafe forwards to intake
                         .splineToLinearHeading(new Pose2d(inX, inY, Math.toRadians(-90)),Math.toRadians(-90))
                         //go back
-                        .splineToSplineHeading(new Pose2d(turnX2, turnY2-18, Math.toRadians(240)),Math.toRadians(125))
+                        .splineToSplineHeading(new Pose2d(turnX2, turnY2-18, Math.toRadians(-90)),Math.toRadians(125))
                         //go to shoot
                         .splineToLinearHeading(shootPose, Math.toRadians(180)) //go into
                         .build(),
@@ -66,7 +65,7 @@ public class MeepMeepTestingFAR {
                         //strafe forwards to intake
                         .splineToLinearHeading(new Pose2d(inX, inY, Math.toRadians(-90)),Math.toRadians(-90))
                         //go back
-                        .splineToSplineHeading(new Pose2d(turnX2, turnY2-18, Math.toRadians(240)),Math.toRadians(125))
+                        .splineToSplineHeading(new Pose2d(turnX2, turnY2-18, Math.toRadians(-90)),Math.toRadians(125))
                         //go to shoot
                         .splineToLinearHeading(shootPose, Math.toRadians(180)) //go into
                         .build()

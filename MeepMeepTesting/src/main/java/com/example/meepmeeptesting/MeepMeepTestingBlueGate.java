@@ -17,14 +17,14 @@ public class MeepMeepTestingBlueGate {
                 //.setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .setConstraints(55, 55, Math.toRadians(180), Math.toRadians(180), 15)//55 speed here 70 in real robot (roadrunner)
                 .build();
+
         double shootX = -28, shootY = -28, shootYaw = Math.toRadians(-135);
         Pose2d shootPose = new Pose2d(shootX, shootY, shootYaw);
         double newShootX = -16, newShootY = -16; //-22, -22
         Pose2d newShootPose = new Pose2d(newShootX, newShootY, Math.toRadians(-135));
+
         Pose2d startPose = new Pose2d(-54, -54, Math.toRadians(-135));
         Pose2d classifierPose = new Pose2d(7.5, -64, Math.toRadians(-120));
-        double readyX = 4, readyY = -30, readyYaw = Math.toRadians(-45);
-        Pose2d readyPose = new Pose2d(readyX, readyY, readyYaw);
 
         myBot.runAction(myBot.getDrive().actionBuilder(startPose)
 //                         preloads
@@ -33,10 +33,8 @@ public class MeepMeepTestingBlueGate {
                         .waitSeconds(2) //to shoot
 
 //                      middle row of artifacts
-                        .setTangent(Math.toRadians(-25))
-                        .splineToSplineHeading(new Pose2d(12.5, -44, Math.toRadians(-83)), Math.toRadians(-80))
-
-//                        .setTangent(Math.toRadians(110))
+                        .setTangent(Math.toRadians(-32))
+                        .splineToSplineHeading(new Pose2d(12, -42, Math.toRadians(270)), Math.toRadians(-90))
                         .splineToLinearHeading(newShootPose, Math.toRadians(160))
                         .waitSeconds(2)
 
@@ -47,15 +45,11 @@ public class MeepMeepTestingBlueGate {
 
                         .setTangent(Math.toRadians(95)) //75, -95
                         .splineToLinearHeading(newShootPose, Math.toRadians(155))
-//                        .splineToSplineHeading(new Pose2d(readyX-4, readyY-4, shootYaw), Math.toRadians(135))
-//                        .splineToConstantHeading(new Vector2d(shootX, shootY), Math.toRadians(200))
                         .waitSeconds(2)
 
                         // classifier artifacts (2)
                         .setTangent(Math.toRadians(-25))
                         .splineToLinearHeading(classifierPose, Math.toRadians(-85))
-//                        .splineToSplineHeading(new Pose2d(readyX, readyY-6, Math.toRadians(-120)), Math.toRadians(-55)) //-95 //go into
-//                        .splineToConstantHeading(new Vector2d(7.5,-64), Math.toRadians(-60))
                         .waitSeconds(1.5)
 
                         .setTangent(Math.toRadians(95))
@@ -63,11 +57,9 @@ public class MeepMeepTestingBlueGate {
                         .waitSeconds(2)
 
                         // first line of artifacts
-                        .setTangent(Math.toRadians(-54))
-                        //.splineToSplineHeading(new Pose2d(-22, -37,  Math.toRadians(-45)), Math.toRadians(-45)) //go into
-                        .splineToSplineHeading(new Pose2d(-8,-47,  Math.toRadians(-115)), Math.toRadians(-90)) //go into
-//                        .setTangent(Math.toRadians(90))
-                        .splineToLinearHeading(shootPose, Math.toRadians(-225)) //go into
+                        .setTangent(Math.toRadians(-60))
+                        .splineToLinearHeading(new Pose2d(-12,-44,  Math.toRadians(270)), Math.toRadians(-100)) //go into
+                        .splineToSplineHeading(shootPose, Math.toRadians(135)) //go into
                         .waitSeconds(2)
                         .build()
         );

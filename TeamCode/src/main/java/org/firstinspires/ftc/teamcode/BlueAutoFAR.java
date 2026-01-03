@@ -311,7 +311,7 @@ public class BlueAutoFAR extends LinearOpMode {
         telemetry.update();
 
         //start from the launch line
-        Pose2d startPose = new Pose2d(61, -11, Math.toRadians(180));
+        Pose2d startPose = new Pose2d(58, -13, Math.toRadians(225));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
 
         initMotors();
@@ -344,14 +344,7 @@ public class BlueAutoFAR extends LinearOpMode {
         telemetryThread.start();
 
         //initialize shooting position on field
-        //double shootX = -9, shootY = 11, shootYaw = 132;//135;
-        //double shootX = -6, shootY = -13, shootYaw = 220;//135;
         double shootX = -13.5, shootY = -13, shootYaw = Math.toRadians(225);
-
-        //double shootX = 46, shootY = -10, shootYaw = -154;
-        //intake the set of balls closest to the right
-        //double intakeX = 35, intakeY = 30, intakeYaw = 90;
-        //double pastIntakeY = 62; //this y value is up higher, closer to the goal
 
         //shooting position
         Pose2d shootPose = new Pose2d(shootX, shootY,  shootYaw);
@@ -372,9 +365,8 @@ public class BlueAutoFAR extends LinearOpMode {
                                 .splineToSplineHeading(new Pose2d(turnX-6, turnY+3, Math.toRadians(256)),Math.toRadians(-27))
                                 //strafe forwards to intake
                                 .splineToLinearHeading(new Pose2d(inX, inY, Math.toRadians(270)),Math.toRadians(-90))
-                                .turn(Math.toRadians(45))
                                 //go back
-                                .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(240)),Math.toRadians(150))
+                                .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(270)),Math.toRadians(150))
                                 //go to shoot
                                 .splineToSplineHeading(shootPose, Math.toRadians(165)) //go into
                                 .build(),
@@ -386,11 +378,9 @@ public class BlueAutoFAR extends LinearOpMode {
                                 .splineToSplineHeading(new Pose2d(turnX2-2, turnY2-15, Math.toRadians(250)),Math.toRadians(-50))
                                 //strafe forwards to intake
                                 .splineToLinearHeading(new Pose2d(inX, inY, Math.toRadians(-90)),Math.toRadians(-90))
-                                .turn(Math.toRadians(45))
-                                //.turn(Math.toRadians(45))
                                 //.strafeTo(new Vector2d(inX + 2, inY+4))
                                 //go back
-                                .splineToSplineHeading(new Pose2d(turnX2, turnY2-18, Math.toRadians(240)),Math.toRadians(125))
+                                .splineToSplineHeading(new Pose2d(turnX2, turnY2-18, Math.toRadians(-90)),Math.toRadians(125))
                                 //go to shoot
                                 .splineToLinearHeading(new Pose2d(shootX, shootY, shootYaw), Math.toRadians(180)) //go into
                                 .build(),
@@ -402,11 +392,9 @@ public class BlueAutoFAR extends LinearOpMode {
                                 .splineToSplineHeading(new Pose2d(turnX2-2, turnY2-15, Math.toRadians(250)),Math.toRadians(-50))
                                 //strafe forwards to intake
                                 .splineToLinearHeading(new Pose2d(inX, inY, Math.toRadians(-90)),Math.toRadians(-90))
-                                .turn(Math.toRadians(45))
-                                //.turn(Math.toRadians(45))
                                 //.strafeTo(new Vector2d(inX + 2, inY+4))
                                 //go back
-                                .splineToSplineHeading(new Pose2d(turnX2, turnY2-20, Math.toRadians(270)),Math.toRadians(100))
+                                .splineToSplineHeading(new Pose2d(turnX2, turnY2-20, Math.toRadians(-90)),Math.toRadians(100))
                                 //go to shoot
                                 .splineToLinearHeading(new Pose2d(shootX, shootY, shootYaw), Math.toRadians(180)) //go into
                                 .build()
