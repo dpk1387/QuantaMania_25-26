@@ -366,41 +366,33 @@ public class BlueGATENear extends LinearOpMode {
                         .waitSeconds(2) //to shoot
 
 //                      middle row of artifacts
-                        .setTangent(Math.toRadians(-15))
-                        .splineToSplineHeading(new Pose2d(8, -34,  Math.toRadians(-95)), Math.toRadians(-80)) //go into
-                        .splineToLinearHeading(new Pose2d(4, -62,  Math.toRadians(-110)), Math.toRadians(-95)) //go into
-                        .setTangent(Math.toRadians(90))
-                        .splineToSplineHeading(new Pose2d(readyX-6, readyY-2, Math.toRadians(-125)), Math.toRadians(135)) //go into
-                        .splineToLinearHeading(shootPose, Math.toRadians(200)) //go into
+                        .setTangent(Math.toRadians(-5))
+                        .splineToSplineHeading(new Pose2d(10, -58, Math.toRadians(-110)), Math.toRadians(-110))
+                        .setTangent(Math.toRadians(100))
+                        .splineToLinearHeading(newShootPose, Math.toRadians(160))
                         .waitSeconds(2)
 
 //                        // classifier artifacts (1)
-                        .setTangent(Math.toRadians(8))
-                        .splineToSplineHeading(new Pose2d(readyX, readyY-8, Math.toRadians(-128)), Math.toRadians(-55)) //-95 //go into.
-                        .splineToLinearHeading(classifierPose,Math.toRadians(-60))
-//                        .splineToConstantHeading(new Vector2d(7.5,-64), Math.toRadians(-60))
+                        .setTangent(Math.toRadians(-5))
+                        .splineToLinearHeading(classifierPose, Math.toRadians(-80))
                         .waitSeconds(1.5)
 
-                        .setTangent(Math.toRadians(90)) //-95
-                        .splineToSplineHeading(new Pose2d(readyX-6, readyY-4, Math.toRadians(-128)), Math.toRadians(135))
-                        .splineToLinearHeading(shootPose, Math.toRadians(200))
+                        .setTangent(Math.toRadians(100)) //75, -95
+                        .splineToLinearHeading(newShootPose, Math.toRadians(160))
                         .waitSeconds(2)
 
                         // classifier artifacts (2)
-                        .setTangent(Math.toRadians(8))
-                        .splineToSplineHeading(new Pose2d(readyX, readyY-8, Math.toRadians(-128)), Math.toRadians(-55)) //-95 //go into
-                        .splineToLinearHeading(classifierPose, Math.toRadians(-60))
+                        .setTangent(Math.toRadians(-5))
+                        .splineToLinearHeading(classifierPose, Math.toRadians(-80))
                         .waitSeconds(1.5)
 
-                        .setTangent(Math.toRadians(90)) //-95
-                        .splineToSplineHeading(new Pose2d(readyX-6, readyY-4, Math.toRadians(-128)), Math.toRadians(135))
-                        .splineToLinearHeading(shootPose, Math.toRadians(200))
+                        .setTangent(Math.toRadians(1100))
+                        .splineToLinearHeading(newShootPose, Math.toRadians(160))
                         .waitSeconds(2)
 
                         // first line of artifacts
                         .setTangent(Math.toRadians(-45))
-                        .splineToSplineHeading(new Pose2d(-22, -37,  Math.toRadians(-45)), Math.toRadians(-45)) //go into
-                        .splineToLinearHeading(new Pose2d(-8, -60,  Math.toRadians(-95)), Math.toRadians(-90)) //go into
+                        .splineToLinearHeading(new Pose2d(-11, -54,  Math.toRadians(-95)), Math.toRadians(-80)) //go into
                         .setTangent(Math.toRadians(90))
                         .splineToLinearHeading(shootPose, Math.toRadians(-225)) //go into
                         .waitSeconds(2)
