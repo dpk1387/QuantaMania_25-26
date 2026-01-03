@@ -1,6 +1,7 @@
 package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
@@ -17,68 +18,60 @@ public class MeepMeepTestingFAR {
                 //.setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .setConstraints(55, 55, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
-        //double shootX = -6, shootY = 13, shootYaw = 140;//135;
-        double shootX = 44, shootY = 6, shootYaw = 155;
-        Pose2d shootPose = new Pose2d(shootX, shootY,  Math.toRadians(shootYaw));
-        double inX = 54, inY = 58;
-        double turnX = inX - 8, turnY = 11;
 
+        Pose2d startPose = new Pose2d(58, -13, Math.toRadians(225));
+        double shootX = -13.5, shootY = -13, shootYaw = Math.toRadians(225);
+        Pose2d shootPose = new Pose2d(shootX, shootY,  shootYaw);
+        double inX = 58, inY = -55;
+        double turnX = inX - 10, turnY = -30;
+        double turnX2 = inX - 8, turnY2 = -16;
 
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(61, 11, Math.toRadians(180)))
-                .splineToLinearHeading(shootPose, Math.toRadians(180))
-                .waitSeconds(3) //to shoot
+        myBot.runAction(new SequentialAction(
+//                1. Go to shooting place
+                myBot.getDrive().actionBuilder(startPose)
+                        .strafeTo(new Vector2d(shootX, shootY))
+                        .build(),
+                //2nd set of balls
+                myBot.getDrive().actionBuilder(shootPose)
+                        .setTangent(Math.toRadians(-5))
+                        //go to intake the 3rd set of balls
+                        .splineToLinearHeading(new Pose2d(turnX-6, turnY+3, Math.toRadians(256)),Math.toRadians(-27))
+                        //strafe forwards to intake
+                        .splineToSplineHeading(new Pose2d(inX, inY, Math.toRadians(270)),Math.toRadians(-90))
+                        //go back
+                        .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(240)),Math.toRadians(150))
+                        //go to shoot
+//                        .setTangent(-45)
+                        .splineToSplineHeading(shootPose, Math.toRadians(165)) //go into
+                        .build(),
 
-                .setTangent(Math.toRadians(0))
-                //go to intake the 3rd set of balls
-                .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(90)),Math.toRadians(0))
-                //strafe forwards to intake
-                .setTangent(Math.toRadians(45))
-                .splineToLinearHeading(new Pose2d(inX, inY, Math.toRadians(90)),Math.toRadians(90))
-                .turn(Math.toRadians(-45))
-                //.turn(Math.toRadians(45))
-                //.strafeTo(new Vector2d(inX + 2, inY+4))
-                //go back
-                .setTangent(Math.toRadians(-90))
-                //.splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(125)),Math.toRadians(-135))
-                //.setTangent(Math.toRadians(180))
-                //go to shoot
-                .splineToLinearHeading(new Pose2d(shootX, shootY,  Math.toRadians(shootYaw)), Math.toRadians(180)) //go into
-                .waitSeconds(3) //to shoot
+                //3rd. intake balls from red alliance human player side
+                myBot.getDrive().actionBuilder(shootPose)
+                        .setTangent(Math.toRadians(0))
+                        //go to intake the 3rd set of balls
+                        .splineToSplineHeading(new Pose2d(turnX2-2, turnY2-15, Math.toRadians(250)),Math.toRadians(-50))
+                        //strafe forwards to intake
+                        .splineToLinearHeading(new Pose2d(inX, inY, Math.toRadians(-90)),Math.toRadians(-90))
+                        //go back
+                        .splineToSplineHeading(new Pose2d(turnX2, turnY2-18, Math.toRadians(240)),Math.toRadians(125))
+                        //go to shoot
+                        .splineToLinearHeading(shootPose, Math.toRadians(180)) //go into
+                        .build(),
 
-                .setTangent(Math.toRadians(0))
-                //go to intake the 3rd set of balls
-                .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(90)),Math.toRadians(0))
-                //strafe forwards to intake
-                .setTangent(Math.toRadians(45))
-                .splineToLinearHeading(new Pose2d(inX, inY, Math.toRadians(90)),Math.toRadians(90))
-                .turn(Math.toRadians(-45))
-                //.turn(Math.toRadians(45))
-                //.strafeTo(new Vector2d(inX + 2, inY+4))
-                //go back
-                .setTangent(Math.toRadians(-90))
-                //.splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(125)),Math.toRadians(-135))
-                //.setTangent(Math.toRadians(180))
-                //go to shoot
-                .splineToLinearHeading(new Pose2d(shootX, shootY,  Math.toRadians(shootYaw)), Math.toRadians(180)) //go into
-                .waitSeconds(3) //to shoot
-
-                .setTangent(Math.toRadians(0))
-                //go to intake the 3rd set of balls
-                .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(90)),Math.toRadians(0))
-                //strafe forwards to intake
-                .setTangent(Math.toRadians(45))
-                .splineToLinearHeading(new Pose2d(inX, inY, Math.toRadians(90)),Math.toRadians(90))
-                .turn(Math.toRadians(-45))
-                //.turn(Math.toRadians(45))
-                //.strafeTo(new Vector2d(inX + 2, inY+4))
-                //go back
-                .setTangent(Math.toRadians(-90))
-                //.splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(125)),Math.toRadians(-135))
-                //.setTangent(Math.toRadians(180))
-                //go to shoot
-                .splineToLinearHeading(new Pose2d(shootX, shootY,  Math.toRadians(shootYaw)), Math.toRadians(180)) //go into
-                .waitSeconds(3) //to shoot
-
+                //4th set of artifacts
+                myBot.getDrive().actionBuilder(shootPose)
+                        .setTangent(Math.toRadians(0))
+                        //go to intake the 3rd set of balls
+                        .splineToSplineHeading(new Pose2d(turnX2-2, turnY2-15, Math.toRadians(250)),Math.toRadians(-50))
+                        //strafe forwards to intake
+                        .splineToLinearHeading(new Pose2d(inX, inY, Math.toRadians(-90)),Math.toRadians(-90))
+                        //go back
+                        .splineToSplineHeading(new Pose2d(turnX2, turnY2-18, Math.toRadians(240)),Math.toRadians(125))
+                        //go to shoot
+                        .splineToLinearHeading(shootPose, Math.toRadians(180)) //go into
+                        .build()
+                )
+        );
                 /*
                 //----------------------------------------------------------------------------------
                 // We want to travel CLOCKWISE, so start tangent is "down" (-90° / 270°)
@@ -176,7 +169,7 @@ public class MeepMeepTestingFAR {
                 //.strafeTo(new Vector2d(-11, 52))
                 //.setTangent(Math.toRadians(225))
                  */
-                .build());
+//                .build());
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_OFFICIAL)
                 .setDarkMode(true)
