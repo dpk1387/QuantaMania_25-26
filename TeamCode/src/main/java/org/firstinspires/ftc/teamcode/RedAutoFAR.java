@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.Time;
 import com.acmerobotics.roadrunner.ftc.Actions;
 
@@ -278,7 +279,7 @@ public class RedAutoFAR extends LinearOpMode {
         telemetry.update();
 
         //start from the launch line
-        Pose2d startPose = new Pose2d(61, 11, Math.toRadians(180));
+        Pose2d startPose = new Pose2d(58, 13, Math.toRadians(135));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
 
         initMotors();
@@ -318,23 +319,19 @@ public class RedAutoFAR extends LinearOpMode {
         //initialize shooting position on field
         //double shootX = -9, shootY = 11, shootYaw = 132;//135;
         double shootX = -13.5, shootY = 13, shootYaw = 135;
-        //double shootX = 46, shootY = 10, shootYaw = 150;
-        //intake the set of balls closest to the right
-        //double intakeX = 35, intakeY = 30, intakeYaw = 90;
-        //double pastIntakeY = 62; //this y value is up higher, closer to the goal
 
         //shooting position
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(shootYaw));
-        double inX = 58, inY = 58;
-        double turnX = inX - 8, turnY = 11;
-        Pose2d intakePose = new Pose2d(inX, inY, Math.toRadians(90));//
+        double inX = 58, inY = 55;
+        double turnX = inX - 10, turnY = 30;
+        double turnX2 = inX - 8, turnY2 = 16;
         try {
             Actions.runBlocking(
                     new SequentialAction(
                             startShooter(),
                             //1. Go to shooting place
                             drive.actionBuilder(startPose)
-                                    .splineToLinearHeading(shootPose, Math.toRadians(180))
+                                    .strafeTo(new Vector2d(shootX, shootY))
                                     .build(),
                             shootAll(), //shoot
                             closeGate(), //make sure the gate is actually closed
@@ -342,19 +339,15 @@ public class RedAutoFAR extends LinearOpMode {
                             //2nd set of balls
                             startIntake(1.0, 0.3, 0),
                             drive.actionBuilder(shootPose)
-                                    .setTangent(Math.toRadians(0))
+                                    .setTangent(Math.toRadians(5))
                                     //go to intake the 3rd set of balls
-                                    .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(90)), Math.toRadians(0))
+                                    .splineToLinearHeading(new Pose2d(turnX-6, turnY-3, Math.toRadians(104)), Math.toRadians(27))
                                     //strafe forwards to intake
-                                    .splineToLinearHeading(new Pose2d(inX, inY, Math.toRadians(90)), Math.toRadians(90))
-                                    .turn(Math.toRadians(-45))
-                                    //.turn(Math.toRadians(45))
-                                    //.strafeTo(new Vector2d(inX + 2, inY+4))
+                                    .splineToSplineHeading(new Pose2d(inX, inY, Math.toRadians(90)), Math.toRadians(90))
                                     //go back
-                                    .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(90)),Math.toRadians(-90))
-                                    .setTangent(Math.toRadians(180))
+                                    .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(90)),Math.toRadians(-150))
                                     //go to shoot
-                                    .splineToLinearHeading(new Pose2d(shootX, shootY, Math.toRadians(shootYaw)), Math.toRadians(180)) //go into
+                                    .splineToSplineHeading(shootPose, Math.toRadians(195)) //go into
                                     .build(),
                             //startShooter(),
                             shootAll(), //shoot
@@ -365,17 +358,12 @@ public class RedAutoFAR extends LinearOpMode {
                             drive.actionBuilder(shootPose)
                                     .setTangent(Math.toRadians(0))
                                     //go to intake the 3rd set of balls
-                                    .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(135)), Math.toRadians(0))
+                                    .splineToLinearHeading(new Pose2d(turnX2-2, turnY2+15, Math.toRadians(110)), Math.toRadians(50))
                                     //strafe forwards to intake
                                     .splineToLinearHeading(new Pose2d(inX, inY, Math.toRadians(90)), Math.toRadians(90))
-                                    .turn(Math.toRadians(-45))
-                                    //.turn(Math.toRadians(45))
-                                    //.strafeTo(new Vector2d(inX + 2, inY+4))
                                     //go back
-                                    .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(135)),Math.toRadians(-90))
-                                    .setTangent(Math.toRadians(180))
-                                    //go to shoot
-                                    .splineToLinearHeading(new Pose2d(shootX, shootY, Math.toRadians(shootYaw)), Math.toRadians(180)) //go into
+                                    .splineToLinearHeading(new Pose2d(turnX2, turnY2+18, Math.toRadians(90)), Math.toRadians(235))
+                                    .splineToLinearHeading(shootPose, Math.toRadians(180)) //go into
                                     .build(),
                             shootAll(), //shoot
                             closeGate(),
@@ -385,14 +373,11 @@ public class RedAutoFAR extends LinearOpMode {
                             drive.actionBuilder(shootPose)
                                     .setTangent(Math.toRadians(0))
                                     //go to intake the 3rd set of balls
-                                    .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(135)), Math.toRadians(0))
+                                    .splineToLinearHeading(new Pose2d(turnX2-2, turnY2+15, Math.toRadians(110)), Math.toRadians(50))
                                     //strafe forwards to intake
                                     .splineToLinearHeading(new Pose2d(inX, inY, Math.toRadians(90)), Math.toRadians(90))
-                                    .turn(Math.toRadians(-45))
-                                    //.turn(Math.toRadians(45))
-                                    //.strafeTo(new Vector2d(inX + 2, inY+4))
                                     //go back
-                                    .splineToLinearHeading(new Pose2d(turnX, turnY, Math.toRadians(135)),Math.toRadians(-90))
+                                    .splineToLinearHeading(new Pose2d(turnX2, turnY2+18, Math.toRadians(90)),Math.toRadians(235))
                                     .setTangent(Math.toRadians(180))
                                     //go to shoot
                                     .splineToLinearHeading(new Pose2d(shootX, shootY, Math.toRadians(shootYaw)), Math.toRadians(180)) //go into

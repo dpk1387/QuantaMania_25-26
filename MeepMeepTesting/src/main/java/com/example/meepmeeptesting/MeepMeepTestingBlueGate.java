@@ -17,14 +17,14 @@ public class MeepMeepTestingBlueGate {
                 //.setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .setConstraints(55, 55, Math.toRadians(180), Math.toRadians(180), 15)//55 speed here 70 in real robot (roadrunner)
                 .build();
+
         double shootX = -28, shootY = -28, shootYaw = Math.toRadians(-135);
         Pose2d shootPose = new Pose2d(shootX, shootY, shootYaw);
         double newShootX = -16, newShootY = -16; //-22, -22
         Pose2d newShootPose = new Pose2d(newShootX, newShootY, Math.toRadians(-135));
+
         Pose2d startPose = new Pose2d(-54, -54, Math.toRadians(-135));
         Pose2d classifierPose = new Pose2d(7.5, -64, Math.toRadians(-120));
-        double readyX = 4, readyY = -30, readyYaw = Math.toRadians(-45);
-        Pose2d readyPose = new Pose2d(readyX, readyY, readyYaw);
 
         myBot.runAction(myBot.getDrive().actionBuilder(startPose)
 //                         preloads
@@ -33,49 +33,33 @@ public class MeepMeepTestingBlueGate {
                         .waitSeconds(2) //to shoot
 
 //                      middle row of artifacts
-//                        .setTangent(Math.toRadians(-15))
-//                        .splineToSplineHeading(new Pose2d(8, -34,  Math.toRadians(-95)), Math.toRadians(-80)) //go into
-//                        .splineToLinearHeading(new Pose2d(4, -62,  Math.toRadians(-110)), Math.toRadians(-95)) //go into
-//                        .setTangent(Math.toRadians(90))
-//                        .splineToSplineHeading(new Pose2d(readyX-6, readyY-2, shootYaw), Math.toRadians(135)) //go into
-//                        .splineToLinearHeading(shootPose, Math.toRadians(200)) //go into
-                        .setTangent(Math.toRadians(-5))
-                        .splineToSplineHeading(new Pose2d(10, -58, Math.toRadians(-110)), Math.toRadians(-110))
-
-                        .setTangent(Math.toRadians(100))
+                        .setTangent(Math.toRadians(-32))
+                        .splineToSplineHeading(new Pose2d(12, -42, Math.toRadians(270)), Math.toRadians(-90))
                         .splineToLinearHeading(newShootPose, Math.toRadians(160))
                         .waitSeconds(2)
 
 //                        // classifier artifacts (1)
-                        .setTangent(Math.toRadians(-5))
-                        .splineToLinearHeading(classifierPose, Math.toRadians(-80))
-//                        .splineToSplineHeading(new Pose2d(readyX, readyY-6, Math.toRadians(-120)), Math.toRadians(-55)) //-95 //go into
-//                        .splineToConstantHeading(new Vector2d(7.5,-64), Math.toRadians(-60))
+                        .setTangent(Math.toRadians(-25))
+                        .splineToLinearHeading(classifierPose, Math.toRadians(-85))
                         .waitSeconds(1.5)
 
-                        .setTangent(Math.toRadians(100)) //75, -95
-                        .splineToLinearHeading(newShootPose, Math.toRadians(160))
-//                        .splineToSplineHeading(new Pose2d(readyX-4, readyY-4, shootYaw), Math.toRadians(135))
-//                        .splineToConstantHeading(new Vector2d(shootX, shootY), Math.toRadians(200))
+                        .setTangent(Math.toRadians(95)) //75, -95
+                        .splineToLinearHeading(newShootPose, Math.toRadians(155))
                         .waitSeconds(2)
 
                         // classifier artifacts (2)
-                        .setTangent(Math.toRadians(-5))
-                        .splineToLinearHeading(classifierPose, Math.toRadians(-80))
-//                        .splineToSplineHeading(new Pose2d(readyX, readyY-6, Math.toRadians(-120)), Math.toRadians(-55)) //-95 //go into
-//                        .splineToConstantHeading(new Vector2d(7.5,-64), Math.toRadians(-60))
+                        .setTangent(Math.toRadians(-25))
+                        .splineToLinearHeading(classifierPose, Math.toRadians(-85))
                         .waitSeconds(1.5)
 
-                        .setTangent(Math.toRadians(-100))
-                        .splineToLinearHeading(newShootPose, Math.toRadians(160))
+                        .setTangent(Math.toRadians(95))
+                        .splineToLinearHeading(newShootPose, Math.toRadians(155))
                         .waitSeconds(2)
 
                         // first line of artifacts
-                        .setTangent(Math.toRadians(-45))
-                        //.splineToSplineHeading(new Pose2d(-22, -37,  Math.toRadians(-45)), Math.toRadians(-45)) //go into
-                        .splineToLinearHeading(new Pose2d(-11, -54,  Math.toRadians(-95)), Math.toRadians(-80)) //go into
-                        .setTangent(Math.toRadians(90))
-                        .splineToLinearHeading(shootPose, Math.toRadians(-225)) //go into
+                        .setTangent(Math.toRadians(-60))
+                        .splineToLinearHeading(new Pose2d(-12,-44,  Math.toRadians(270)), Math.toRadians(-100)) //go into
+                        .splineToSplineHeading(shootPose, Math.toRadians(135)) //go into
                         .waitSeconds(2)
                         .build()
         );
