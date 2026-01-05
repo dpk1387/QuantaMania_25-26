@@ -24,12 +24,12 @@ public class MeepMeepTestingBlueGate {
         Pose2d newShootPose = new Pose2d(newShootX, newShootY, Math.toRadians(-135));
 
         Pose2d startPose = new Pose2d(-54, -54, Math.toRadians(-135));
-        Pose2d classifierPose = new Pose2d(7.5, -64, Math.toRadians(-120));
+        Pose2d classifierPose = new Pose2d(7.5, -60, Math.toRadians(-120));
 
         myBot.runAction(myBot.getDrive().actionBuilder(startPose)
                 //indent starts here
-//                         preloads
-//                         .strafeTo(new Vector2d(newShootX, newShootY))
+//              preloads
+                .strafeTo(new Vector2d(newShootX, newShootY))
 
                 .waitSeconds(2) //to shoot
 
@@ -58,8 +58,8 @@ public class MeepMeepTestingBlueGate {
                 .waitSeconds(2)
 
                 // first line of artifacts
-                .setTangent(Math.toRadians(-60))
-                .splineToLinearHeading(new Pose2d(-12,-44,  Math.toRadians(270)), Math.toRadians(-100)) //go into
+                .setTangent(Math.toRadians(-45)) //-60
+                .splineToLinearHeading(new Pose2d(-12,-44,  Math.toRadians(270)), Math.toRadians(-80)) //-100
                 .splineToSplineHeading(shootPose, Math.toRadians(135)) //go into
                 .waitSeconds(2)
                 .build()
