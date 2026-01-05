@@ -27,41 +27,42 @@ public class MeepMeepTestingBlueGate {
         Pose2d classifierPose = new Pose2d(7.5, -64, Math.toRadians(-120));
 
         myBot.runAction(myBot.getDrive().actionBuilder(startPose)
+                //indent starts here
 //                         preloads
-                        .strafeTo(new Vector2d(newShootX, newShootY))
+//                         .strafeTo(new Vector2d(newShootX, newShootY))
 
-                        .waitSeconds(2) //to shoot
+                .waitSeconds(2) //to shoot
 
 //                      middle row of artifacts
-                        .setTangent(Math.toRadians(-32))
-                        .splineToSplineHeading(new Pose2d(12, -42, Math.toRadians(270)), Math.toRadians(-90))
-                        .splineToLinearHeading(newShootPose, Math.toRadians(160))
-                        .waitSeconds(2)
+                .setTangent(Math.toRadians(-32))
+                .splineToSplineHeading(new Pose2d(12, -42, Math.toRadians(270)), Math.toRadians(-90))
+                .splineToLinearHeading(newShootPose, Math.toRadians(160))
+                .waitSeconds(2)
 
 //                        // classifier artifacts (1)
-                        .setTangent(Math.toRadians(-25))
-                        .splineToLinearHeading(classifierPose, Math.toRadians(-85))
-                        .waitSeconds(1.5)
+                .setTangent(Math.toRadians(-25))
+                .splineToLinearHeading(classifierPose, Math.toRadians(-85))
+                .waitSeconds(1.5)
 
-                        .setTangent(Math.toRadians(95)) //75, -95
-                        .splineToLinearHeading(newShootPose, Math.toRadians(155))
-                        .waitSeconds(2)
+                .setTangent(Math.toRadians(95)) //75, -95
+                .splineToLinearHeading(newShootPose, Math.toRadians(155))
+                .waitSeconds(2)
 
-                        // classifier artifacts (2)
-                        .setTangent(Math.toRadians(-25))
-                        .splineToLinearHeading(classifierPose, Math.toRadians(-85))
-                        .waitSeconds(1.5)
+                // classifier artifacts (2)
+                .setTangent(Math.toRadians(-25))
+                .splineToLinearHeading(classifierPose, Math.toRadians(-85))
+                .waitSeconds(1.5)
 
-                        .setTangent(Math.toRadians(95))
-                        .splineToLinearHeading(newShootPose, Math.toRadians(155))
-                        .waitSeconds(2)
+                .setTangent(Math.toRadians(95))
+                .splineToLinearHeading(newShootPose, Math.toRadians(155))
+                .waitSeconds(2)
 
-                        // first line of artifacts
-                        .setTangent(Math.toRadians(-60))
-                        .splineToLinearHeading(new Pose2d(-12,-44,  Math.toRadians(270)), Math.toRadians(-100)) //go into
-                        .splineToSplineHeading(shootPose, Math.toRadians(135)) //go into
-                        .waitSeconds(2)
-                        .build()
+                // first line of artifacts
+                .setTangent(Math.toRadians(-60))
+                .splineToLinearHeading(new Pose2d(-12,-44,  Math.toRadians(270)), Math.toRadians(-100)) //go into
+                .splineToSplineHeading(shootPose, Math.toRadians(135)) //go into
+                .waitSeconds(2)
+                .build()
         );
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_OFFICIAL)
