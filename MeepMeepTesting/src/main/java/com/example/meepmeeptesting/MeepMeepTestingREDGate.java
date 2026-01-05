@@ -37,22 +37,23 @@ public class MeepMeepTestingREDGate {
                 //.turn(-Math.toRadians(100))
                 //.strafeTo(new Vector2d(-20, 40))
 
-                // MIDDLEROW OF ARTIFACTS
+                // MIDDLE ROW OF ARTIFACTS
                 .setTangent(Math.toRadians(5))
                 //.splineToLinearHeading(readyPose, Math.toRadians(-30))
                 //chatgpt suggestion:
 //                .splineToLinearHeading(new Pose2d (11, 38, Math.toRadians(90)), Math.toRadians(100))
 
                 //pick up
-                .splineToSplineHeading(new Pose2d(10, 58, Math.toRadians(110)), Math.toRadians(110)) //_, _,_, 95
+                //.splineToSplineHeading(new Pose2d(10, 56, Math.toRadians(110)), Math.toRadians(110)) //_, _,_, 95//
+                .splineToSplineHeading(new Pose2d(10+2, 56-7, Math.toRadians(90)), Math.toRadians(80)) // 80
 
                 //go back to shoot
-                .setTangent(Math.toRadians(-100))
+                //.setTangent(Math.toRadians(-100))
                 .splineToLinearHeading(newShootPose, Math.toRadians(-160))
                 .waitSeconds(2)
 
                 // classifier artifacts (1)
-                .setTangent(Math.toRadians(5))
+                .setTangent(Math.toRadians(2)) //5
                 .splineToLinearHeading(classifierPose, Math.toRadians(80))
                 .waitSeconds(1.5)
 
@@ -61,7 +62,7 @@ public class MeepMeepTestingREDGate {
                 .waitSeconds(2)
 
                 // classifier artifacts (2)
-                .setTangent(Math.toRadians(5))
+                .setTangent(Math.toRadians(2)) //5
                 .splineToLinearHeading(classifierPose, Math.toRadians(80))
                 .waitSeconds(1.5)
 
@@ -73,8 +74,10 @@ public class MeepMeepTestingREDGate {
 
                 .setTangent(Math.toRadians(45))
 //                .splineToLinearHeading(new Pose2d(-24, 38,  Math.toRadians(45)), Math.toRadians(45))
-                .splineToLinearHeading(new Pose2d(-11, 54,  Math.toRadians(90)), Math.toRadians(80))
-                .setTangent(Math.toRadians(-90))
+                //.splineToLinearHeading(new Pose2d(-11, 54,  Math.toRadians(90)), Math.toRadians(80))
+                .splineToSplineHeading(new Pose2d(-11, 54-5,  Math.toRadians(90)), Math.toRadians(90))
+
+                        //.setTangent(Math.toRadians(-90))
                 .splineToLinearHeading(shootPose, Math.toRadians(225)) //go into
                 .waitSeconds(2)
                 .build()
