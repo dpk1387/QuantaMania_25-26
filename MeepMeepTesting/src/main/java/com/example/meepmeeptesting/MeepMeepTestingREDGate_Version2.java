@@ -90,6 +90,9 @@ public class MeepMeepTestingREDGate_Version2 {
                         //go back to shooting
                         .splineToSplineHeading(shootPose, Math.toRadians(225)) //-135 //go into
                         .waitSeconds(2)
+
+                        //.splineToLinearHeading(new Pose2d(0, 32, Math.toRadians(120)), Math.toRadians(-135)) //200
+                        .strafeTo(new Vector2d(-5, 32))
                         .build()
         );
 

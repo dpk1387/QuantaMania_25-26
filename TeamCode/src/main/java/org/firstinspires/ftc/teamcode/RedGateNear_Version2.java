@@ -350,7 +350,7 @@ public class RedGateNear_Version2 extends LinearOpMode {
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(135));
         Pose2d newShootPose = new Pose2d(newShootX, newShootY, Math.toRadians(135));
 
-        Pose2d classifierPose = new Pose2d(7.5, 64,  Math.toRadians(120)); //120
+        Pose2d classifierPose = new Pose2d(7.5, 64,  Math.toRadians(115)); //120
 
         while (opModeIsActive()){
             try {
@@ -379,7 +379,10 @@ public class RedGateNear_Version2 extends LinearOpMode {
                                         //go to shoot
 
                                         //.setTangent(Math.toRadians(-100))
-                                        .splineToLinearHeading(new Pose2d(0, 34, Math.toRadians(120)), Math.toRadians(-135)) //200
+
+                                        //ROBOT PAUSES HERE (?)
+                                        //was .splineToLinearHeading before
+                                        .splineToSplineHeading(new Pose2d(0, 34, Math.toRadians(120)), Math.toRadians(225)) //200
                                         .splineToLinearHeading(newShootPose, Math.toRadians(-170)) //-160, -200
                                         .build(),
                                 shootAll(), //shoot balls
