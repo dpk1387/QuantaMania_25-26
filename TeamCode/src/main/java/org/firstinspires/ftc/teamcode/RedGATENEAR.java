@@ -12,7 +12,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
-import com.acmerobotics.roadrunner.ftc.Actions;
+import com.acmerobotics.roadrunner.Actions;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -55,7 +55,7 @@ public class RedGATENEAR extends LinearOpMode {
     final private double OPENSHOOTER_CLOSED = 1.0; // OPENSHOOTER_OPEN + 28//0.55
     final private double CAMERASERVO_HIGH = 0.55;
     final private double CAMERASERVO_LOW = 0.68;
-    final private double SHOOTER_VELOCITY = 2100; //2100 //2200 //2150
+    final private double SHOOTER_VELOCITY = 2150; //4000//4200;//4800;//5000;
     /* INIT */
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
     private static final int DESIRED_TAG_ID = 24;//RED //20;//BLUE//24;// -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
@@ -297,7 +297,7 @@ public class RedGATENEAR extends LinearOpMode {
                 // Optionally log something
                 packet.put("intake Delay", "");
                 // Fire three balls in sequence (blocking, similar to SleepAction(3))
-                sleep(1000); //1500
+                sleep(1500);
 
                 initialized = true;
             }
@@ -347,98 +347,113 @@ public class RedGATENEAR extends LinearOpMode {
         runtime.reset();
         telemetryThread.start();
         double shootX = -28, shootY = 28; //30, 30
-        double newShootX = -23, newShootY = 23; //-16, 16 //-13, 13
+        double newShootX = -16, newShootY = 16; //-13, 13
+
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(135));
         Pose2d newShootPose = new Pose2d(newShootX, newShootY, Math.toRadians(135));
 
-        Pose2d classifierPose = new Pose2d(7.5, 64,  Math.toRadians(120)); //120
+        Pose2d classifierPose = new Pose2d(9.5, 62,  Math.toRadians(115)); //120
+        Pose2d readyPose = new Pose2d(0, 30, Math.toRadians(135));
+        try {
+            Actions.runBlocking(
+                    new SequentialAction(
+                            startShooter(),
+                            startIntake(1.0, 0.3),
+                            //go to shooting place
+                            drive.actionBuilder(startPose)
+                                    .strafeTo(new Vector2d(shootX, shootY))
+                                    .build(),
+                            shooterWait(), //let shooter accelerate
+                            shootAll(), //shoot 3 balls
+                            closeGate(),
+                            startIntake(1.0, 0.3), //start intake
 
-        while (opModeIsActive()){
-            try {
-                Actions.runBlocking(
-                        new SequentialAction(
-                                startShooter(),
-                                startIntake(1.0, 0.3),
-                                //go to shooting place
-                                drive.actionBuilder(startPose)
-                                        .strafeTo(new Vector2d(newShootX, newShootY))
-                                        .build(),
-                                shooterWait(), //let shooter accelerate
-                                shootAll(), //shoot 3 balls
-                                closeGate(),
-                                startIntake(1.0, 0.3), //start intake
+                            //get the middle row balls
+                            drive.actionBuilder(shootPose)
+                                    .setTangent(Math.toRadians(-5)) //15
+                                    //go to get 2nd set
+                                    //.splineToLinearHeading(new Pose2d(2, 38,  Math.toRadians(45)), Math.toRadians(30)) //go into
+                                    //intake them all and get
+//                                    .splineToLinearHeading(new Pose2d(4, 54 /*62*/,  Math.toRadians(110)), Math.toRadians(95)) //go into
+//                                    .setTangent(Math.toRadians(-100)) //-90
+                                    //.splineToLinearHeading(readyPose, Math.toRadians(200))
+//                                    .splineToLinearHeading(newShootPose, Math.toRadians(-160)) //go into
 
-                                //get the middle row balls
-                                drive.actionBuilder(shootPose)
-                                        .setTangent(Math.toRadians(-5))
-                                        .splineToSplineHeading(new Pose2d(10, 52, Math.toRadians(110)), Math.toRadians(110))
+                                    //UPDATE: FROM MEEPMEEP:
+                                    //go to intake balls and clear classifier
+                                    .splineToSplineHeading(new Pose2d(10, 52, Math.toRadians(110)), Math.toRadians(110)) //_, _,_, 95
 
+                                    //go to shoot
+                                    .setTangent(Math.toRadians(-100))
+                                    .splineToLinearHeading(newShootPose, Math.toRadians(-160))
+                                    .build(),
 
-                                        //.setTangent(Math.toRadians(32)) //15
-                                        //go to intake balls
-                                        //.splineToSplineHeading(new Pose2d(12, 42, Math.toRadians(90)), Math.toRadians(90)) //_, _,_, 95
-                                        //go to shoot
+                            shootAll(), //shoot balls
+                            closeGate(),
+                            startIntake(1.0, 0.3),
 
-                                        .setTangent(Math.toRadians(-100))
-                                        .splineToLinearHeading(newShootPose, Math.toRadians(-160)) //200
-                                        .build(),
-                                shootAll(), //shoot balls
-                                closeGate(),
-                                startIntake(1.0, 0.3),
+                            //INTAKING FROM CLASSIFIER
+                            //----------FIRST TIME
+                            //get balls from classifier
+                            drive.actionBuilder(newShootPose)
+                                    .setTangent(Math.toRadians(5)) //15
+                                    .splineToLinearHeading(classifierPose, Math.toRadians(80)) //95 //go into
+//                                    .setTangent(Math.toRadians(-90))
+//                                    .splineToLinearHeading(shootPose, Math.toRadians(200)) //go into
+                                    .build(),
+                            //wait at the classifier to intake balls
+                            intakeWait(),
 
-                                //INTAKE FROM CLASSIFIER
-                                //----------FIRST TIME
-                                //get balls from classifier
-                                drive.actionBuilder(newShootPose)
-                                        .setTangent(Math.toRadians(5))
+                            //go to shoot
+                            drive.actionBuilder(classifierPose)
+                                    .setTangent(Math.toRadians(-100)) //-90
+                                    .splineToLinearHeading(newShootPose, Math.toRadians(-160)) //200 //go into
+                                    .build(),
+                            shootAll(), //shoot all
+                            closeGate(),
+                            startIntake(1.0, 0.3), //intake again if time
 
-                                        //.setTangent(Math.toRadians(25)) //15
-                                        .splineToLinearHeading(classifierPose, Math.toRadians(80)) //85 //95 //go into
-                                        .build(),
-                                //wait at the classifier to intake balls
-                                intakeWait(),
-                                //go to shoot
-                                drive.actionBuilder(classifierPose)
-                                        .setTangent(Math.toRadians(-100)) //-95 //-90
-                                        .splineToLinearHeading(newShootPose, Math.toRadians(-160)) //-155 //200 //go into
-                                        .build(),
-                                shootAll(), //shoot all
-                                closeGate(),
-                                startIntake(1.0, 0.3), //intake again if time
+                            //--------SECOND TIME
+                            drive.actionBuilder(newShootPose)
+                                    .setTangent(Math.toRadians(5)) //15
+                                    // .splineToLinearHeading(readyPose, Math.toRadians(135))
+                                    .splineToLinearHeading(classifierPose, Math.toRadians(80)) //95 //go into
+//                                    .setTangent(Math.toRadians(-90))
+//                                    .splineToLinearHeading(shootPose, Math.toRadians(200)) //go into
+                                    .build(),
+                            //wait at the classifier to intake balls
+                            intakeWait(),
+                            //go to shoot
+                            drive.actionBuilder(classifierPose)
+                                    //.splineToLinearHeading(readyPose, Math.toRadians(95))
+                                    .setTangent(Math.toRadians(-100)) //-90
+                                    .splineToLinearHeading(newShootPose, Math.toRadians(-160)) //200 //go into
+                                    .build(),
+                            shootAll(), //shoot all
+                            closeGate(),
+                            startIntake(1.0, 0.3), //intake again if time
 
-                                //--------SECOND TIME
-                                drive.actionBuilder(newShootPose)
-                                        .setTangent(Math.toRadians(5)) //25 //15
-                                        .splineToLinearHeading(classifierPose, Math.toRadians(80)) //85 //95 //go into
-                                        .build(),
-                                //wait at the classifier to intake balls
-                                intakeWait(),
-                                //go to shoot
-                                drive.actionBuilder(classifierPose)
-                                        .setTangent(Math.toRadians(-100)) //-95 //-90
-                                        .splineToLinearHeading(newShootPose, Math.toRadians(-160)) //-155 //200 //go into
-                                        .build(),
-                                shootAll(), //shoot all
-                                closeGate(),
-                                startIntake(1.0, 0.3), //intake again if time
+                            //get the inner most 3 balls
+                            drive.actionBuilder(newShootPose)
+                                    .setTangent(Math.toRadians(45))
+                                    //in front of stack
+                                    //.splineToLinearHeading(new Pose2d(-24, 38,  Math.toRadians(45)), Math.toRadians(45)) //go into
+                                    //intaking stack
+//                                    .splineToLinearHeading(new Pose2d(-6, 60,  Math.toRadians(95)), Math.toRadians(90)) //go into
+                                    //get first ball directly
+                                    .splineToLinearHeading(new Pose2d(-11, 54,  Math.toRadians(90)), Math.toRadians(80))
+                                    .setTangent(Math.toRadians(-90))
+                                    //go back to shooting
+                                    .splineToLinearHeading(shootPose, Math.toRadians(225)) //go into
+                                    .build(),
+                            shootAll(), //shoot 3 balls
+                            closeGate()
 
-                                //get the inner most 3 balls
-                                drive.actionBuilder(newShootPose)
-                                        .setTangent(Math.toRadians(45)) //60
-                                        //go into
-                                        //.splineToLinearHeading(new Pose2d(-12, 44,  Math.toRadians(90)), Math.toRadians(100))
-                                        .splineToLinearHeading(new Pose2d(-11, 56,  Math.toRadians(90)), Math.toRadians(80))
-                                        //go back to shooting
-                                        .splineToSplineHeading(shootPose, Math.toRadians(225)) //-135 //go into
-                                        .build(),
-                                shootAll(), //shoot 3 balls
-                                closeGate()
-                        )
-                );
-                telemetry.addData("Trajectory", "Executed Successfully");
-            } catch (Exception e) {
-                telemetry.addData("Error", e.getMessage());
-            }
+                            )
+            );
+            telemetry.addData("Trajectory", "Executed Successfully");
+        } catch (Exception e) {
+            telemetry.addData("Error", e.getMessage());
         }
     }
     private void initMotors(){
@@ -665,7 +680,7 @@ public class RedGATENEAR extends LinearOpMode {
     public void shootN(int count) {
         final double targetVel = SHOOTER_VELOCITY + 100; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
         final double dropMargin = 100;         // tune
-        final double recoverMargin = 75; //100;      // tune (smaller than dropMargin)
+        final double recoverMargin = 100; //100;      // tune (smaller than dropMargin)
         final double stage3FeedPower = 0.6;    // tune down if multiple balls sneak
         final double stage3HoldPower = 0.0;
 
@@ -697,7 +712,7 @@ public class RedGATENEAR extends LinearOpMode {
             //stage3.setPower(stage3HoldPower);
 
             // 4) Wait for recovery enough to avoid weak/overpowered 2nd/3rd shots
-            while (opModeIsActive() && shooter.getVelocity() < targetVel - recoverMargin) {
+            while (opModeIsActive() && shooter.getVelocity() >= targetVel - recoverMargin) {
                 telemetry.addData("Shooter Vel", "%5.2f", shooter.getVelocity());
                 telemetry.update();
                 sleep(loopSleepMs);
