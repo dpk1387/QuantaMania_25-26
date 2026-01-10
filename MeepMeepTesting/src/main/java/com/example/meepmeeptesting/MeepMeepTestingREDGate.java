@@ -20,67 +20,73 @@ public class MeepMeepTestingREDGate {
 
         //longer shot
         //shorter movement to classifier
-        double newShootX = -16, newShootY = 16; // -22, 22
+        double newShootX = -23, newShootY = 23; // -22, 22
         Pose2d newShootPose = new Pose2d(newShootX, newShootY, Math.toRadians(135));
 
         Pose2d startPose = new Pose2d(-54, 54, Math.toRadians(135));
-        Pose2d classifierPose = new Pose2d(7.5, 62, Math.toRadians(120));
+        Pose2d classifierPose = new Pose2d(7.5, 64, Math.toRadians(120));
 
         //not necessary
         Pose2d readyPose = new Pose2d(4, -30, Math.toRadians(-45));
 
         myBot.runAction(myBot.getDrive().actionBuilder(startPose)
-                //SHOOT PRELOADS
-                .strafeTo(new Vector2d(newShootX, newShootY))
-                .waitSeconds(2)
+                        //SHOOT PRELOADS
+                        .strafeTo(new Vector2d(newShootX, newShootY))
+                        .waitSeconds(2)
 
-                //.turn(-Math.toRadians(100))
-                //.strafeTo(new Vector2d(-20, 40))
+                        //.turn(-Math.toRadians(100))
+                        //.strafeTo(new Vector2d(-20, 40))
 
-                // MIDDLE ROW OF ARTIFACTS
-                .setTangent(Math.toRadians(5))
-                //.splineToLinearHeading(readyPose, Math.toRadians(-30))
-                //chatgpt suggestion:
-//                .splineToLinearHeading(new Pose2d (11, 38, Math.toRadians(90)), Math.toRadians(100))
+                        // MIDDLE ROW OF ARTIFACTS
+                        .setTangent(Math.toRadians(-3))
+//                .splineToSplineHeading(new Pose2d(12.4, 43, Math.toRadians(92)), Math.toRadians(90))
+                        .splineToLinearHeading(new Pose2d(7.5, 29, Math.toRadians(85)), Math.toRadians(50))
+                        .splineToSplineHeading(new Pose2d(11.5, 46, Math.toRadians(95)), Math.toRadians(90))
 
-                //pick up
-                //.splineToSplineHeading(new Pose2d(10, 56, Math.toRadians(110)), Math.toRadians(110)) //_, _,_, 95//
-                .splineToSplineHeading(new Pose2d(10+2, 56-7, Math.toRadians(90)), Math.toRadians(80)) // 80
 
-                //go back to shoot
-                //.setTangent(Math.toRadians(-100))
-                .splineToLinearHeading(newShootPose, Math.toRadians(-160))
-                .waitSeconds(2)
+                        //.setTangent(Math.toRadians(32)) //15
+                        //go to intake balls
+                        //.splineToSplineHeading(new Pose2d(12, 42, Math.toRadians(90)), Math.toRadians(90)) //_, _,_, 95
+                        //go to shoot
 
-                // classifier artifacts (1)
-                .setTangent(Math.toRadians(2)) //5
-                .splineToLinearHeading(classifierPose, Math.toRadians(80))
-                .waitSeconds(1.5)
+//                .setTangent(Math.toRadians(-100))
+                        .splineToLinearHeading(new Pose2d(0, 34, Math.toRadians(120)), Math.toRadians(-135)) //200
+                        .splineToSplineHeading(newShootPose, Math.toRadians(-170)) //200
+                        .waitSeconds(2)
 
-                .setTangent(Math.toRadians(-100))
-                .splineToLinearHeading(newShootPose, Math.toRadians(-160))
-                .waitSeconds(2)
+                        // classifier artifacts (1)
+                        .setTangent(Math.toRadians(5))
 
-                // classifier artifacts (2)
-                .setTangent(Math.toRadians(2)) //5
-                .splineToLinearHeading(classifierPose, Math.toRadians(80))
-                .waitSeconds(1.5)
+                        //.setTangent(Math.toRadians(25)) //15
+                        .splineToLinearHeading(classifierPose, Math.toRadians(95)) //85 //95 //go into
+                        .waitSeconds(1.5)
 
-                .setTangent(Math.toRadians(-100))
-                .splineToLinearHeading(newShootPose, Math.toRadians(-160))
-                .waitSeconds(2)
+                        .setTangent(Math.toRadians(-95)) //-95 //-90
+                        .splineToLinearHeading(newShootPose, Math.toRadians(-175)) //-155 //200 //go into
+                        .waitSeconds(2)
 
-                // first line of artifacts
+                        // classifier artifacts (2)
+                        .setTangent(Math.toRadians(5))
 
-                .setTangent(Math.toRadians(45))
-//                .splineToLinearHeading(new Pose2d(-24, 38,  Math.toRadians(45)), Math.toRadians(45))
-                //.splineToLinearHeading(new Pose2d(-11, 54,  Math.toRadians(90)), Math.toRadians(80))
-                .splineToSplineHeading(new Pose2d(-11, 54-5,  Math.toRadians(90)), Math.toRadians(90))
+                        //.setTangent(Math.toRadians(25)) //15
+                        .splineToLinearHeading(classifierPose, Math.toRadians(95)) //85 //95 //go into
+                        .waitSeconds(1.5)
 
-                        //.setTangent(Math.toRadians(-90))
-                .splineToLinearHeading(shootPose, Math.toRadians(225)) //go into
-                .waitSeconds(2)
-                .build()
+                        .setTangent(Math.toRadians(-95)) //-95 //-90
+                        .splineToLinearHeading(newShootPose, Math.toRadians(-175)) //-155 //200 //go into
+                        .waitSeconds(2)
+
+                        // first line of artifacts
+
+                        .setTangent(Math.toRadians(0)) //60
+                        //go into
+                        //.splineToLinearHeading(new Pose2d(-12, 44,  Math.toRadians(90)), Math.toRadians(100))
+                        .splineToSplineHeading(new Pose2d(-12, 36,  Math.toRadians(85)), Math.toRadians(85))
+                        .splineToLinearHeading(new Pose2d(-13.5, 48, Math.toRadians(100)), Math.toRadians(115))
+                        //go back to shooting
+                        .splineToSplineHeading(shootPose, Math.toRadians(225)) //-135 //go into
+                        .waitSeconds(2)
+                        .build()
         );
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_OFFICIAL)
