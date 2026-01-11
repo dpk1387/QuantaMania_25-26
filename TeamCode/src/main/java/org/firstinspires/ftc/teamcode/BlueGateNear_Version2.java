@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit;
 
 @Autonomous(name = "RedGateNear_Version 2", group = "Autonomous")
 @Config
-public class RedGateNear_Version2 extends LinearOpMode {
+public class BlueGateNear_Version2 extends LinearOpMode {
     /* HARDWARE */
     private DcMotorEx shooter = null;
     private DcMotor stage1 = null;
