@@ -37,7 +37,7 @@ import org.firstinspires.ftc.vision.opencv.ColorRange;
 
 import java.util.concurrent.TimeUnit;
 
-@Autonomous(name = "RedGateNear_Version 2", group = "Autonomous")
+@Autonomous(name = "BlueGateNear_Version 2", group = "Autonomous")
 @Config
 public class BlueGateNear_Version2 extends LinearOpMode {
     /* HARDWARE */
@@ -345,12 +345,12 @@ public class BlueGateNear_Version2 extends LinearOpMode {
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         runtime.reset();
         telemetryThread.start();
-        double shootX = -27.5, shootY = -27.5; //-28, 28 //30, 30
-        double newShootX = -22, newShootY = -22; //-21, 21 //-16, 16 //-13, 13
+        double shootX = -29, shootY = -29; //-29, -29 //-27.5, -27.5 //-28, 28 //30, 30
+        double newShootX =-25, newShootY = -25; //-24, -24 //-21, 21 //-16, 16 //-13, 13
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(-135));
         Pose2d newShootPose = new Pose2d(newShootX, newShootY, Math.toRadians(-135));
 
-        Pose2d classifierPose = new Pose2d(7.5+0.2, -64,  Math.toRadians(-(120-6))); //120
+        Pose2d classifierPose = new Pose2d(7.5+0.2, -64-1,  Math.toRadians(240)); //120
 
         while (opModeIsActive()){
             try {
@@ -371,7 +371,8 @@ public class BlueGateNear_Version2 extends LinearOpMode {
                                 drive.actionBuilder(shootPose)
                                         .setTangent(Math.toRadians(3)) // -5
                                         .splineToSplineHeading(new Pose2d(7.5, -29, Math.toRadians(-80)), Math.toRadians(-50))
-                                        .splineToLinearHeading(new Pose2d(5.5, -67.8, Math.toRadians(-110)), Math.toRadians(-108))
+                                        //                                                      -67.8
+                                        .splineToLinearHeading(new Pose2d(5.5, -60, Math.toRadians(-110)), Math.toRadians(-108))
                                         .setTangent(Math.toRadians(90))
                                         //.setTangent(Math.toRadians(32)) //15
                                         //go to intake balls

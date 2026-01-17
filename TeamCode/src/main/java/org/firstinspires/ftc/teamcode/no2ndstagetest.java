@@ -367,7 +367,7 @@ public class no2ndstagetest extends LinearOpMode
             lastYState = gamepad2.y;
             if(intakeMode){
                 //turn on intake power
-                stage1_power = 0.6;
+                stage1_power = 0.7;
 //                stage2_power = 0.3;//0.5;
                 stage3_power = 0.3;//0.5;
                 shooter.setPower(0.0);
@@ -417,7 +417,7 @@ public class no2ndstagetest extends LinearOpMode
 
         //3. set stage power
 //        stage1.setPower(1.0); //keep stage1 as intake
-        stage1.setPower(0.6);
+        stage1.setPower(0.7);
         sleep(100);
 //        stage2.setPower(-0.3); //use stage 2 as the second gate
         stage3.setPower(-0.3);
