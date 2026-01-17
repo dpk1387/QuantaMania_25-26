@@ -353,6 +353,8 @@ public class BlueGateNear_Version2 extends LinearOpMode {
         Pose2d classifierPose = new Pose2d(7.5+0.2, -64-1,  Math.toRadians(240)); //120
 
         while (opModeIsActive()){
+            telemetry.addData("Shooter Velocity", shooter.getVelocity());
+            telemetry.update();
             try {
                 Actions.runBlocking(
                         new SequentialAction(
