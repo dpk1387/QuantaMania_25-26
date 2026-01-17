@@ -346,7 +346,7 @@ public class RedGateNear_Version2 extends LinearOpMode {
         runtime.reset();
         telemetryThread.start();
         double shootX = -26.5, shootY = 26.5; //-28, 28 //30, 30
-        double newShootX = -21, newShootY = 21; //-21, 21 //-16, 16 //-13, 13
+        double newShootX = -24, newShootY = 24; //-23, 23 //-21, 21 //-16, 16 //-13, 13
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(135));
         Pose2d newShootPose = new Pose2d(newShootX, newShootY, Math.toRadians(135));
 
@@ -371,7 +371,8 @@ public class RedGateNear_Version2 extends LinearOpMode {
                                 drive.actionBuilder(shootPose)
                                         .setTangent(Math.toRadians(-3)) // -5
                                         .splineToSplineHeading(new Pose2d(7.5, 29, Math.toRadians(80)), Math.toRadians(50))
-                                        .splineToLinearHeading(new Pose2d(5.5, 67.8, Math.toRadians(110)), Math.toRadians(108))
+                                        //                                                      67.8
+                                        .splineToLinearHeading(new Pose2d(5.5, 55, Math.toRadians(110)), Math.toRadians(108))
                                         .setTangent(Math.toRadians(-90))
                                         //.setTangent(Math.toRadians(32)) //15
                                         //go to intake balls
