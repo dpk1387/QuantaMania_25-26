@@ -346,7 +346,7 @@ public class BlueGateNear_Version2 extends LinearOpMode {
         runtime.reset();
         telemetryThread.start();
         double shootX = -29, shootY = -29; //-29, -29 //-27.5, -27.5 //-28, 28 //30, 30
-        double newShootX =-26, newShootY = -26; //-24, -24 //-21, 21 //-16, 16 //-13, 13
+        double newShootX =-26.0, newShootY = -26; //-24, -24 //-21, 21 //-16, 16 //-13, 13
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(-135));
         Pose2d newShootPose = new Pose2d(newShootX, newShootY, Math.toRadians(-135));
 
