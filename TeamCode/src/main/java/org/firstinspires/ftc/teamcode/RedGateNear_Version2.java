@@ -370,7 +370,7 @@ public class RedGateNear_Version2 extends LinearOpMode {
                                 startIntake(1.0, 0.3), //start intake
 
                                 //get the middle row balls
-                                drive.actionBuilder(shootPose)
+                                drive.actionBuilder(newShootPose)
                                         .setTangent(Math.toRadians(-3)) // -5
                                         .splineToSplineHeading(new Pose2d(7.5, 29, Math.toRadians(80)), Math.toRadians(50))
                                         //                                                      67.8

@@ -54,7 +54,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
     final private double OPENSHOOTER_CLOSED = 1.0; // OPENSHOOTER_OPEN + 28//0.55
     final private double CAMERASERVO_HIGH = 0.55;
     final private double CAMERASERVO_LOW = 0.68;
-    final private double SHOOTER_VELOCITY = 1800; //2100 //2200 //2150
+    final private double SHOOTER_VELOCITY = 2400; //2100 //2200 //2150
     /* INIT */
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
     private static final int DESIRED_TAG_ID = 24;//RED //20;//BLUE//24;// -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
@@ -265,7 +265,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
 
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            long wait = 150 + 200;
+            long wait = 150 + 350;
             if (!initialized) {
                 // Optionally log something
                 packet.put("Delay", "");
@@ -346,7 +346,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
         runtime.reset();
         telemetryThread.start();
         double shootX = -29, shootY = -29; //-29, -29 //-27.5, -27.5 //-28, 28 //30, 30
-        double newShootX =-30, newShootY = -30; //-24, -24 //-21, 21 //-16, 16 //-13, 13
+        double newShootX = -30, newShootY = -30; //-24, -24 //-21, 21 //-16, 16 //-13, 13
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(-135));
         Pose2d newShootPose = new Pose2d(newShootX, newShootY, Math.toRadians(-135));
 
@@ -682,7 +682,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
         final double GATE_HOLD = OPENSHOOTER_CLOSED;   // you may want a slightly-open "hold" instead
         final double GATE_PULSE_OPEN = OPENSHOOTER_OPEN; // tune so 1 ball passes, not 2
 
-        final int pulseMs = 200;//130;              // tune: shorter = fewer double-feeds
+        final int pulseMs = 400;//130;              // tune: shorter = fewer double-feeds
         final int stableMs = 120;             // require speed stable before feeding next ball
         final int loopSleepMs = 15;
 
@@ -707,12 +707,12 @@ public class BlueGateNear_Version3 extends LinearOpMode {
             //stage3.setPower(stage3HoldPower);
 
             // 4) Wait for recovery enough to avoid weak/overpowered 2nd/3rd shots
-            while (opModeIsActive() && shooter.getVelocity() < targetVel - recoverMargin) {
-                telemetry.addData("Shooter Vel", "%5.2f", shooter.getVelocity());
-                telemetry.update();
-                sleep(loopSleepMs);
-                idle();
-            }
+//            while (opModeIsActive() && shooter.getVelocity() < targetVel - recoverMargin) {
+//                telemetry.addData("Shooter Vel", "%5.2f", shooter.getVelocity());
+//                telemetry.update();
+//                sleep(loopSleepMs);
+//                idle();
+//            }
         }
 
         // Stop / reset
