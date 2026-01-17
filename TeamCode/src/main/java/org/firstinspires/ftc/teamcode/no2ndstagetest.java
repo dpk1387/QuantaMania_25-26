@@ -170,7 +170,7 @@ public class no2ndstagetest extends LinearOpMode
             desired_x = -32; desired_y =  32; desired_yaw =  135; //corresonpindng do DESIRED DISTANCE 50 -- NEED TO CHeck the yaw
             latch_x = 0; latch_y = 46; latch_yaw = 90; //0, 50, 90
             park_x = 38.5; park_y = -35; park_yaw = 90;
-        } else {
+        } else if (DESIRED_TAG_ID == 20){
             //desired_x = -30; desired_y = -30; desired_yaw = 135;
             desired_x = -32; desired_y = -32; desired_yaw = 225;
             latch_x = 0; latch_y = -46; latch_yaw = -90; //0, 50
