@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit;
 
 @Autonomous(name = "RedGateNear_Version 2", group = "Autonomous")
 @Config
-public class RedGateNear_Version2 extends LinearOpMode {
+public class BlueGateNear_Version2 extends LinearOpMode {
     /* HARDWARE */
     private DcMotorEx shooter = null;
     private DcMotor stage1 = null;
@@ -318,7 +318,7 @@ public class RedGateNear_Version2 extends LinearOpMode {
         telemetry.update();
         telemetry.update();
 
-        Pose2d startPose = new Pose2d(-54, 54, Math.toRadians(135));
+        Pose2d startPose = new Pose2d(-54, -54, Math.toRadians(-135));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
 
         initMotors();
@@ -345,12 +345,12 @@ public class RedGateNear_Version2 extends LinearOpMode {
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         runtime.reset();
         telemetryThread.start();
-        double shootX = -26.5, shootY = 26.5; //-28, 28 //30, 30
-        double newShootX = -21, newShootY = 21; //-21, 21 //-16, 16 //-13, 13
-        Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(135));
-        Pose2d newShootPose = new Pose2d(newShootX, newShootY, Math.toRadians(135));
+        double shootX = -27.5, shootY = -27.5; //-28, 28 //30, 30
+        double newShootX = -22, newShootY = -22; //-21, 21 //-16, 16 //-13, 13
+        Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(-135));
+        Pose2d newShootPose = new Pose2d(newShootX, newShootY, Math.toRadians(-135));
 
-        Pose2d classifierPose = new Pose2d(7.5+0.2, 64,  Math.toRadians(120-6)); //120
+        Pose2d classifierPose = new Pose2d(7.5+0.2, -64,  Math.toRadians(-(120-6))); //120
 
         while (opModeIsActive()){
             try {
@@ -369,10 +369,10 @@ public class RedGateNear_Version2 extends LinearOpMode {
 
                                 //get the middle row balls
                                 drive.actionBuilder(shootPose)
-                                        .setTangent(Math.toRadians(-3)) // -5
-                                        .splineToSplineHeading(new Pose2d(7.5, 29, Math.toRadians(80)), Math.toRadians(50))
-                                        .splineToLinearHeading(new Pose2d(5.5, 67.8, Math.toRadians(110)), Math.toRadians(108))
-                                        .setTangent(Math.toRadians(-90))
+                                        .setTangent(Math.toRadians(3)) // -5
+                                        .splineToSplineHeading(new Pose2d(7.5, -29, Math.toRadians(-80)), Math.toRadians(-50))
+                                        .splineToLinearHeading(new Pose2d(5.5, -67.8, Math.toRadians(-110)), Math.toRadians(-108))
+                                        .setTangent(Math.toRadians(90))
                                         //.setTangent(Math.toRadians(32)) //15
                                         //go to intake balls
                                         //.splineToSplineHeading(new Pose2d(12, 42, Math.toRadians(90)), Math.toRadians(90)) //_, _,_, 95
@@ -380,8 +380,8 @@ public class RedGateNear_Version2 extends LinearOpMode {
                                         //go to shoot
 
                                         //.setTangent(Math.toRadians(-100))
-                                        .splineToSplineHeading(new Pose2d(0, 31, Math.toRadians(120)), Math.toRadians(-135)) //200
-                                        .splineToLinearHeading(newShootPose, Math.toRadians(-170)) //-160, -200
+                                        .splineToSplineHeading(new Pose2d(0, -31, Math.toRadians(-120)), Math.toRadians(135)) //200
+                                        .splineToLinearHeading(newShootPose, Math.toRadians(170)) //-160, -200
                                         .build(),
                                 shootAll(), //shoot balls
                                 closeGate(),
@@ -391,17 +391,17 @@ public class RedGateNear_Version2 extends LinearOpMode {
                                 //----------FIRST TIME
                                 //get balls from classifier
                                 drive.actionBuilder(newShootPose)
-                                        .setTangent(Math.toRadians(15))
+                                        .setTangent(Math.toRadians(-15))
 
                                         //.setTangent(Math.toRadians(25)) //15
-                                        .splineToLinearHeading(classifierPose, Math.toRadians(95)) //80 //85 //95 //go into
+                                        .splineToLinearHeading(classifierPose, Math.toRadians(-95)) //80 //85 //95 //go into
                                         .build(),
                                 //wait at the classifier to intake balls
                                 intakeWait(),
                                 //go to shoot
                                 drive.actionBuilder(classifierPose)
-                                        .setTangent(Math.toRadians(-95)) //-100 //-90
-                                        .splineToLinearHeading(newShootPose, Math.toRadians(-175)) //-160 //-155 //200 //go into
+                                        .setTangent(Math.toRadians(95)) //-100 //-90
+                                        .splineToLinearHeading(newShootPose, Math.toRadians(175)) //-160 //-155 //200 //go into
                                         .build(),
                                 shootAll(), //shoot all
                                 closeGate(),
@@ -409,15 +409,15 @@ public class RedGateNear_Version2 extends LinearOpMode {
 
                                 //--------SECOND TIME
                                 drive.actionBuilder(newShootPose)
-                                        .setTangent(Math.toRadians(15)) //25 //15
-                                        .splineToLinearHeading(classifierPose, Math.toRadians(95)) //85 //95 //go into
+                                        .setTangent(Math.toRadians(-15)) //25 //15
+                                        .splineToLinearHeading(classifierPose, Math.toRadians(-95)) //85 //95 //go into
                                         .build(),
                                 //wait at the classifier to intake balls
                                 intakeWait(),
                                 //go to shoot
                                 drive.actionBuilder(classifierPose)
-                                        .setTangent(Math.toRadians(-95)) //-95 //-90
-                                        .splineToLinearHeading(newShootPose, Math.toRadians(-175)) //-155 //200 //go into
+                                        .setTangent(Math.toRadians(95)) //-95 //-90
+                                        .splineToLinearHeading(newShootPose, Math.toRadians(175)) //-155 //200 //go into
                                         .build(),
                                 shootAll(), //shoot all
                                 closeGate(),
@@ -429,18 +429,18 @@ public class RedGateNear_Version2 extends LinearOpMode {
                                         //go into
                                         //.splineToLinearHeading(new Pose2d(-12, 44,  Math.toRadians(90)), Math.toRadians(100))
                                         //.splineToLinearHeading(new Pose2d(-11, 56,  Math.toRadians(90)), Math.toRadians(80))
-                                        .splineToSplineHeading(new Pose2d(-12, 36,  Math.toRadians(85)), Math.toRadians(85))
-                                        .splineToLinearHeading(new Pose2d(-13.5, 48, Math.toRadians(100)), Math.toRadians(115))
+                                        .splineToSplineHeading(new Pose2d(-12, -36,  Math.toRadians(-85)), Math.toRadians(-85))
+                                        .splineToLinearHeading(new Pose2d(-13.5, -48, Math.toRadians(-100)), Math.toRadians(-115))
 
                                         //go back to shooting
-                                        .splineToSplineHeading(shootPose, Math.toRadians(225)) //-135 //go into
+                                        .splineToSplineHeading(shootPose, Math.toRadians(-225)) //-135 //go into
                                         .build(),
                                 shootAll(), //shoot 3 balls
                                 closeGate(),
 
                                 //get out of launch zone
                                 drive.actionBuilder(shootPose)
-                                        .strafeTo(new Vector2d(-5, 32))
+                                        .strafeTo(new Vector2d(-5, -32))
                                         .build()
                         )
                 );

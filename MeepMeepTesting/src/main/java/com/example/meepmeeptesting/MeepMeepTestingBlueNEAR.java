@@ -25,7 +25,7 @@ public class MeepMeepTestingBlueNEAR {
                 //.turn(-Math.toRadians(100))
                 //.strafeTo(new Vector2d(-20, 40))
                 .setTangent(Math.toRadians(-45))
-                .splineToLinearHeading(new Pose2d(-24, -38,  Math.toRadians(-45)), Math.toRadians(-45)) //go into
+                .splineToLinearHeading(new Pose2d(-24, -38,  Math.toRadians(-45)), Math.toRadians(-45))
                 .splineToLinearHeading(new Pose2d(-6, -58,  Math.toRadians(-95)), Math.toRadians(-90)) //go into
                 .setTangent(Math.toRadians(90))
                 .splineToLinearHeading(shootPos, Math.toRadians(-225)) //go into
