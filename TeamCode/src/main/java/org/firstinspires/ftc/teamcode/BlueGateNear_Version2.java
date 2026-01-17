@@ -345,12 +345,12 @@ public class BlueGateNear_Version2 extends LinearOpMode {
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         runtime.reset();
         telemetryThread.start();
-        double shootX = -29, shootY = -29; //-29, -29 //-27.5, -27.5 //-28, 28 //30, 30
-        double newShootX =-26.0, newShootY = -26; //-24, -24 //-21, 21 //-16, 16 //-13, 13
+        double shootX = -27.5, shootY = -27.5; //-28, -28 //-29, -29 //-27.5, -27.5 //-28, 28 //30, 30
+        double newShootX =-24.5, newShootY = -24.5; //=25, -25 //-24, -24 //-21, 21 //-16, 16 //-13, 13
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(-135));
         Pose2d newShootPose = new Pose2d(newShootX, newShootY, Math.toRadians(-135));
 
-        Pose2d classifierPose = new Pose2d(7.5+0.2, -64-3,  Math.toRadians(240)); //120
+        Pose2d classifierPose = new Pose2d(7.5+0.2, -64-1,  Math.toRadians(240)); //120
 
         while (opModeIsActive()){
             try {
@@ -368,8 +368,8 @@ public class BlueGateNear_Version2 extends LinearOpMode {
                                 startIntake(1.0, 0.3), //start intake
 
                                 //get the middle row balls
-                                drive.actionBuilder(shootPose)
-                                        .setTangent(Math.toRadians(3)) // -5
+                                drive.actionBuilder(newShootPose)
+                                        .setTangent(Math.toRadians(3.0)) // -5
                                         .splineToSplineHeading(new Pose2d(7.5, -29, Math.toRadians(-80)), Math.toRadians(-50))
                                         //                                                      -67.8
                                         .splineToLinearHeading(new Pose2d(5.5, -60, Math.toRadians(-110)), Math.toRadians(-108))
@@ -482,8 +482,8 @@ public class BlueGateNear_Version2 extends LinearOpMode {
         stage3.setDirection(DcMotor.Direction.REVERSE);
         blockShooter.setDirection(Servo.Direction.REVERSE); //Do we really need this?
 
-        //shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
     //Initialize the AprilTag processor.
     private void initAprilTagAndColorBlob() {

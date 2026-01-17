@@ -330,14 +330,14 @@ public class no2ndstagetest extends LinearOpMode
                     }
                 }
             // if right bumper is press -> and there is purple ball in sights -> turn and drive toward it
-            if (gamepad1.right_trigger > 0.5) {
-                DriveCommand cmd = autoAcquirePurple();
-                if (cmd.validBlob) {
-                    drive = cmd.drive;
-                    strafe = cmd.strafe;
-                    turn = cmd.turn;
-                }
-            }
+//            if (gamepad1.right_trigger > 0.5) {
+////                DriveCommand cmd = autoAcquirePurple();
+//                if (cmd.validBlob) {
+//                    drive = cmd.drive;
+//                    strafe = cmd.strafe;
+//                    turn = cmd.turn;
+//                }
+//            }
             /**************************************************************************************/
             /// THIS IS OPTIONAL --  to disentangle the robot from clutter
 //            final double DODGE_STRAFE_POWER = 0.6;
@@ -618,8 +618,8 @@ public class no2ndstagetest extends LinearOpMode
         stage3.setDirection(DcMotor.Direction.REVERSE);
         blockShooter.setDirection(Servo.Direction.REVERSE); //Do we really need this?
 
-        shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
     //Initialize the AprilTag processor.
     private void initAprilTagAndColorBlob() {
@@ -722,14 +722,14 @@ public class no2ndstagetest extends LinearOpMode
                     .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                     .setCameraResolution(new Size(640, 480))
                     .addProcessor(aprilTag)
-                    .addProcessor(colorLocator)
+//                    .addProcessor(colorLocator)
                     .build();
         } else {
             visionPortal = new VisionPortal.Builder()
                     .setCamera(BuiltinCameraDirection.BACK)
                     .setCameraResolution(new Size(640, 480))
                     .addProcessor(aprilTag)
-                    .addProcessor(colorLocator)
+//                    .addProcessor(colorLocator)
                     .build();
         }
     }
