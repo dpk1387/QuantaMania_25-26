@@ -275,15 +275,24 @@ public class no2ndstagetest extends LinearOpMode
             // If Left Bumper is being pressed, AND we have found the desired target, Drive to target Automatically .
             if (gamepad1.left_bumper) {
                 if (targetFound) {
+
+                    final double[] yawRange = new double[] {0,25};//degrees
+                    final double[] distanceRange = new double[] {45,68}; //inches
+
                     // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
                     double rangeError   = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
                     double headingError = desiredTag.ftcPose.bearing;
                     double yawError     = desiredTag.ftcPose.yaw;
                     // Use the speed and turn "gains" to calculate how we want the robot to move.
-                    drive   = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+                    if (!(rangeError>distanceRange[0] && rangeError<distanceRange[1])) {
+                        drive = 0;
+                    } else drive   = Range.clip((rangeError + (distanceRange[0] + distanceRange[1])/2) * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
                     turn    = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-                    strafe  = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+                    if (!(yawError>yawRange[0] && yawError<yawRange[1])) {
+                        strafe = Range.clip(-(yawError - (yawRange[0] + yawRange[1])/2) * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+                    } else strafe = 0;
                     telemetry.addData("Auto", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+
                     // Update robot location according to tag - reset pinpoint position
                     if ((yawError < 15) && (rangeError < 70)) {
                         // update the position according to localization, based on tag -- this is field coordinate
@@ -338,28 +347,7 @@ public class no2ndstagetest extends LinearOpMode
                     turn = cmd.turn;
                 }
             }
-            /**************************************************************************************/
-            /// THIS IS OPTIONAL --  to disentangle the robot from clutter
-//            final double DODGE_STRAFE_POWER = 0.6;
-//            // Detect rising edge of B
-//            boolean curB = gamepad1.b;
-////            if (curB && !prevB) {// B was just pressed: decide dodge direction ONCE
-////                dodgeDirection = -chooseDodgeDirectionOnce();
-////            }
-//            prevB = curB;
-//
-//            if (gamepad1.b && dodgeDirection != 0.0) {
-//                // While B is held, keep strafing in the chosen direction.
-//                drive = 0.0;
-//                strafe = dodgeDirection * DODGE_STRAFE_POWER;
-//                turn = 0.0;
-//            }else{
-//                dodgeDirection = 0.0;
-//            }
-            /**************************************************************************************/
-//            pinpoint.update();
-//            pose2D = pinpoint.getPosition();
-//            telemetry.addLine(String.format("PINPOINT -- XY-yaw %6.1f %6.1f %6.1f  (inch)", pose2D.getX(DistanceUnit.INCH), pose2D.getY(DistanceUnit.INCH), pose2D.getHeading(AngleUnit.DEGREES)));
+
             telemetry.update();
             /**************************************************************************************/
             if (gamepad2.y && !lastYState)
@@ -378,13 +366,13 @@ public class no2ndstagetest extends LinearOpMode
                 shooter.setPower(0.0);
             }
             if (gamepad2.left_bumper && !shooting){
-                shootOnce();
+                shoot(1100);
                 shooting = false;
             }
 
             if (gamepad2.right_bumper && !shooting){
                 //shootThree();
-                shootN(6);
+                shoot(2100);
                 shooting = false;
 
             }
@@ -407,68 +395,9 @@ public class no2ndstagetest extends LinearOpMode
     }
     /**************************************************************************************/
     //Move robot according to desired axes motions: Positive X is forward,  Positive Y is strafe left, Positive Yaw is counter-clockwise
-    //not used
-    public void shootOnce(){
-        blockShooter.setPosition(OPENSHOOTER_CLOSED);
-        //2. start the shooter
-        shooter.setPower(0.95);
-        //shooter.setVelocity(SHOOTER_VELOCITY);
-        //sleep(200);
 
-        //3. set stage power
-//        stage1.setPower(1.0); //keep stage1 as intake
-        stage1.setPower(0.7);
-        sleep(100);
-//        stage2.setPower(-0.3); //use stage 2 as the second gate
-        stage3.setPower(-0.3);
-        sleep(110);
-        stage3.setPower(1); //accelate stage3
-        //open the gate so that the ball can go through
-        blockShooter.setPosition(OPENSHOOTER_OPEN);
-        sleep(200); //250//300
-        //4. close the gate
-        blockShooter.setPosition(OPENSHOOTER_CLOSED);
-        stage3.setPower(0);
-//        stage2.setPower(0.8);
-        sleep(200);//150
-
-//        stage2.setPower(0);
-    }
-
-    //not used
-    public void shootThree(){
-        blockShooter.setPosition(OPENSHOOTER_CLOSED);
-        //2. start the shooter
-        //shooter.setPower(1);
-        shooter.setVelocity(4800);
-        //stage3.setVelocity(2000);
-        stage3.setPower(0.6);
-        //stage1.setPower(1.0); //keep stage1 as intake
-        stage1.setPower(0.6);
-        /*
-        blockShooter.setPosition(OPENSHOOTER_OPEN);
-        sleep(3000);
-        blockShooter.setPosition(OPENSHOOTER_CLOSED);
-        */
-        //do it slowly
-        sleep(1000);
-        double N = 20;
-        double delta = (float)(OPENSHOOTER_CLOSED - OPENSHOOTER_OPEN)/N;
-        for (int i = 0; i < N; i++){
-            blockShooter.setPosition(OPENSHOOTER_OPEN - (i+1)*delta);
-            sleep(10);
-        }
-        sleep(2000);
-        stage3.setPower(0);
-        blockShooter.setPosition(OPENSHOOTER_CLOSED);
-
-//        shootOnce();
-//        shootOnce();
-//        shootOnce();
-
-    }
-
-    public void shootN(int count) {
+    public void shoot(int totalMs) {
+        moveRobot(0, 0, 0); // stops robot in place
         final double targetVel = 2200;//close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
         final double dropMargin = 100;         // tune
         final double recoverMargin = 200; //100;      // tune (smaller than dropMargin)
@@ -481,7 +410,7 @@ public class no2ndstagetest extends LinearOpMode
         final double GATE_PULSE_OPEN = OPENSHOOTER_OPEN; // tune so 1 ball passes, not 2
 
         final int pulseMs = 200;//130;              // tune: shorter = fewer double-feeds
-        final int stableMs = 120;             // require speed stable before feeding next ball
+        final int stableizeMs = 600;             // startup time to accelorate before shooting
         final int loopSleepMs = 15;
 
         // Spin up
@@ -491,25 +420,15 @@ public class no2ndstagetest extends LinearOpMode
         //stage1.setPower(0.6);  //0.6, 1.0       // intake
         stage3.setPower(stage3HoldPower);
 
-        sleep(600);
+        telemetry.addData("Ewan", "accelerating shooter");
+        telemetry.update();
+        sleep(stableizeMs);
+        telemetry.addData("Ewan", "Open gate");
+        telemetry.update();
         ElapsedTime time_pass = new ElapsedTime();
         time_pass.reset();
         boolean high = true;
-        while(time_pass.milliseconds() <= 1500){
-        //for (int k = 0; k < count && opModeIsActive(); k++) {
-
-            // 1) Wait until we're "ready" (at speed for stableMs)
-            //waitAtSpeed(targetVel, dropMargin, stableMs, loopSleepMs);
-
-            // 2) Pulse-feed exactly ONE ball
-
-//            if (high) {
-//                stage1.setPower(0.6);
-//                high = false;
-//            }else{
-//                stage1.setPower(0.4);
-//                high = true;
-//            }
+        while(time_pass.milliseconds() <= totalMs - stableizeMs){
 
             stage3.setPower(stage3FeedPower);
             blockShooter.setPosition(GATE_PULSE_OPEN);
@@ -527,29 +446,14 @@ public class no2ndstagetest extends LinearOpMode
                 idle();
             }
         }
+        telemetry.addData("Ewan", "End Shooting");
+        telemetry.update();
 
         // Stop / reset
         stage3.setPower(0);
         blockShooter.setPosition(GATE_HOLD);
         shooter.setVelocity(0);
         intakeMode = true;
-    }
-
-    //not used
-    private void waitAtSpeed(double targetVel, double margin, int stableMs, int loopSleepMs) {
-        ElapsedTime stable = new ElapsedTime();
-        stable.reset();
-
-        while (opModeIsActive()) {
-            double v = shooter.getVelocity();
-            if (v >= targetVel - margin) {
-                if (stable.milliseconds() >= stableMs) return;
-            } else {
-                stable.reset(); // not stable yet
-            }
-            sleep(loopSleepMs);
-            idle();
-        }
     }
 
     public void moveRobot(double x, double y, double yaw) {
