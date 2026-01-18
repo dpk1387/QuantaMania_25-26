@@ -54,7 +54,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
     final private double OPENSHOOTER_CLOSED = 1.0; // OPENSHOOTER_OPEN + 28//0.55
     final private double CAMERASERVO_HIGH = 0.55;
     final private double CAMERASERVO_LOW = 0.68;
-    final private double SHOOTER_VELOCITY = 2400; //2100 //2200 //2150
+    final private double SHOOTER_VELOCITY = 2200; //2100 //2200 //2150
     /* INIT */
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
     private static final int DESIRED_TAG_ID = 24;//RED //20;//BLUE//24;// -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
@@ -346,7 +346,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
         runtime.reset();
         telemetryThread.start();
         double shootX = -29, shootY = -29; //-29, -29 //-27.5, -27.5 //-28, 28 //30, 30
-        double newShootX = -25, newShootY = -25; //-24, -24 //-21, 21 //-16, 16 //-13, 13
+        double newShootX = -27, newShootY = -27; //-24, -24 //-21, 21 //-16, 16 //-13, 13
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(-135));
         Pose2d newShootPose = new Pose2d(newShootX, newShootY, Math.toRadians(-135));
 
@@ -398,7 +398,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
                                 //----------FIRST TIME
                                 //get balls from classifier
                                 drive.actionBuilder(newShootPose)
-                                        .setTangent(Math.toRadians(10))
+                                        .setTangent(Math.toRadians(15))
 
                                         //.setTangent(Math.toRadians(25)) //15
                                         .splineToLinearHeading(classifierPose, Math.toRadians(-95)) //80 //85 //95 //go into
@@ -416,7 +416,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
 
                                 //--------SECOND TIME
                                 drive.actionBuilder(newShootPose)
-                                        .setTangent(Math.toRadians(10)) //25 //15
+                                        .setTangent(Math.toRadians(15)) //25 //15
                                         .splineToLinearHeading(classifierPose, Math.toRadians(-95)) //85 //95 //go into
                                         .build(),
                                 //wait at the classifier to intake balls
@@ -662,7 +662,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
         //sleep(200);
 
         //3. set stage power
-        stage1.setPower(0.6); //1.0 //keep stage1 as intake
+        stage1.setPower(0.9); //1.0 //keep stage1 as intake
         sleep(100);
         // stage2.setPower(-0.4); //use stage 2 as the second gate
         stage3.setPower(-0.3);

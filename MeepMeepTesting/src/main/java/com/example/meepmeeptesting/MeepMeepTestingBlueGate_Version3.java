@@ -15,7 +15,7 @@ public class MeepMeepTestingBlueGate_Version3 {
                 //.setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .setConstraints(55, 55, Math.toRadians(180), Math.toRadians(180), 15)//55 speed here 70 in real robot (roadrunner)
                 .build();
-        double shootX = -29, shootY = -29;
+        double shootX = -25, shootY = -25;
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(-135));
 
         //longer shot
