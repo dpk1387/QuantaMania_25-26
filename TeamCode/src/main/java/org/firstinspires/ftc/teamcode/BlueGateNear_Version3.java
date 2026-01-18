@@ -346,11 +346,11 @@ public class BlueGateNear_Version3 extends LinearOpMode {
         runtime.reset();
         telemetryThread.start();
         double shootX = -29, shootY = -29; //-29, -29 //-27.5, -27.5 //-28, 28 //30, 30
-        double newShootX = -30, newShootY = -30; //-24, -24 //-21, 21 //-16, 16 //-13, 13
+        double newShootX = -25, newShootY = -25; //-24, -24 //-21, 21 //-16, 16 //-13, 13
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(-135));
         Pose2d newShootPose = new Pose2d(newShootX, newShootY, Math.toRadians(-135));
 
-        Pose2d classifierPose = new Pose2d(7.5+0.2, -64-3,  Math.toRadians(240)); //120
+        Pose2d classifierPose = new Pose2d(7.5, -64,  Math.toRadians(240)); //120
 
         while (opModeIsActive()){
 
@@ -373,7 +373,9 @@ public class BlueGateNear_Version3 extends LinearOpMode {
                                         .setTangent(Math.toRadians(3)) // -5
                                         .splineToSplineHeading(new Pose2d(7.5, -29, Math.toRadians(-80)), Math.toRadians(-50))
                                         //                                                      -67.8
-                                        .splineToLinearHeading(new Pose2d(5.5, -60, Math.toRadians(-110)), Math.toRadians(-108))
+
+
+                                        .splineToLinearHeading(new Pose2d(5.0, -60, Math.toRadians(-110)), Math.toRadians(-102))
                                         .setTangent(Math.toRadians(90))
                                         //.setTangent(Math.toRadians(32)) //15
                                         //go to intake balls
@@ -385,6 +387,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
                                         .splineToSplineHeading(new Pose2d(0, -31, Math.toRadians(-120)), Math.toRadians(135)) //200
                                         .splineToLinearHeading(newShootPose, Math.toRadians(170)) //-160, -200
                                         .build(),
+
                                 shootAll(), //shoot balls
                                 closeGate(),
                                 startIntake(1.0, 0.3),
@@ -705,6 +708,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
 
             // 3) Immediately block the next ball
             blockShooter.setPosition(GATE_HOLD);
+            sleep(50); //prevent artifacts from being shot too quickly
             //stage3.setPower(stage3HoldPower);
 
             // 4) Wait for recovery enough to avoid weak/overpowered 2nd/3rd shots
