@@ -398,7 +398,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
                                 //----------FIRST TIME
                                 //get balls from classifier
                                 drive.actionBuilder(newShootPose)
-                                        .setTangent(Math.toRadians(-15))
+                                        .setTangent(Math.toRadians(10))
 
                                         //.setTangent(Math.toRadians(25)) //15
                                         .splineToLinearHeading(classifierPose, Math.toRadians(-95)) //80 //85 //95 //go into
@@ -416,7 +416,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
 
                                 //--------SECOND TIME
                                 drive.actionBuilder(newShootPose)
-                                        .setTangent(Math.toRadians(-15)) //25 //15
+                                        .setTangent(Math.toRadians(10)) //25 //15
                                         .splineToLinearHeading(classifierPose, Math.toRadians(-95)) //85 //95 //go into
                                         .build(),
                                 //wait at the classifier to intake balls
