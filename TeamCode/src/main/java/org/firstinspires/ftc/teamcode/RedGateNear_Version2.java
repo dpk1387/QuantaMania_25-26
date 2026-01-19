@@ -374,7 +374,7 @@ public class RedGateNear_Version2 extends LinearOpMode {
                                         .setTangent(Math.toRadians(-3)) // -5
                                         .splineToSplineHeading(new Pose2d(7.5, 29, Math.toRadians(80)), Math.toRadians(50))
                                         //                                                      67.8
-                                        .splineToLinearHeading(new Pose2d(5.5, 55+5, Math.toRadians(110)), Math.toRadians(108))
+                                        .splineToLinearHeading(new Pose2d(5.5, 55, Math.toRadians(110)), Math.toRadians(108))
                                         .setTangent(Math.toRadians(-90))
                                         //.setTangent(Math.toRadians(32)) //15
                                         //go to intake balls
