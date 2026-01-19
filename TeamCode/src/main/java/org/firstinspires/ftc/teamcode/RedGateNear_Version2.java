@@ -684,7 +684,7 @@ public class RedGateNear_Version2 extends LinearOpMode {
         final double GATE_HOLD = OPENSHOOTER_CLOSED;   // you may want a slightly-open "hold" instead
         final double GATE_PULSE_OPEN = OPENSHOOTER_OPEN; // tune so 1 ball passes, not 2
 
-        final int pulseMs = 200;//130;              // tune: shorter = fewer double-feeds
+        final int pulseMs = 130;//150; //200;//130;              // tune: shorter = fewer double-feeds
         final int stableMs = 120;             // require speed stable before feeding next ball
         final int loopSleepMs = 15;
 
