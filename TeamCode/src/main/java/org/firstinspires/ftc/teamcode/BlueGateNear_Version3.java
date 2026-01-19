@@ -54,7 +54,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
     final private double OPENSHOOTER_CLOSED = 1.0; // OPENSHOOTER_OPEN + 28//0.55
     final private double CAMERASERVO_HIGH = 0.55;
     final private double CAMERASERVO_LOW = 0.68;
-    final private double SHOOTER_VELOCITY = 2220; //2100 //2200 //2150 //2250
+    final private double SHOOTER_VELOCITY = 2150; //2100 //2200 //2220 //2250
     /* INIT */
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
     private static final int DESIRED_TAG_ID = 24;//RED //20;//BLUE//24;// -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
@@ -370,7 +370,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
         runtime.reset();
         telemetryThread.start();
         double shootX = -29, shootY = -29; //-29, -29 //-27.5, -27.5 //-28, 28 //30, 30
-        double newShootX = -25.5, newShootY = -25.5; //-27, -27//-24, -24 //-21, 21 //-16, 16 //-13, 13
+        double newShootX = -26, newShootY = -26; //-27, -27//-24, -24 //-21, 21 //-16, 16 //-13, 13
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(-135));
         Pose2d newShootPose = new Pose2d(newShootX, newShootY, Math.toRadians(-135));
 
@@ -401,7 +401,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
                                         //                                                      -67.8
 
 
-                                        .splineToLinearHeading(new Pose2d(5.0, -60, Math.toRadians(-110)), Math.toRadians(-102))
+                                        .splineToLinearHeading(new Pose2d(5.0, -55, Math.toRadians(-110)), Math.toRadians(-102))
                                         .setTangent(Math.toRadians(90))
                                         //.setTangent(Math.toRadians(32)) //15
                                         //go to intake balls
@@ -461,10 +461,10 @@ public class BlueGateNear_Version3 extends LinearOpMode {
                                         //.splineToLinearHeading(new Pose2d(-12, 44,  Math.toRadians(90)), Math.toRadians(100))
                                         //.splineToLinearHeading(new Pose2d(-11, 56,  Math.toRadians(90)), Math.toRadians(80))
                                         .splineToSplineHeading(new Pose2d(-12, -36,  Math.toRadians(-85)), Math.toRadians(-85))
-                                        .splineToLinearHeading(new Pose2d(-13.5, -48, Math.toRadians(-100)), Math.toRadians(-115))
+                                        .splineToLinearHeading(new Pose2d(-13.5, -53, Math.toRadians(-100)), Math.toRadians(-115))
 
                                         //go back to shooting
-                                        .splineToSplineHeading(shootPose, Math.toRadians(-225)) //-135 //go into
+                                        .splineToSplineHeading(newShootPose, Math.toRadians(-225)) //-135 //go into
                                         .build(),
                                 shootAll(), //shoot 3 balls
                                 closeGate(),
@@ -738,12 +738,12 @@ public class BlueGateNear_Version3 extends LinearOpMode {
             //stage3.setPower(stage3HoldPower);
 
             // 4) Wait for recovery enough to avoid weak/overpowered 2nd/3rd shots
-//            while (opModeIsActive() && shooter.getVelocity() < targetVel - recoverMargin) {
-//                telemetry.addData("Shooter Vel", "%5.2f", shooter.getVelocity());
-//                telemetry.update();
-//                sleep(loopSleepMs);
-//                idle();
-//            }
+            while (opModeIsActive() && shooter.getVelocity() < targetVel - recoverMargin) {
+                telemetry.addData("Shooter Vel", "%5.2f", shooter.getVelocity());
+                telemetry.update();
+                sleep(loopSleepMs);
+                idle();
+            }
         }
 
         // Stop / reset
