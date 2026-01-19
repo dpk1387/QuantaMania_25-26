@@ -54,7 +54,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
     final private double OPENSHOOTER_CLOSED = 1.0; // OPENSHOOTER_OPEN + 28//0.55
     final private double CAMERASERVO_HIGH = 0.55;
     final private double CAMERASERVO_LOW = 0.68;
-    final private double SHOOTER_VELOCITY = 2200; //2100 //2200 //2150
+    final private double SHOOTER_VELOCITY = 2220; //2100 //2200 //2150 //2250
     /* INIT */
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
     private static final int DESIRED_TAG_ID = 24;//RED //20;//BLUE//24;// -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
@@ -287,7 +287,30 @@ public class BlueGateNear_Version3 extends LinearOpMode {
     }
 
 
-    public class intakeDelay implements Action {
+    public class intakeDelay1 implements Action {
+        private boolean initialized = false;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (!initialized) {
+                // Optionally log something
+                packet.put("intake Delay", "");
+                // Fire three balls in sequence (blocking, similar to SleepAction(3))
+                sleep(750); //1000 //1500
+
+                initialized = true;
+            }
+            // Returning false tells Road Runner this action is finished
+            return false;
+        }
+    }
+
+    // Convenience factory so you can just write shootAll() in your SequentialAction
+    public Action intakeWait1() {
+        return new intakeDelay1();
+    }
+
+    public class intakeDelay2 implements Action {
         private boolean initialized = false;
 
         @Override
@@ -306,9 +329,10 @@ public class BlueGateNear_Version3 extends LinearOpMode {
     }
 
     // Convenience factory so you can just write shootAll() in your SequentialAction
-    public Action intakeWait() {
-        return new intakeDelay();
+    public Action intakeWait2() {
+        return new intakeDelay2();
     }
+
 
     /// ***********************************************************************************
     @Override
@@ -322,7 +346,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
 
         initMotors();
-        initAprilTagAndColorBlob();
+        // initAprilTagAndColorBlob();
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -346,11 +370,11 @@ public class BlueGateNear_Version3 extends LinearOpMode {
         runtime.reset();
         telemetryThread.start();
         double shootX = -29, shootY = -29; //-29, -29 //-27.5, -27.5 //-28, 28 //30, 30
-        double newShootX = -27, newShootY = -27; //-24, -24 //-21, 21 //-16, 16 //-13, 13
+        double newShootX = -25.5, newShootY = -25.5; //-27, -27//-24, -24 //-21, 21 //-16, 16 //-13, 13
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(-135));
         Pose2d newShootPose = new Pose2d(newShootX, newShootY, Math.toRadians(-135));
 
-        Pose2d classifierPose = new Pose2d(7.5, -64,  Math.toRadians(240)); //120
+        Pose2d classifierPose = new Pose2d(7.5, -64,  Math.toRadians(243)); //240 //120
 
         while (opModeIsActive()){
             telemetry.addData("Shooter Velocity", shooter.getVelocity());
@@ -404,7 +428,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
                                         .splineToLinearHeading(classifierPose, Math.toRadians(-95)) //80 //85 //95 //go into
                                         .build(),
                                 //wait at the classifier to intake balls
-                                intakeWait(),
+                                intakeWait1(),
                                 //go to shoot
                                 drive.actionBuilder(classifierPose)
                                         .setTangent(Math.toRadians(95)) //-100 //-90
@@ -420,7 +444,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
                                         .splineToLinearHeading(classifierPose, Math.toRadians(-95)) //85 //95 //go into
                                         .build(),
                                 //wait at the classifier to intake balls
-                                intakeWait(),
+                                intakeWait2(),
                                 //go to shoot
                                 drive.actionBuilder(classifierPose)
                                         .setTangent(Math.toRadians(95)) //-95 //-90
@@ -662,7 +686,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
         //sleep(200);
 
         //3. set stage power
-        stage1.setPower(0.9); //1.0 //keep stage1 as intake
+        stage1.setPower(0.8); //1.0 //keep stage1 as intake
         sleep(100);
         // stage2.setPower(-0.4); //use stage 2 as the second gate
         stage3.setPower(-0.3);
@@ -679,7 +703,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
     }
 
     public void shootN(int count) {
-        final double targetVel = SHOOTER_VELOCITY + 100; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
+        final double targetVel = SHOOTER_VELOCITY + 60; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
         final double dropMargin = 100;         // tune
         final double recoverMargin = 100; //75;      // tune (smaller than dropMargin)
         final double stage3FeedPower = 0.6;    // tune down if multiple balls sneak
