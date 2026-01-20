@@ -54,7 +54,7 @@ public class RedGateNear_Version2 extends LinearOpMode {
     final private double OPENSHOOTER_CLOSED = 1.0; // OPENSHOOTER_OPEN + 28//0.55
     final private double CAMERASERVO_HIGH = 0.55;
     final private double CAMERASERVO_LOW = 0.68;
-    final private double SHOOTER_VELOCITY = 2100; //2100 //2200 //2150
+    final private double SHOOTER_VELOCITY = 2150; //2100 //2200 //2150
     /* INIT */
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
     private static final int DESIRED_TAG_ID = 24;//RED //20;//BLUE//24;// -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
@@ -265,13 +265,19 @@ public class RedGateNear_Version2 extends LinearOpMode {
 
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            long wait = 150 + 200;
+//            long wait = 150 + 250;
             if (!initialized) {
                 // Optionally log something
                 packet.put("Delay", "");
                 // Fire three balls in sequence (blocking, similar to SleepAction(3))
                 shooter.setVelocity(SHOOTER_VELOCITY);
-                sleep(wait);
+//                sleep(wait);
+                while (shooter.getVelocity() < SHOOTER_VELOCITY-75) {
+                    telemetry.addData("Shooter Vel", "%5.2f", shooter.getVelocity());
+                    telemetry.update();
+                    sleep(15);
+                    idle();
+                }
                 //sleep(500); //sleep before moving to next position
 
                 initialized = true;
@@ -436,7 +442,7 @@ public class RedGateNear_Version2 extends LinearOpMode {
                                         .splineToLinearHeading(new Pose2d(-13.5, 48, Math.toRadians(100)), Math.toRadians(115))
 
                                         //go back to shooting
-                                        .splineToSplineHeading(shootPose, Math.toRadians(225)) //-135 //go into
+                                        .splineToSplineHeading(newShootPose, Math.toRadians(225)) //-135 //go into
                                         .build(),
                                 shootAll(), //shoot 3 balls
                                 closeGate(),
@@ -677,14 +683,15 @@ public class RedGateNear_Version2 extends LinearOpMode {
     public void shootN(int count) {
         final double targetVel = SHOOTER_VELOCITY + 100; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
         final double dropMargin = 100;         // tune
-        final double recoverMargin = 100; //75;      // tune (smaller than dropMargin)
+        final double lowRecoverMargin = 75; //75;      // tune (smaller than dropMargin)
+        final double highRecoverMargin = 50;
         final double stage3FeedPower = 0.6;    // tune down if multiple balls sneak
         final double stage3HoldPower = 0.0;
 
         final double GATE_HOLD = OPENSHOOTER_CLOSED;   // you may want a slightly-open "hold" instead
         final double GATE_PULSE_OPEN = OPENSHOOTER_OPEN; // tune so 1 ball passes, not 2
 
-        final int pulseMs = 130;//150; //200;//130;              // tune: shorter = fewer double-feeds
+        final int pulseMs = 120;//150; //200;//130;              // tune: shorter = fewer double-feeds
         final int stableMs = 120;             // require speed stable before feeding next ball
         final int loopSleepMs = 15;
 
@@ -709,7 +716,7 @@ public class RedGateNear_Version2 extends LinearOpMode {
             //stage3.setPower(stage3HoldPower);
 
             // 4) Wait for recovery enough to avoid weak/overpowered 2nd/3rd shots
-            while (opModeIsActive() && shooter.getVelocity() < targetVel - recoverMargin) {
+            while (opModeIsActive() && (shooter.getVelocity() < targetVel - lowRecoverMargin || shooter.getVelocity() > targetVel + highRecoverMargin)) { //NEW: avoid overpowered shots as well
                 telemetry.addData("Shooter Vel", "%5.2f", shooter.getVelocity());
                 telemetry.update();
                 sleep(loopSleepMs);
