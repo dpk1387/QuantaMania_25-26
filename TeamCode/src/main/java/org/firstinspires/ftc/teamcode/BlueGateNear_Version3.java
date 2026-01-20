@@ -265,19 +265,13 @@ public class BlueGateNear_Version3 extends LinearOpMode {
 
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-//            long wait = 150 + 250;
+            long wait = 150 + 350;
             if (!initialized) {
                 // Optionally log something
                 packet.put("Delay", "");
                 // Fire three balls in sequence (blocking, similar to SleepAction(3))
                 shooter.setVelocity(SHOOTER_VELOCITY);
-//                sleep(wait);
-                while (shooter.getVelocity() < SHOOTER_VELOCITY-75) {
-                    telemetry.addData("Shooter Vel", "%5.2f", shooter.getVelocity());
-                    telemetry.update();
-                    sleep(15);
-                    idle();
-                }
+                sleep(wait);
                 //sleep(500); //sleep before moving to next position
 
                 initialized = true;
@@ -375,12 +369,12 @@ public class BlueGateNear_Version3 extends LinearOpMode {
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         runtime.reset();
         telemetryThread.start();
-        double shootX = -25, shootY = -25; //-29, -29 //-27.5, -27.5 //-28, 28 //30, 30
-        double newShootX = -24, newShootY = -24; //-27, -27//-24, -24 //-21, 21 //-16, 16 //-13, 13
+        double shootX = -29, shootY = -29; //-29, -29 //-27.5, -27.5 //-28, 28 //30, 30
+        double newShootX = -26, newShootY = -26; //-27, -27//-24, -24 //-21, 21 //-16, 16 //-13, 13
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(-135));
         Pose2d newShootPose = new Pose2d(newShootX, newShootY, Math.toRadians(-135));
 
-        Pose2d classifierPose = new Pose2d(7.5+0.2, -64-2,  Math.toRadians(240)); //240 //120
+        Pose2d classifierPose = new Pose2d(7.5, -64,  Math.toRadians(243)); //240 //120
 
         while (opModeIsActive()){
             telemetry.addData("Shooter Velocity", shooter.getVelocity());
@@ -407,7 +401,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
                                         //                                                      -67.8
 
 
-                                        .splineToLinearHeading(new Pose2d(5.0, -55, Math.toRadians(-110)), Math.toRadians(-108))
+                                        .splineToLinearHeading(new Pose2d(5.0, -55, Math.toRadians(-110)), Math.toRadians(-102))
                                         .setTangent(Math.toRadians(90))
                                         //.setTangent(Math.toRadians(32)) //15
                                         //go to intake balls
@@ -709,17 +703,16 @@ public class BlueGateNear_Version3 extends LinearOpMode {
     }
 
     public void shootN(int count) {
-        final double targetVel = SHOOTER_VELOCITY + 100; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
+        final double targetVel = SHOOTER_VELOCITY + 60; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
         final double dropMargin = 100;         // tune
-        final double lowRecoverMargin = 75; //75;      // tune (smaller than dropMargin)
-        final double highRecoverMargin = 50;
+        final double recoverMargin = 100; //75;      // tune (smaller than dropMargin)
         final double stage3FeedPower = 0.6;    // tune down if multiple balls sneak
         final double stage3HoldPower = 0.0;
 
         final double GATE_HOLD = OPENSHOOTER_CLOSED;   // you may want a slightly-open "hold" instead
         final double GATE_PULSE_OPEN = OPENSHOOTER_OPEN; // tune so 1 ball passes, not 2
 
-        final int pulseMs = 120;//150; //200;//130;              // tune: shorter = fewer double-feeds
+        final int pulseMs = 400;//130;              // tune: shorter = fewer double-feeds
         final int stableMs = 120;             // require speed stable before feeding next ball
         final int loopSleepMs = 15;
 
@@ -741,10 +734,11 @@ public class BlueGateNear_Version3 extends LinearOpMode {
 
             // 3) Immediately block the next ball
             blockShooter.setPosition(GATE_HOLD);
+            sleep(50); //prevent artifacts from being shot too quickly
             //stage3.setPower(stage3HoldPower);
 
             // 4) Wait for recovery enough to avoid weak/overpowered 2nd/3rd shots
-            while (opModeIsActive() && (shooter.getVelocity() < targetVel - lowRecoverMargin || shooter.getVelocity() > targetVel + highRecoverMargin)) { //NEW: avoid overpowered shots as well
+            while (opModeIsActive() && shooter.getVelocity() < targetVel - recoverMargin) {
                 telemetry.addData("Shooter Vel", "%5.2f", shooter.getVelocity());
                 telemetry.update();
                 sleep(loopSleepMs);
