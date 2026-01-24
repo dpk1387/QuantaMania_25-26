@@ -19,6 +19,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
@@ -44,6 +45,8 @@ public class BlueGateNear_Version2 extends LinearOpMode {
     /* HARDWARE */
     private DcMotorEx shooter = null;
     private DcMotor stage1 = null;
+
+    private VoltageSensor voltageSensor;
     // private DcMotor stage2 = null;
     private DcMotor stage3 = null;
     private Servo blockShooter = null;
@@ -508,6 +511,9 @@ public class BlueGateNear_Version2 extends LinearOpMode {
 
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        voltageSensor =  hardwareMap.voltageSensor.iterator().next();
+
     }
     //Initialize the AprilTag processor.
     private void initAprilTagAndColorBlob() {

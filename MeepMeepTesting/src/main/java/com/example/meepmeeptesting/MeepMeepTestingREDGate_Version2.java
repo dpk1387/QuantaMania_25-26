@@ -15,12 +15,12 @@ public class MeepMeepTestingREDGate_Version2 {
                 //.setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .setConstraints(55, 55, Math.toRadians(180), Math.toRadians(180), 15)//55 speed here 70 in real robot (roadrunner)
                 .build();
-        double shootX = -27, shootY = 27;
+        double shootX = -25, shootY = 25; //-27, 27
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(135));
 
         //longer shot
         //shorter movement to classifier
-        double newShootX = -20, newShootY = 20; // -22, 22
+        double newShootX = -25, newShootY = 25; //-20, 20 //-22, 22
         Pose2d newShootPose = new Pose2d(newShootX, newShootY, Math.toRadians(135));
 
         Pose2d startPose = new Pose2d(-54, 54, Math.toRadians(135));
@@ -48,15 +48,15 @@ public class MeepMeepTestingREDGate_Version2 {
 
                         .setTangent(Math.toRadians(-90))
                         .splineToSplineHeading(new Pose2d(0, 31, Math.toRadians(120)), Math.toRadians(-125)) //200
-                        .splineToLinearHeading(newShootPose, Math.toRadians(-170)) //200
+                        .splineToLinearHeading(newShootPose, Math.toRadians(200)) //190 //200
                         .waitSeconds(2)
 
                         // classifier artifacts (1)
-                        .setTangent(Math.toRadians(15))
+                        .setTangent(Math.toRadians(5)) //15
 
                         //.setTangent(Math.toRadians(25)) //15
 //                        .splineToSplineHeading(new Pose2d(0, 32, Math.toRadians(135)), Math.toRadians(50))
-                        .splineToLinearHeading(classifierPose, Math.toRadians(95)) //85 //95 //go into
+                        .splineToLinearHeading(classifierPose, Math.toRadians(105)) //105 //85 //95 //go into
                         .waitSeconds(1.5)
 
                         .setTangent(Math.toRadians(-95)) //-95 //-90
