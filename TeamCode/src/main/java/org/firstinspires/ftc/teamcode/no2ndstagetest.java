@@ -276,21 +276,24 @@ public class no2ndstagetest extends LinearOpMode
             if (gamepad1.left_bumper) {
                 if (targetFound) {
 
-                    final double[] yawRange = new double[] {0,25};//degrees
-                    final double[] distanceRange = new double[] {45,68}; //inches
-
+                    final double[] yawRange = new double[] {0,15};// 0, 25degrees
+                    final double[] distanceRange = new double[] {55,65}; //inches
                     // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
                     double rangeError   = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
                     double headingError = desiredTag.ftcPose.bearing;
                     double yawError     = desiredTag.ftcPose.yaw;
                     // Use the speed and turn "gains" to calculate how we want the robot to move.
+
                     if (!(rangeError>distanceRange[0] && rangeError<distanceRange[1])) {
                         drive = 0;
                     } else drive   = Range.clip((rangeError + (distanceRange[0] + distanceRange[1])/2) * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-                    turn    = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
+
+                    turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
+
                     if (!(yawError>yawRange[0] && yawError<yawRange[1])) {
                         strafe = Range.clip(-(yawError - (yawRange[0] + yawRange[1])/2) * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
                     } else strafe = 0;
+
                     telemetry.addData("Auto", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
 
                     // Update robot location according to tag - reset pinpoint position

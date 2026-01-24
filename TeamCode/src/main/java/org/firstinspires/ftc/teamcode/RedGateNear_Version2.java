@@ -639,7 +639,8 @@ public class RedGateNear_Version2 extends LinearOpMode {
             sleep(20);
         }
     }
-    private void setBlobExposureAuto() {
+
+    public void setBlobExposureAuto(){
         if (visionPortal == null) return;
 
         ExposureControl exposureControl =
@@ -655,30 +656,6 @@ public class RedGateNear_Version2 extends LinearOpMode {
         // if (gainControl != null) { gainControl.setGain(someMaxValue); }
     }
 
-    public void shootOnce(){
-        //1. make sure the gate is closed
-        blockShooter.setPosition(OPENSHOOTER_CLOSED);
-        //2. start the shooter
-        shooter.setVelocity(SHOOTER_VELOCITY); //max RPM * 0.9
-        //shooter.setPower(0.90);
-        //sleep(200);
-
-        //3. set stage power
-        stage1.setPower(0.6); //1.0 //keep stage1 as intake
-        sleep(100);
-        // stage2.setPower(-0.4); //use stage 2 as the second gate
-        stage3.setPower(-0.3);
-        sleep(110);
-        stage3.setPower(1); //accelate stage3
-        //open the gate so that the ball can go through
-        blockShooter.setPosition(OPENSHOOTER_OPEN);
-        sleep(200); //250//300
-        //4. close the gate
-        blockShooter.setPosition(OPENSHOOTER_CLOSED);
-        stage3.setPower(0);
-        // stage2.setPower(0.8);
-        sleep(200);//300 //150
-    }
 
     public void shootN(int count) {
         final double targetVel = SHOOTER_VELOCITY + 100; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
@@ -736,3 +713,4 @@ public class RedGateNear_Version2 extends LinearOpMode {
         stage3.setPower(s3);
     }
 }
+
