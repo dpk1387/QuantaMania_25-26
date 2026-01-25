@@ -713,14 +713,14 @@ public class BlueGateNear_Version3 extends LinearOpMode {
         final double targetVel = SHOOTER_VELOCITY + 60; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
         final double dropMargin = 100;         // tune
         final double lowRecoverMargin = 100; //75;      // tune (smaller than dropMargin)
-        final double highRecoverMargin = 75;
+        final double highRecoverMargin = 100; //75
         final double stage3FeedPower = 0.6;    // tune down if multiple balls sneak
         final double stage3HoldPower = 0.0;
 
         final double GATE_HOLD = OPENSHOOTER_CLOSED;   // you may want a slightly-open "hold" instead
         final double GATE_PULSE_OPEN = OPENSHOOTER_OPEN; // tune so 1 ball passes, not 2
 
-        final int pulseMs = 400;//130;              // tune: shorter = fewer double-feeds
+        final int pulseMs = 200;//400;//130;              // tune: shorter = fewer double-feeds
         final int stableMs = 120;             // require speed stable before feeding next ball
         final int loopSleepMs = 15;
 

@@ -54,7 +54,7 @@ public class RedGateNear_Version2 extends LinearOpMode {
     final private double OPENSHOOTER_CLOSED = 1.0; // OPENSHOOTER_OPEN + 28//0.55
     final private double CAMERASERVO_HIGH = 0.55;
     final private double CAMERASERVO_LOW = 0.68;
-    final private double SHOOTER_VELOCITY = 2150; //2100 //2200 //2150
+    final private double SHOOTER_VELOCITY = 2200; //2100 //2200 //2150
     /* INIT */
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
     private static final int DESIRED_TAG_ID = 24;//RED //20;//BLUE//24;// -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
@@ -357,7 +357,7 @@ public class RedGateNear_Version2 extends LinearOpMode {
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(135));
         Pose2d newShootPose = new Pose2d(newShootX, newShootY, Math.toRadians(135));
 
-        Pose2d classifierPose = new Pose2d(7.5+0.2-0.2, 64+2-2,  Math.toRadians(120-3)); //120-6 //120
+        Pose2d classifierPose = new Pose2d(7.5+0.2, 64+2,  Math.toRadians(120)); //120-6 //120
 
         while (opModeIsActive()){
             telemetry.addData("Shooter Velocity", shooter.getVelocity());
@@ -663,7 +663,7 @@ public class RedGateNear_Version2 extends LinearOpMode {
         final double targetVel = SHOOTER_VELOCITY + 60; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
         final double dropMargin = 100;         // tune
         final double lowRecoverMargin = 100; //75;      // tune (smaller than dropMargin)
-        final double highRecoverMargin = 75;
+        final double highRecoverMargin = 100; //75
         final double stage3FeedPower = 0.6;    // tune down if multiple balls sneak
         final double stage3HoldPower = 0.0;
 
@@ -685,13 +685,14 @@ public class RedGateNear_Version2 extends LinearOpMode {
         ElapsedTime time_pass = new ElapsedTime();
         time_pass.reset();
 
-        while(time_pass.milliseconds() <= 1800){
+        while(time_pass.milliseconds() <= 1500){
             stage3.setPower(stage3FeedPower);
             blockShooter.setPosition(GATE_PULSE_OPEN);
             sleep(pulseMs);
 
             // 3) Immediately block the next ball
             blockShooter.setPosition(GATE_HOLD);
+            sleep(75); //prevent artifacts from being shot too quickly
             //stage3.setPower(stage3HoldPower);
 
             // 4) Wait for recovery enough to avoid weak/overpowered 2nd/3rd shots
@@ -701,8 +702,6 @@ public class RedGateNear_Version2 extends LinearOpMode {
                 sleep(loopSleepMs);
                 idle();
             }
-
-            sleep(100);
 
         }
 
