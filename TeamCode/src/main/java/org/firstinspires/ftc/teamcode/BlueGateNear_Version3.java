@@ -272,6 +272,13 @@ public class BlueGateNear_Version3 extends LinearOpMode {
                 // Fire three balls in sequence (blocking, similar to SleepAction(3))
                 shooter.setVelocity(SHOOTER_VELOCITY);
                 sleep(wait);
+
+//                while (shooter.getVelocity() < SHOOTER_VELOCITY-75) {
+//                    telemetry.addData("Shooter Vel", "%5.2f", shooter.getVelocity());
+//                    telemetry.update();
+//                    sleep(15);
+//                    idle();
+//                }
                 //sleep(500); //sleep before moving to next position
 
                 initialized = true;
@@ -705,7 +712,8 @@ public class BlueGateNear_Version3 extends LinearOpMode {
     public void shootN(int count) {
         final double targetVel = SHOOTER_VELOCITY + 60; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
         final double dropMargin = 100;         // tune
-        final double recoverMargin = 100; //75;      // tune (smaller than dropMargin)
+        final double lowRecoverMargin = 100; //75;      // tune (smaller than dropMargin)
+        final double highRecoverMargin = 75;
         final double stage3FeedPower = 0.6;    // tune down if multiple balls sneak
         final double stage3HoldPower = 0.0;
 
@@ -727,7 +735,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
         ElapsedTime time_pass = new ElapsedTime();
         time_pass.reset();
 
-        while(time_pass.milliseconds() <= 1500){
+        while(time_pass.milliseconds() <= 1800){
             stage3.setPower(stage3FeedPower);
             blockShooter.setPosition(GATE_PULSE_OPEN);
             sleep(pulseMs);
@@ -737,8 +745,8 @@ public class BlueGateNear_Version3 extends LinearOpMode {
             sleep(50); //prevent artifacts from being shot too quickly
             //stage3.setPower(stage3HoldPower);
 
-            // 4) Wait for recovery enough to avoid weak/overpowered 2nd/3rd shots
-            while (opModeIsActive() && shooter.getVelocity() < targetVel - recoverMargin) {
+            // 4) Wait for recovery enough to avoid weak/overpowered 2nd/3rd shots.getVelocity()
+            while (opModeIsActive() && shooter.getVelocity() < targetVel - lowRecoverMargin && shooter.getVelocity() > targetVel + highRecoverMargin) {
                 telemetry.addData("Shooter Vel", "%5.2f", shooter.getVelocity());
                 telemetry.update();
                 sleep(loopSleepMs);

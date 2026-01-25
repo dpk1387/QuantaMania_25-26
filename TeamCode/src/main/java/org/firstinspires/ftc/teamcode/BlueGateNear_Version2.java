@@ -1,5 +1,4 @@
 package org.firstinspires.ftc.teamcode;
-
 import android.graphics.Color;
 import android.util.Size;
 
@@ -38,7 +37,6 @@ import org.firstinspires.ftc.vision.opencv.ColorRange;
 
 import java.lang.Math;
 import java.util.concurrent.TimeUnit;
-
 @Autonomous(name = "BlueGateNear_Version 2", group = "Autonomous")
 @Config
 public class BlueGateNear_Version2 extends LinearOpMode {

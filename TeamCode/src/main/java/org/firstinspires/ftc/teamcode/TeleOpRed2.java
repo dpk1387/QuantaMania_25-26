@@ -103,7 +103,7 @@ import java.util.concurrent.TimeUnit;
 public class TeleOpRed2 extends LinearOpMode
 {
     // Adjust these numbers to suit your robot. Should be from 30 - 55 inches
-    final double DESIRED_DISTANCE = 40;//35;//45;//12.0; //  this is how close the camera should get to the target (inches)
+    final double DESIRED_DISTANCE = 40+6;//35;//45;//12.0; //  this is how close the camera should get to the target (inches)
 
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
@@ -274,6 +274,7 @@ public class TeleOpRed2 extends LinearOpMode
             /**************************************************************************************/
             // If Left Bumper is being pressed, AND we have found the desired target, Drive to target Automatically .
             if (gamepad1.left_bumper) {
+                prepShooter(); //prep shooter while moving to shooting position
                 if (targetFound) {
 
                     // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
@@ -378,6 +379,9 @@ public class TeleOpRed2 extends LinearOpMode
                 shooter.setPower(0.0);
 
             }
+            if (gamepad2.b){ //prep shooter a bit before shooting
+                prepShooter();
+            }
 
             /**************************************************************************************/
             // Apply desired axes motions to the drivetrain.
@@ -389,6 +393,10 @@ public class TeleOpRed2 extends LinearOpMode
     }
     /**************************************************************************************/
     //Move robot according to desired axes motions: Positive X is forward,  Positive Y is strafe left, Positive Yaw is counter-clockwise
+    public void prepShooter(){
+        blockShooter.setPosition(OPENSHOOTER_CLOSED);
+        shooter.setVelocity(2000);
+    }
 
     public void shoot(int totalMs) {
         moveRobot(0, 0, 0); // stops robot in place
