@@ -294,7 +294,30 @@ public class RedGateNear_Version2 extends LinearOpMode {
     }
 
 
-    public class intakeDelay implements Action {
+    public class intakeDelay1 implements Action {
+        private boolean initialized = false;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (!initialized) {
+                // Optionally log something
+                packet.put("intake Delay", "");
+                // Fire three balls in sequence (blocking, similar to SleepAction(3))
+                sleep(750); //1000 //1500
+
+                initialized = true;
+            }
+            // Returning false tells Road Runner this action is finished
+            return false;
+        }
+    }
+
+    // Convenience factory so you can just write shootAll() in your SequentialAction
+    public Action intakeWait1() {
+        return new intakeDelay1();
+    }
+
+    public class intakeDelay2 implements Action {
         private boolean initialized = false;
 
         @Override
@@ -313,8 +336,8 @@ public class RedGateNear_Version2 extends LinearOpMode {
     }
 
     // Convenience factory so you can just write shootAll() in your SequentialAction
-    public Action intakeWait() {
-        return new intakeDelay();
+    public Action intakeWait2() {
+        return new intakeDelay2();
     }
 
     /// ***********************************************************************************
@@ -329,7 +352,7 @@ public class RedGateNear_Version2 extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
 
         initMotors();
-//        initAprilTagAndColorBlob();
+        // initAprilTagAndColorBlob();
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -408,7 +431,7 @@ public class RedGateNear_Version2 extends LinearOpMode {
                                         .splineToLinearHeading(classifierPose, Math.toRadians(95)) //80 //85 //95 //go into
                                         .build(),
                                 //wait at the classifier to intake balls
-                                intakeWait(),
+                                intakeWait1(),
                                 //go to shoot
                                 drive.actionBuilder(classifierPose)
                                         .setTangent(Math.toRadians(-95)) //-100 //-90
@@ -424,7 +447,7 @@ public class RedGateNear_Version2 extends LinearOpMode {
                                         .splineToLinearHeading(classifierPose, Math.toRadians(95)) //85 //95 //go into
                                         .build(),
                                 //wait at the classifier to intake balls
-                                intakeWait(),
+                                intakeWait2(),
                                 //go to shoot
                                 drive.actionBuilder(classifierPose)
                                         .setTangent(Math.toRadians(-95)) //-95 //-90
@@ -658,7 +681,6 @@ public class RedGateNear_Version2 extends LinearOpMode {
         // if (gainControl != null) { gainControl.setGain(someMaxValue); }
     }
 
-
     public void shootN(int count) {
         final double targetVel = SHOOTER_VELOCITY + 60; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
         final double dropMargin = 100;         // tune
@@ -670,7 +692,7 @@ public class RedGateNear_Version2 extends LinearOpMode {
         final double GATE_HOLD = OPENSHOOTER_CLOSED;   // you may want a slightly-open "hold" instead
         final double GATE_PULSE_OPEN = OPENSHOOTER_OPEN; // tune so 1 ball passes, not 2
 
-        final int pulseMs = 180;//150; //200;//130;              // tune: shorter = fewer double-feeds
+        final int pulseMs = 200;//400;//130;          // tune: shorter = fewer double-feeds
         final int stableMs = 120;             // require speed stable before feeding next ball
         final int loopSleepMs = 15;
 
@@ -685,14 +707,14 @@ public class RedGateNear_Version2 extends LinearOpMode {
         ElapsedTime time_pass = new ElapsedTime();
         time_pass.reset();
 
-        while(time_pass.milliseconds() <= 1500){
+        while(time_pass.milliseconds() <= 1800){
             stage3.setPower(stage3FeedPower);
             blockShooter.setPosition(GATE_PULSE_OPEN);
             sleep(pulseMs);
 
             // 3) Immediately block the next ball
             blockShooter.setPosition(GATE_HOLD);
-            sleep(75); //prevent artifacts from being shot too quickly
+            sleep(50); //prevent artifacts from being shot too quickly
             //stage3.setPower(stage3HoldPower);
 
             // 4) Wait for recovery enough to avoid weak/overpowered 2nd/3rd shots
@@ -702,7 +724,6 @@ public class RedGateNear_Version2 extends LinearOpMode {
                 sleep(loopSleepMs);
                 idle();
             }
-
         }
 
         // Stop / reset
@@ -717,4 +738,3 @@ public class RedGateNear_Version2 extends LinearOpMode {
         stage3.setPower(s3);
     }
 }
-
