@@ -376,7 +376,7 @@ public class RedGateNear_Version2 extends LinearOpMode {
         runtime.reset();
         telemetryThread.start();
         double shootX = -29, shootY = 29;//-25, 25 //-28, 28  //30, 30
-        double newShootX = -26, newShootY = 26;//-24, 24 //-25, 25 //-23, 23 //-21, 21 //-16, 16 //-13, 13
+        double newShootX = -23, newShootY = 23;//-26, 26 //-24, 24 //-25, 25 //-23, 23 //-21, 21 //-16, 16 //-13, 13
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(135));
         Pose2d newShootPose = new Pose2d(newShootX, newShootY, Math.toRadians(135));
 
@@ -390,7 +390,7 @@ public class RedGateNear_Version2 extends LinearOpMode {
                 Actions.runBlocking(
                         new SequentialAction(
                                 startShooter(),
-                                startIntake(1.0, 0.3),
+                                startIntake(0.9, 0.3),
                                 //go to shooting place
                                 drive.actionBuilder(startPose)
                                         .strafeTo(new Vector2d(newShootX, newShootY))
@@ -398,7 +398,7 @@ public class RedGateNear_Version2 extends LinearOpMode {
                                 shooterWait(), //let shooter accelerate
                                 shootAll(), //shoot 3 balls
                                 closeGate(),
-                                startIntake(1.0, 0.3), //start intake
+                                startIntake(0.9, 0.3), //start intake
 
                                 //get the middle row balls
                                 drive.actionBuilder(newShootPose)
@@ -419,7 +419,7 @@ public class RedGateNear_Version2 extends LinearOpMode {
                                         .build(),
                                 shootAll(), //shoot balls
                                 closeGate(),
-                                startIntake(1.0, 0.3),
+                                startIntake(0.9, 0.3),
 
                                 //INTAKE FROM CLASSIFIER
                                 //----------FIRST TIME
@@ -439,7 +439,7 @@ public class RedGateNear_Version2 extends LinearOpMode {
                                         .build(),
                                 shootAll(), //shoot all
                                 closeGate(),
-                                startIntake(1.0, 0.3), //intake again if time
+                                startIntake(0.9, 0.3), //intake again if time
 
                                 //--------SECOND TIME
                                 drive.actionBuilder(newShootPose)
@@ -455,7 +455,7 @@ public class RedGateNear_Version2 extends LinearOpMode {
                                         .build(),
                                 shootAll(), //shoot all
                                 closeGate(),
-                                startIntake(1.0, 0.3), //intake again if time
+                                startIntake(0.9, 0.3), //intake again if time
 
                                 //get the inner most 3 balls
                                 drive.actionBuilder(newShootPose)
@@ -682,17 +682,17 @@ public class RedGateNear_Version2 extends LinearOpMode {
     }
 
     public void shootN(int count) {
-        final double targetVel = SHOOTER_VELOCITY + 60; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
+        final double targetVel = SHOOTER_VELOCITY + 100; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
         final double dropMargin = 100;         // tune
-        final double lowRecoverMargin = 100; //75;      // tune (smaller than dropMargin)
-        final double highRecoverMargin = 100; //75
+        final double lowRecoverMargin = 75; //100;      // tune (smaller than dropMargin)
+        final double highRecoverMargin = 150; //75
         final double stage3FeedPower = 0.6;    // tune down if multiple balls sneak
         final double stage3HoldPower = 0.0;
 
         final double GATE_HOLD = OPENSHOOTER_CLOSED;   // you may want a slightly-open "hold" instead
         final double GATE_PULSE_OPEN = OPENSHOOTER_OPEN; // tune so 1 ball passes, not 2
 
-        final int pulseMs = 200;//400;//130;          // tune: shorter = fewer double-feeds
+        final int pulseMs = 200;//180;//400;//130;          // tune: shorter = fewer double-feeds
         final int stableMs = 120;             // require speed stable before feeding next ball
         final int loopSleepMs = 15;
 
@@ -707,7 +707,7 @@ public class RedGateNear_Version2 extends LinearOpMode {
         ElapsedTime time_pass = new ElapsedTime();
         time_pass.reset();
 
-        while(time_pass.milliseconds() <= 1800){
+        while(time_pass.milliseconds() <= 1500){
             stage3.setPower(stage3FeedPower);
             blockShooter.setPosition(GATE_PULSE_OPEN);
             sleep(pulseMs);

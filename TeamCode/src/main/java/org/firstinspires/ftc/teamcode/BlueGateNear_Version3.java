@@ -390,7 +390,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
                 Actions.runBlocking(
                         new SequentialAction(
                                 startShooter(),
-                                startIntake(1.0, 0.3),
+                                startIntake(0.9, 0.3),
                                 //go to shooting place
                                 drive.actionBuilder(startPose)
                                         .strafeTo(new Vector2d(newShootX, newShootY))
@@ -398,7 +398,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
                                 shooterWait(), //let shooter accelerate
                                 shootAll(), //shoot 3 balls
                                 closeGate(),
-                                startIntake(1.0, 0.3), //start intake
+                                startIntake(0.9, 0.3), //start intake
 
                                 //get the middle row balls
                                 drive.actionBuilder(newShootPose)
@@ -421,7 +421,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
                                         .build(),
                                 shootAll(), //shoot balls
                                 closeGate(),
-                                startIntake(1.0, 0.3),
+                                startIntake(0.9, 0.3),
 
                                 //INTAKE FROM CLASSIFIER
                                 //----------FIRST TIME
@@ -441,7 +441,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
                                         .build(),
                                 shootAll(), //shoot all
                                 closeGate(),
-                                startIntake(1.0, 0.3), //intake again if time
+                                startIntake(0.9, 0.3), //intake again if time
 
                                 //--------SECOND TIME
                                 drive.actionBuilder(newShootPose)
@@ -457,7 +457,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
                                         .build(),
                                 shootAll(), //shoot all
                                 closeGate(),
-                                startIntake(1.0, 0.3), //intake again if time
+                                startIntake(0.9, 0.3), //intake again if time
 
                                 //get the inner most 3 balls
                                 drive.actionBuilder(newShootPose)
@@ -466,7 +466,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
                                         //.splineToLinearHeading(new Pose2d(-12, 44,  Math.toRadians(90)), Math.toRadians(100))
                                         //.splineToLinearHeading(new Pose2d(-11, 56,  Math.toRadians(90)), Math.toRadians(80))
                                         .splineToSplineHeading(new Pose2d(-12, -36,  Math.toRadians(-85)), Math.toRadians(-85))
-                                        .splineToLinearHeading(new Pose2d(-13.5, -53, Math.toRadians(-100)), Math.toRadians(-115))
+                                        .splineToLinearHeading(new Pose2d(-13.5, -53-3, Math.toRadians(-100)), Math.toRadians(-115))
 
                                         //go back to shooting
                                         .splineToSplineHeading(newShootPose, Math.toRadians(-225)) //-135 //go into
@@ -684,17 +684,17 @@ public class BlueGateNear_Version3 extends LinearOpMode {
 
 
     public void shootN(int count) {
-        final double targetVel = SHOOTER_VELOCITY + 60; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
+        final double targetVel = SHOOTER_VELOCITY + 100; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
         final double dropMargin = 100;         // tune
-        final double lowRecoverMargin = 100; //75;      // tune (smaller than dropMargin)
-        final double highRecoverMargin = 100; //75
+        final double lowRecoverMargin = 75; //100;      // tune (smaller than dropMargin)
+        final double highRecoverMargin = 150; //100 //75
         final double stage3FeedPower = 0.6;    // tune down if multiple balls sneak
         final double stage3HoldPower = 0.0;
 
         final double GATE_HOLD = OPENSHOOTER_CLOSED;   // you may want a slightly-open "hold" instead
         final double GATE_PULSE_OPEN = OPENSHOOTER_OPEN; // tune so 1 ball passes, not 2
 
-        final int pulseMs = 200;//400;//130;              // tune: shorter = fewer double-feeds
+        final int pulseMs = 200; //180;//400;//130;              // tune: shorter = fewer double-feeds
         final int stableMs = 120;             // require speed stable before feeding next ball
         final int loopSleepMs = 15;
 
@@ -709,7 +709,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
         ElapsedTime time_pass = new ElapsedTime();
         time_pass.reset();
 
-        while(time_pass.milliseconds() <= 1800){
+        while(time_pass.milliseconds() <= 1500){ //1800
             stage3.setPower(stage3FeedPower);
             blockShooter.setPosition(GATE_PULSE_OPEN);
             sleep(pulseMs);
