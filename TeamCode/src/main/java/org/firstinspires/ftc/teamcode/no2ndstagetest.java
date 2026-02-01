@@ -108,7 +108,7 @@ public class no2ndstagetest extends LinearOpMode
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
     //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
-    final double SPEED_GAIN  =  0.04;//0.02  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    final double SPEED_GAIN  =  0.10;//0.02  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
     final double STRAFE_GAIN = 0.03; //0.03;//0.015 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
     final double TURN_GAIN   =  0.03;//0.04;//0.02  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
@@ -168,7 +168,7 @@ public class no2ndstagetest extends LinearOpMode
         if (DESIRED_TAG_ID == 24) {
             //desired_x = -30; desired_y =  30; desired_yaw =  45;
             desired_x = -32; desired_y =  32; desired_yaw =  135; //corresonpindng do DESIRED DISTANCE 50 -- NEED TO CHeck the yaw
-            latch_x = 0; latch_y = 46; latch_yaw = 90; //0, 50, 90
+            latch_x = 8; latch_y = 66; latch_yaw = 120; //0, 50, 90
             park_x = 38.5; park_y = -35; park_yaw = 90;
         } else {
             //desired_x = -30; desired_y = -30; desired_yaw = 135;
@@ -277,16 +277,16 @@ public class no2ndstagetest extends LinearOpMode
                 if (targetFound) {
 
                     final double[] yawRange = new double[] {0,15};// 0, 25degrees
-                    final double[] distanceRange = new double[] {55,65}; //inches
+                    final double[] distanceRange = new double[] {45,65}; //inches
                     // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-                    double rangeError   = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
+                    double rangeError   = (desiredTag.ftcPose.range);
                     double headingError = desiredTag.ftcPose.bearing;
                     double yawError     = desiredTag.ftcPose.yaw;
                     // Use the speed and turn "gains" to calculate how we want the robot to move.
 
-                    if (!(rangeError>distanceRange[0] && rangeError<distanceRange[1])) {
+                    if ((rangeError>distanceRange[0] && rangeError<distanceRange[1])) {
                         drive = 0;
-                    } else drive   = Range.clip((rangeError + (distanceRange[0] + distanceRange[1])/2) * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+                    } else drive   = Range.clip((rangeError - (distanceRange[0] + distanceRange[1])/2)*SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
 
                     turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
 
