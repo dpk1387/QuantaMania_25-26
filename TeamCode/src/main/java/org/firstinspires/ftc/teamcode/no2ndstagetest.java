@@ -358,9 +358,9 @@ public class no2ndstagetest extends LinearOpMode
             lastYState = gamepad2.y;
             if(intakeMode){
                 //turn on intake power
-                stage1_power = 0.7;
+                stage1_power = 0.8; //0.7
 //                stage2_power = 0.3;//0.5;
-                stage3_power = 0.3;//0.5;
+                stage3_power = 0.5;//0.3;
                 shooter.setPower(0.0);
             }else{
                 stage1_power = 0;
@@ -404,7 +404,7 @@ public class no2ndstagetest extends LinearOpMode
         final double targetVel = 2200;//close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
         final double dropMargin = 100;         // tune
         final double recoverMargin = 200; //100;      // tune (smaller than dropMargin)
-        final double stage3FeedPower = 0.6;    // tune down if multiple balls sneak
+        final double stage3FeedPower = 0.7;    // tune down if multiple balls sneak
         final double stage3HoldPower = 0.0;
 
         intakeMode = true;
@@ -428,6 +428,7 @@ public class no2ndstagetest extends LinearOpMode
         sleep(stableizeMs);
         telemetry.addData("Ewan", "Open gate");
         telemetry.update();
+
         ElapsedTime time_pass = new ElapsedTime();
         time_pass.reset();
         boolean high = true;
