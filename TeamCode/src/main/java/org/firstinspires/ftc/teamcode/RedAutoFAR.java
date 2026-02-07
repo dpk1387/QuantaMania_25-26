@@ -9,6 +9,7 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -42,6 +43,8 @@ import java.util.concurrent.TimeUnit;
 
 @Autonomous(name = "RedAutoFAR", group = "Autonomous")
 @Config
+@Disabled
+
 public class RedAutoFAR extends LinearOpMode {
     /* HARDWARE */
     private DcMotorEx shooter = null;

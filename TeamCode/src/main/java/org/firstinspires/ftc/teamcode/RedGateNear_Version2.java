@@ -37,7 +37,7 @@ import org.firstinspires.ftc.vision.opencv.ColorRange;
 
 import java.util.concurrent.TimeUnit;
 
-@Autonomous(name = "RedGateNear_Version 2", group = "Autonomous")
+@Autonomous(name = "RED NEAR AUTONOMOUS", group = "Autonomous")
 @Config
 public class RedGateNear_Version2 extends LinearOpMode {
     /* HARDWARE */
@@ -380,7 +380,7 @@ public class RedGateNear_Version2 extends LinearOpMode {
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(135));
         Pose2d newShootPose = new Pose2d(newShootX, newShootY, Math.toRadians(135));
 
-        Pose2d classifierPose = new Pose2d(7.5+0.2, 64+2,  Math.toRadians(120)); //120-6 //120
+        Pose2d classifierPose = new Pose2d(7.5+0.2+0.5, 64+2,  Math.toRadians(120)); //120-6 //120
 
         while (opModeIsActive()){
             telemetry.addData("Shooter Velocity", shooter.getVelocity());

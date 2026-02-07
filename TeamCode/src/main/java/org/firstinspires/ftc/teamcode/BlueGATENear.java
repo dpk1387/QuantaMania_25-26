@@ -15,6 +15,7 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -40,6 +41,8 @@ import java.util.concurrent.TimeUnit;
 
 @Autonomous(name = "BlueGATENEAR", group = "Autonomous")
 @Config
+@Disabled
+
 public class BlueGATENear extends LinearOpMode {
     /* HARDWARE */
     private DcMotorEx shooter = null;

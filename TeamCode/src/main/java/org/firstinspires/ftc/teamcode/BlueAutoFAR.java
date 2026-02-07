@@ -8,6 +8,7 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.SequentialAction;
@@ -47,6 +48,7 @@ import java.util.concurrent.TimeUnit;
 
 @Autonomous(name = "BlueAutoFAR", group = "Autonomous")
 @Config
+@Disabled
 public class BlueAutoFAR extends LinearOpMode {
     /* HARDWARE */
     private DcMotorEx shooter = null;

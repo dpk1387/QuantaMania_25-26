@@ -32,6 +32,8 @@ package org.firstinspires.ftc.teamcode;
 import android.graphics.Color;
 import android.util.Size;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -99,7 +101,8 @@ import java.util.concurrent.TimeUnit;
  */
 
 @TeleOp(name="no2ndstagetest", group = "Concept")
-//@Disabled
+@Disabled
+
 public class no2ndstagetest extends LinearOpMode
 {
     // Adjust these numbers to suit your robot. Should be from 30 - 55 inches

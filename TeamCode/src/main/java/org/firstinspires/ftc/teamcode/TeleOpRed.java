@@ -39,6 +39,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.SortOrder;
 
@@ -107,13 +108,13 @@ public class TeleOpRed extends LinearOpMode
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
     //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
-    final double SPEED_GAIN  =  0.04;//0.02  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-    final double STRAFE_GAIN = 0.03;//0.015 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
+    final double SPEED_GAIN  =  0.10;//0.02  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    final double STRAFE_GAIN = 0.03; //0.03;//0.015 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
     final double TURN_GAIN   =  0.03;//0.04;//0.02  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
-    final double MAX_AUTO_SPEED = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
-    final double MAX_AUTO_STRAFE= 0.8;   //  Clip the strafing speed to this max value (adjust for your robot)
-    final double MAX_AUTO_TURN  = 0.8;   //  Clip the turn speed to this max value (adjust for your robot)
+    final double MAX_AUTO_SPEED = 0.9;   //  Clip the approach speed to this max value (adjust for your robot)
+    final double MAX_AUTO_STRAFE= 0.9;   //  Clip the strafing speed to this max value (adjust for your robot)
+    final double MAX_AUTO_TURN  = 0.9;   //  Clip the turn speed to this max value (adjust for your robot)
 
     private DcMotor frontLeftDrive = null;  //  Used to control the left front drive wheel
     private DcMotor frontRightDrive = null;  //  Used to control the right front drive wheel
@@ -121,20 +122,21 @@ public class TeleOpRed extends LinearOpMode
     private DcMotor backRightDrive = null;  //  Used to control the right back drive wheel
     private DcMotorEx shooter = null;
     private DcMotor stage1 = null;
-    private DcMotor stage2 = null;
-    private DcMotor stage3 = null;
+    //    private DcMotor stage2 = null;
+    private DcMotorEx stage3 = null;
     private Servo blockShooter = null;
-    final private double OPENSHOOTER_OPEN = 0.5;//0.3;
+    final private double OPENSHOOTER_OPEN = 0.8;
     final private double OPENSHOOTER_CLOSED = 1.0;//OPENSHOOTER_OPEN + 28;//0.55
 
     private Servo cameraServo = null;
     final private double CAMERASERVO_HIGH = 0.49;//0.55;
     //private double CAMERASERVO_LOW = 0.72;
     final private double CAMERASERVO_LOW = 0.68;
-    final private double SHOOTER_VELOCITY = 4500;//4800;//5000;
-    //private DistanceSensor leftDist;
-    //private DistanceSensor rightDist;
+    final private double SHOOTER_VELOCITY = 2300;//4800;//5000;
+//    private DistanceSensor leftDist;
+//    private DistanceSensor rightDist;
 
+    boolean intakeMode = false;
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
     private static final int DESIRED_TAG_ID = 24;//20;//24;// -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
     private VisionPortal visionPortal;               // Used to manage the video source.
@@ -165,15 +167,16 @@ public class TeleOpRed extends LinearOpMode
         double park_x, park_y, park_yaw;
         if (DESIRED_TAG_ID == 24) {
             //desired_x = -30; desired_y =  30; desired_yaw =  45;
-            desired_x = -32; desired_y =  32; desired_yaw =  135; //corresponding do DESIRED DISTANCE 50 -- NEED TO CHeck the yaw
-            latch_x = 0; latch_y = 46; latch_yaw = 90; //0, 50, 90
+            desired_x = -32; desired_y =  32; desired_yaw =  135; //corresonpindng do DESIRED DISTANCE 50 -- NEED TO CHeck the yaw
+            latch_x = 8; latch_y = 66; latch_yaw = 120; //0, 50, 90
             park_x = 38.5; park_y = -35; park_yaw = 90;
-        } else {
-            //desired_x = -30; desired_y = -30; desired_yaw = 135;
-            desired_x = -32; desired_y = -32; desired_yaw = 225;
-            latch_x = 0; latch_y = -46; latch_yaw = -90; //0, 50
-            park_x = 38.5; park_y = 35; park_yaw = -90;
         }
+//        else {
+//            //desired_x = -30; desired_y = -30; desired_yaw = 135;
+//            desired_x = -32; desired_y = -32; desired_yaw = 225;
+//            latch_x = 0; latch_y = -46; latch_yaw = -90; //0, 50
+//            park_x = 38.5; park_y = 35; park_yaw = -90;
+//        }
 
         boolean targetFound     = false;    // Set to true when an AprilTag target is detected
         double  drive           = 0;        // Desired forward power/speed (-1 to +1)
@@ -181,8 +184,8 @@ public class TeleOpRed extends LinearOpMode
         double  turn            = 0;        // Desired turning power/speed (-1 to +1)
 
         double shooter_power = 0;
-        double stage1_power = 0;
-        double stage2_power = 0;
+        double stage1_power = 0.5;
+//        double stage2_power = 0;
         double stage3_power = 0;
 
         // Initialize the Apriltag Detection process
@@ -205,13 +208,14 @@ public class TeleOpRed extends LinearOpMode
         boolean blobMode     = false;
 
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
-        boolean intakeMode = false;
         boolean lastYState = false;  // The previous state of the Y button
         boolean shooting = false;
 
         double pos= CAMERASERVO_LOW;//TEST
 
-        while (opModeIsActive()) {
+        shooter.setVelocity(SHOOTER_VELOCITY);
+        while (opModeIsActive())
+        {
             /*
             //TEST CODE -- Test servo -- open it to fine turn servo
 
@@ -273,15 +277,27 @@ public class TeleOpRed extends LinearOpMode
             // If Left Bumper is being pressed, AND we have found the desired target, Drive to target Automatically .
             if (gamepad1.left_bumper) {
                 if (targetFound) {
+
+                    final double[] yawRange = new double[] {0,15};// 0, 25degrees
+                    final double[] distanceRange = new double[] {50,55}; //45, 65 inches
                     // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-                    double rangeError   = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
+                    double rangeError   = (desiredTag.ftcPose.range);
                     double headingError = desiredTag.ftcPose.bearing;
                     double yawError     = desiredTag.ftcPose.yaw;
                     // Use the speed and turn "gains" to calculate how we want the robot to move.
-                    drive   = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-                    turn    = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-                    strafe  = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+
+                    if ((rangeError>distanceRange[0] && rangeError<distanceRange[1])) {
+                        drive = 0;
+                    } else drive   = Range.clip((rangeError - (distanceRange[0] + distanceRange[1])/2)*SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+
+                    turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
+
+                    if (!(yawError>yawRange[0] && yawError<yawRange[1])) {
+                        strafe = Range.clip(-(yawError - (yawRange[0] + yawRange[1])/2) * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+                    } else strafe = 0;
+
                     telemetry.addData("Auto", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+
                     // Update robot location according to tag - reset pinpoint position
                     if ((yawError < 15) && (rangeError < 70)) {
                         // update the position according to localization, based on tag -- this is field coordinate
@@ -319,8 +335,8 @@ public class TeleOpRed extends LinearOpMode
                         lbState = LbState.IDLE;
                         yawStableCount = 0;
                         // drive using manual POV Joystick mode.  Slow things down to make the robot more controlable.
-                        drive = -gamepad1.left_stick_y / 1.2;  // Reduce drive rate to 50%.
-                        strafe = -gamepad1.left_stick_x / 1.2;  // Reduce strafe rate to 50%.
+                        drive = -gamepad1.left_stick_y / 1.5;  // Reduce drive rate to 50%.
+                        strafe = -gamepad1.left_stick_x / 1.5;  // Reduce strafe rate to 50%.
                         turn = -gamepad1.right_stick_x / 2.0;  // Reduce turn rate to 33%.
 
 
@@ -336,28 +352,7 @@ public class TeleOpRed extends LinearOpMode
                     turn = cmd.turn;
                 }
             }
-            /**************************************************************************************/
-            /// THIS IS OPTIONAL --  to disentangle the robot from clutter
-            final double DODGE_STRAFE_POWER = 0.6;
-            // Detect rising edge of B
-            boolean curB = gamepad1.b;
-            if (curB && !prevB) {// B was just pressed: decide dodge direction ONCE
-                //dodgeDirection = -chooseDodgeDirectionOnce();
-            }
-            prevB = curB;
 
-            if (gamepad1.b && dodgeDirection != 0.0) {
-                // While B is held, keep strafing in the chosen direction.
-                drive = 0.0;
-                strafe = dodgeDirection * DODGE_STRAFE_POWER;
-                turn = 0.0;
-            }else{
-                dodgeDirection = 0.0;
-            }
-            /**************************************************************************************/
-//            pinpoint.update();
-//            pose2D = pinpoint.getPosition();
-//            telemetry.addLine(String.format("PINPOINT -- XY-yaw %6.1f %6.1f %6.1f  (inch)", pose2D.getX(DistanceUnit.INCH), pose2D.getY(DistanceUnit.INCH), pose2D.getHeading(AngleUnit.DEGREES)));
             telemetry.update();
             /**************************************************************************************/
             if (gamepad2.y && !lastYState)
@@ -365,32 +360,19 @@ public class TeleOpRed extends LinearOpMode
             lastYState = gamepad2.y;
             if(intakeMode){
                 //turn on intake power
-                stage1_power = 1.0;//0.6;
-                stage2_power = 0.3;//0.5;
-                stage3_power = 0;//0.5;
-                shooter.setPower(0.90);
-            }else{
-                stage1_power = 0;
-                stage2_power = 0;
-                stage3_power = 0;
-                shooter.setPower(0.0);
+                stage1_power = 0.5;//; //0.6 (too low)
+//                stage2_power = 0.3;//0.5;
+                stage3_power = 0.3;//0.3;
             }
             if (gamepad2.left_bumper && !shooting){
-                shootOnce();
+                shoot(1100);
                 shooting = false;
             }
 
             if (gamepad2.right_bumper && !shooting){
-                shootThree();
+                //shootThree();
+                shoot(2100);
                 shooting = false;
-
-            }
-
-            if (gamepad2.a){
-                stage1_power = 0;
-                stage2_power = 0;
-                stage3_power = 0;
-                shooter.setPower(0.0);
 
             }
 
@@ -398,43 +380,67 @@ public class TeleOpRed extends LinearOpMode
             // Apply desired axes motions to the drivetrain.
             moveRobot(drive, strafe, turn);
             //Apply power to stage1, stage2, stage3
-            runIntake(stage1_power, stage2_power, stage3_power);
+            runIntake(stage1_power, stage3_power);
             sleep(10);
         }
     }
     /**************************************************************************************/
     //Move robot according to desired axes motions: Positive X is forward,  Positive Y is strafe left, Positive Yaw is counter-clockwise
-    public void shootOnce(){
-        blockShooter.setPosition(OPENSHOOTER_CLOSED);
-        //2. start the shooter
-        shooter.setPower(0.95);
-        //shooter.setVelocity(SHOOTER_VELOCITY);
-        //sleep(200);
 
-        //3. set stage power
-        stage1.setPower(1.0); //keep stage1 as intake
-        sleep(100);
-        stage2.setPower(-0.3); //use stage 2 as the second gate
-        stage3.setPower(-0.3);
-        sleep(110);
-        stage3.setPower(1); //accelate stage3
-        //open the gate so that the ball can go through
-        blockShooter.setPosition(OPENSHOOTER_OPEN);
-        sleep(200); //250//300
-        //4. close the gate
-        blockShooter.setPosition(OPENSHOOTER_CLOSED);
-        stage3.setPower(0);
-        stage2.setPower(0.8);
-        sleep(200);//150
+    public void shoot(int totalMs) {
+        moveRobot(0, 0, 0); // stops robot in place
+        final double targetVel = 2300; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
+        final double dropMargin = 100; // tune
+        final double recoverMargin = 100; //100;      // tune (smaller than dropMargin)
+        final double stage3FeedPower = 0.6; //0.6 // tune down if multiple balls sneak
+        final double stage3HoldPower = 0.0;
 
-        stage2.setPower(0);
-    }
+        intakeMode = true;
 
-    public void shootThree(){
-        shootOnce();
-        shootOnce();
-        shootOnce();
+        final double GATE_HOLD = OPENSHOOTER_CLOSED;   // you may want a slightly-open "hold" instead
+        final double GATE_PULSE_OPEN = OPENSHOOTER_OPEN; // tune so 1 ball passes, not 2
 
+
+        final int pulseMs = 130;
+        final int stableizeMs = 300;             // startup time to accelorate before shooting
+        final int loopSleepMs = 15;
+
+        // Spin up
+        blockShooter.setPosition(GATE_HOLD);
+        shooter.setVelocity(targetVel); //target Velocity
+        stage3.setPower(stage3HoldPower);
+
+        ElapsedTime time_pass = new ElapsedTime();
+        time_pass.reset();
+        boolean high = true;
+        //1500 - stabilize Ms
+        while(time_pass.milliseconds() <= 1800 ){
+
+            stage3.setPower(stage3FeedPower);
+            blockShooter.setPosition(GATE_PULSE_OPEN);
+            sleep(pulseMs);
+
+            // 3) Immediately block the next ball
+            blockShooter.setPosition(GATE_HOLD);
+            //stage3.setPower(stage3HoldPower);
+
+            // 4) Wait for recovery enough to avoid weak 2nd/3rd shots
+            while (opModeIsActive() && shooter.getVelocity() < targetVel - recoverMargin) {
+                telemetry.addData("Shooter Vel", "%5.2f", shooter.getVelocity());
+                telemetry.update();
+                sleep(loopSleepMs);
+                idle();
+            }
+        }
+
+        telemetry.addData("Ewan", "End Shooting");
+        telemetry.update();
+
+        // Stop / reset
+//        stage3.setPower(0);
+        blockShooter.setPosition(GATE_HOLD);
+//        shooter.setVelocity(0);
+        intakeMode = true;
     }
 
     public void moveRobot(double x, double y, double yaw) {
@@ -474,14 +480,14 @@ public class TeleOpRed extends LinearOpMode
         backRightDrive = hardwareMap.get(DcMotor.class, "backRightWheel");//backRightWheel
 
         cameraServo = hardwareMap.get(Servo.class, "cameraServo");
-        //leftDist  = hardwareMap.get(DistanceSensor.class, "leftDistanceSensor");
-        //rightDist = hardwareMap.get(DistanceSensor.class, "rightDistanceSensor");
+//        leftDist  = hardwareMap.get(DistanceSensor.class, "leftDistanceSensor");
+//        rightDist = hardwareMap.get(DistanceSensor.class, "rightDistanceSensor");
 
         //1. need initial the shooter, stage1, 2, 3, servo
         shooter = hardwareMap.get(DcMotorEx.class, "shooter");
         stage1 = hardwareMap.get(DcMotor.class, "stage1");
-        stage2 = hardwareMap.get(DcMotor.class, "stage2");
-        stage3 = hardwareMap.get(DcMotor.class, "stage3");
+//        stage2 = hardwareMap.get(DcMotor.class, "stage2");
+        stage3 = hardwareMap.get(DcMotorEx.class, "stage3");
         blockShooter = hardwareMap.get(Servo.class, "blockShooter");
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
@@ -499,7 +505,7 @@ public class TeleOpRed extends LinearOpMode
 
         shooter.setDirection(DcMotor.Direction.REVERSE);
         stage1.setDirection(DcMotor.Direction.REVERSE);
-        stage2.setDirection(DcMotor.Direction.REVERSE);
+//        stage2.setDirection(DcMotor.Direction.REVERSE);
         stage3.setDirection(DcMotor.Direction.REVERSE);
         blockShooter.setDirection(Servo.Direction.REVERSE); //Do we really need this?
 
@@ -731,7 +737,6 @@ public class TeleOpRed extends LinearOpMode
         if (a < 0) a += 360.0;
         return a - 180.0;
     }
-    /**************************************************************************************/
     // BLOB related
     // Put this inside your OpMode class (but outside any methods)
     private static class DriveCommand {
@@ -746,7 +751,6 @@ public class TeleOpRed extends LinearOpMode
             this.validBlob = v;
         }
     }
-
     private DriveCommand drivePinpoint(double desired_x, double desired_y, double desired_yaw){
         double  drive           = 0;        // Desired forward power/speed (-1 to +1)
         double  strafe          = 0;        // Desired strafe power/speed (-1 to +1)
@@ -995,56 +999,55 @@ public class TeleOpRed extends LinearOpMode
      * Uses two REV 2M distance sensors at 45° left/right.
      * Returns DriveCommand(drive=0, strafe, turn=0).
      * When both sides are clear, returns near-zero strafe so caller can resume “home”.
-     */
-    /**************************************************************************************/
-    /**
+     /**
      * Decide initial dodge direction based on current distances.
      * Returns -1 for strafe left, +1 for strafe right, or 0 for no dodge.
      */
-    /*private double chooseDodgeDirectionOnce() {
-         LOGIC HERE IS REVERSED!!!!!
-        final double NEAR_THRESHOLD_IN = 18.0;  // tune as needed
-        double leftIn  = leftDist.getDistance(DistanceUnit.INCH);
-        double rightIn = rightDist.getDistance(DistanceUnit.INCH);
 
-        if (Double.isNaN(leftIn) || Double.isInfinite(leftIn))  leftIn  = 1000;
-        if (Double.isNaN(rightIn) || Double.isInfinite(rightIn)) rightIn = 1000;
-
-        telemetry.addData("Dodge leftIn",  "%.1f", leftIn);
-        telemetry.addData("Dodge rightIn", "%.1f", rightIn);
-
-        boolean leftNear  = leftIn  < NEAR_THRESHOLD_IN;
-        boolean rightNear = rightIn < NEAR_THRESHOLD_IN;
-
-        // Simple rules:
-        // - If only left is near → slide right (+1)
-        // - If only right is near → slide left (-1)
-        // - If both near → slide toward side with more room
-        // - If neither near → no dodge (0)
-        if (leftNear && !rightNear) {
-            telemetry.addLine("Dodge dir chosen: RIGHT (obstacle left)");
-            return +1.0;
-        } else if (rightNear && !leftNear) {
-            telemetry.addLine("Dodge dir chosen: LEFT (obstacle right)");
-            return -1.0;
-        } else if (leftNear && rightNear) {
-            if (leftIn > rightIn) {
-                telemetry.addLine("Dodge dir chosen: LEFT (more room left)");
-                return -1.0;
-            } else {
-                telemetry.addLine("Dodge dir chosen: RIGHT (more room right)");
-                return +1.0;
-            }
-        } else {
-            telemetry.addLine("Dodge dir chosen: NONE (no close obstacle)");
-            return 0.0;
-        }
-    } */
+//    private double chooseDodgeDirectionOnce() {
+//        /* LOGIC HERE IS REVERSED!!!!!*/
+//        final double NEAR_THRESHOLD_IN = 18.0;  // tune as needed
+////        double leftIn  = leftDist.getDistance(DistanceUnit.INCH);
+////        double rightIn = rightDist.getDistance(DistanceUnit.INCH);
+//
+//        if (Double.isNaN(leftIn) || Double.isInfinite(leftIn))  leftIn  = 1000;
+//        if (Double.isNaN(rightIn) || Double.isInfinite(rightIn)) rightIn = 1000;
+//
+//        telemetry.addData("Dodge leftIn",  "%.1f", leftIn);
+//        telemetry.addData("Dodge rightIn", "%.1f", rightIn);
+//
+//        boolean leftNear  = leftIn  < NEAR_THRESHOLD_IN;
+//        boolean rightNear = rightIn < NEAR_THRESHOLD_IN;
+//
+//        // Simple rules:
+//        // - If only left is near → slide right (+1)
+//        // - If only right is near → slide left (-1)
+//        // - If both near → slide toward side with more room
+//        // - If neither near → no dodge (0)
+//        if (leftNear && !rightNear) {
+//            telemetry.addLine("Dodge dir chosen: RIGHT (obstacle left)");
+//            return +1.0;
+//        } else if (rightNear && !leftNear) {
+//            telemetry.addLine("Dodge dir chosen: LEFT (obstacle right)");
+//            return -1.0;
+//        } else if (leftNear && rightNear) {
+//            if (leftIn > rightIn) {
+//                telemetry.addLine("Dodge dir chosen: LEFT (more room left)");
+//                return -1.0;
+//            } else {
+//                telemetry.addLine("Dodge dir chosen: RIGHT (more room right)");
+//                return +1.0;
+//            }
+//        } else {
+//            telemetry.addLine("Dodge dir chosen: NONE (no close obstacle)");
+//            return 0.0;
+//        }
+//    }
     /**************************************************************************************/
     //INTAKE
-    public void runIntake(double stage1_power, double stage2_power, double stage3_power){
+    public void runIntake(double stage1_power, double stage3_power){
         stage1.setPower(stage1_power);
-        stage2.setPower(stage2_power);
+//        stage2.setPower(stage2_power);
         stage3.setPower(stage3_power);
     }
 }

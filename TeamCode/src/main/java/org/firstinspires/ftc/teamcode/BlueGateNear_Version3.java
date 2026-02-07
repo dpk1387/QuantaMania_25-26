@@ -37,7 +37,7 @@ import org.firstinspires.ftc.vision.opencv.ColorRange;
 
 import java.util.concurrent.TimeUnit;
 
-@Autonomous(name = "BlueGateNear_Version 3", group = "Autonomous")
+@Autonomous(name = "BLUE NEAR AUTONOMOUS", group = "Autonomous")
 @Config
 public class BlueGateNear_Version3 extends LinearOpMode {
     /* HARDWARE */
@@ -303,7 +303,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
                 // Optionally log something
                 packet.put("intake Delay", "");
                 // Fire three balls in sequence (blocking, similar to SleepAction(3))
-                sleep(750); //1000 //1500
+                sleep(650); //550 //750 //1000 //1500
 
                 initialized = true;
             }
@@ -380,7 +380,8 @@ public class BlueGateNear_Version3 extends LinearOpMode {
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(-135));
         Pose2d newShootPose = new Pose2d(newShootX, newShootY, Math.toRadians(-135));
 
-        Pose2d classifierPose = new Pose2d(7.5+0.2, -64-2-1,  Math.toRadians(240)); //240 //120
+        // FROM RED:  Pose2d classifierPose = new Pose2d(7.5+0.2+0.5, 64+2,  Math.toRadians(120)); //120-6 //120
+        Pose2d classifierPose = new Pose2d(7.5+0.2+0.5, -64-2,  Math.toRadians(240)); //240 //-120
 
         while (opModeIsActive()){
             telemetry.addData("Shooter Velocity", shooter.getVelocity());
@@ -445,6 +446,9 @@ public class BlueGateNear_Version3 extends LinearOpMode {
                                 drive.actionBuilder(newShootPose)
                                         .setTangent(Math.toRadians(15)) //25 //15
                                         .splineToLinearHeading(classifierPose, Math.toRadians(-95)) //85 //95 //go into
+                                        //Pose2d classifierPose = new Pose2d(7.5+0.2+0.5, -64-2,  Math.toRadians(240)); //240 //-120
+                                        .strafeTo(new Vector2d(7.5+0.2+0.5+3, -64-2+2))
+
                                         .build(),
                                 //wait at the classifier to intake balls
                                 intakeWait2(),
@@ -707,7 +711,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
         ElapsedTime time_pass = new ElapsedTime();
         time_pass.reset();
 
-        while(time_pass.milliseconds() <= 1500){ //1800
+        while(time_pass.milliseconds() <= 1200){ //1500 //1800
             stage3.setPower(stage3FeedPower);
             blockShooter.setPosition(GATE_PULSE_OPEN);
             sleep(pulseMs);
