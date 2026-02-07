@@ -404,8 +404,8 @@ public class RedGateNear_Version2 extends LinearOpMode {
                                 drive.actionBuilder(newShootPose)
                                         .setTangent(Math.toRadians(-3)) // -5
                                         .splineToSplineHeading(new Pose2d(7.5, 29, Math.toRadians(80)), Math.toRadians(50))
-                                        //                                                      67.8
-                                        .splineToLinearHeading(new Pose2d(5.5, 55-3, Math.toRadians(110)), Math.toRadians(108-6))
+
+                                        .splineToLinearHeading(new Pose2d(5.5, 55, Math.toRadians(110)), Math.toRadians(108-6))
                                         .setTangent(Math.toRadians(-90))
                                         //.setTangent(Math.toRadians(32)) //15
                                         //go to intake balls
@@ -464,7 +464,7 @@ public class RedGateNear_Version2 extends LinearOpMode {
                                         //.splineToLinearHeading(new Pose2d(-12, 44,  Math.toRadians(90)), Math.toRadians(100))
                                         //.splineToLinearHeading(new Pose2d(-11, 56,  Math.toRadians(90)), Math.toRadians(80))
                                         .splineToSplineHeading(new Pose2d(-12, 36,  Math.toRadians(85)), Math.toRadians(85))
-                                        .splineToLinearHeading(new Pose2d(-13.5, 48, Math.toRadians(100)), Math.toRadians(115))
+                                        .splineToLinearHeading(new Pose2d(-13.5, 53+3, Math.toRadians(100)), Math.toRadians(115))
 
                                         //go back to shooting
                                         .splineToSplineHeading(newShootPose, Math.toRadians(225)) //-135 //go into
@@ -718,7 +718,7 @@ public class RedGateNear_Version2 extends LinearOpMode {
             //stage3.setPower(stage3HoldPower);
 
             // 4) Wait for recovery enough to avoid weak/overpowered 2nd/3rd shots
-            while (opModeIsActive() && (shooter.getVelocity() < targetVel - lowRecoverMargin || shooter.getVelocity() > targetVel + highRecoverMargin)) { //NEW: avoid overpowered shots as well
+            while (opModeIsActive() && (shooter.getVelocity() < targetVel - lowRecoverMargin && shooter.getVelocity() > targetVel + highRecoverMargin)) { //NEW: avoid overpowered shots as well
                 telemetry.addData("Shooter Vel", "%5.2f", shooter.getVelocity());
                 telemetry.update();
                 sleep(loopSleepMs);

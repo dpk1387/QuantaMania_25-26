@@ -376,11 +376,11 @@ public class BlueGateNear_Version3 extends LinearOpMode {
         runtime.reset();
         telemetryThread.start();
         double shootX = -29, shootY = -29; //-29, -29 //-27.5, -27.5 //-28, 28 //30, 30
-        double newShootX = -26, newShootY = -26; //-27, -27//-24, -24 //-21, 21 //-16, 16 //-13, 13
+        double newShootX = -23, newShootY = -23; //-27, -27//-24, -24 //-21, 21 //-16, 16 //-13, 13
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(-135));
         Pose2d newShootPose = new Pose2d(newShootX, newShootY, Math.toRadians(-135));
 
-        Pose2d classifierPose = new Pose2d(7.5+0.2, -64-2,  Math.toRadians(240)); //240 //120
+        Pose2d classifierPose = new Pose2d(7.5+0.2, -64-2-1,  Math.toRadians(240)); //240 //120
 
         while (opModeIsActive()){
             telemetry.addData("Shooter Velocity", shooter.getVelocity());
@@ -404,8 +404,6 @@ public class BlueGateNear_Version3 extends LinearOpMode {
                                 drive.actionBuilder(newShootPose)
                                         .setTangent(Math.toRadians(3)) // -5
                                         .splineToSplineHeading(new Pose2d(7.5, -29, Math.toRadians(-80)), Math.toRadians(-50))
-                                        //                                                      -67.8
-
 
                                         .splineToLinearHeading(new Pose2d(5.0, -55, Math.toRadians(-110)), Math.toRadians(-102))
                                         .setTangent(Math.toRadians(90))
@@ -666,6 +664,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
             sleep(20);
         }
     }
+
     private void setBlobExposureAuto() {
         if (visionPortal == null) return;
 
@@ -681,7 +680,6 @@ public class BlueGateNear_Version3 extends LinearOpMode {
         // Optional: some drivers like to cap gain to reduce noise, if supported
         // if (gainControl != null) { gainControl.setGain(someMaxValue); }
     }
-
 
     public void shootN(int count) {
         final double targetVel = SHOOTER_VELOCITY + 100; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
