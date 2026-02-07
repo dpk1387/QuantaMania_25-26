@@ -112,9 +112,9 @@ public class no2ndstagetest extends LinearOpMode
     final double STRAFE_GAIN = 0.03; //0.03;//0.015 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
     final double TURN_GAIN   =  0.03;//0.04;//0.02  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
-    final double MAX_AUTO_SPEED = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
-    final double MAX_AUTO_STRAFE= 0.8;   //  Clip the strafing speed to this max value (adjust for your robot)
-    final double MAX_AUTO_TURN  = 0.8;   //  Clip the turn speed to this max value (adjust for your robot)
+    final double MAX_AUTO_SPEED = 0.9;   //  Clip the approach speed to this max value (adjust for your robot)
+    final double MAX_AUTO_STRAFE= 0.9;   //  Clip the strafing speed to this max value (adjust for your robot)
+    final double MAX_AUTO_TURN  = 0.9;   //  Clip the turn speed to this max value (adjust for your robot)
 
     private DcMotor frontLeftDrive = null;  //  Used to control the left front drive wheel
     private DcMotor frontRightDrive = null;  //  Used to control the right front drive wheel
@@ -132,7 +132,7 @@ public class no2ndstagetest extends LinearOpMode
     final private double CAMERASERVO_HIGH = 0.49;//0.55;
     //private double CAMERASERVO_LOW = 0.72;
     final private double CAMERASERVO_LOW = 0.68;
-    final private double SHOOTER_VELOCITY = 4500;//4800;//5000;
+    final private double SHOOTER_VELOCITY = 2300;//4800;//5000;
 //    private DistanceSensor leftDist;
 //    private DistanceSensor rightDist;
 
@@ -212,6 +212,7 @@ public class no2ndstagetest extends LinearOpMode
 
         double pos= CAMERASERVO_LOW;//TEST
 
+        shooter.setVelocity(SHOOTER_VELOCITY);
         while (opModeIsActive())
         {
             /*
@@ -277,7 +278,7 @@ public class no2ndstagetest extends LinearOpMode
                 if (targetFound) {
 
                     final double[] yawRange = new double[] {0,15};// 0, 25degrees
-                    final double[] distanceRange = new double[] {45,65}; //inches
+                    final double[] distanceRange = new double[] {50,55}; //45, 65 inches
                     // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
                     double rangeError   = (desiredTag.ftcPose.range);
                     double headingError = desiredTag.ftcPose.bearing;
@@ -358,15 +359,9 @@ public class no2ndstagetest extends LinearOpMode
             lastYState = gamepad2.y;
             if(intakeMode){
                 //turn on intake power
-                stage1_power = 0.8; //0.7
+                stage1_power = 0.5;//; //0.6 (too low)
 //                stage2_power = 0.3;//0.5;
-                stage3_power = 0.5;//0.3;
-                shooter.setPower(0.0);
-            }else{
-                stage1_power = 0;
-//                stage2_power = 0;
-                stage3_power = 0;
-                shooter.setPower(0.0);
+                stage3_power = 0.3;//0.3;
             }
             if (gamepad2.left_bumper && !shooting){
                 shoot(1100);
@@ -377,14 +372,6 @@ public class no2ndstagetest extends LinearOpMode
                 //shootThree();
                 shoot(2100);
                 shooting = false;
-
-            }
-
-            if (gamepad2.a){
-                stage1_power = 0;
-//                stage2_power = 0;
-                stage3_power = 0;
-                shooter.setPower(0.0);
 
             }
 
@@ -401,10 +388,10 @@ public class no2ndstagetest extends LinearOpMode
 
     public void shoot(int totalMs) {
         moveRobot(0, 0, 0); // stops robot in place
-        final double targetVel = 2200;//close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
-        final double dropMargin = 100;         // tune
-        final double recoverMargin = 200; //100;      // tune (smaller than dropMargin)
-        final double stage3FeedPower = 0.7;    // tune down if multiple balls sneak
+        final double targetVel = 2300; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
+        final double dropMargin = 100; // tune
+        final double recoverMargin = 100; //100;      // tune (smaller than dropMargin)
+        final double stage3FeedPower = 0.6; //0.6 // tune down if multiple balls sneak
         final double stage3HoldPower = 0.0;
 
         intakeMode = true;
@@ -412,27 +399,21 @@ public class no2ndstagetest extends LinearOpMode
         final double GATE_HOLD = OPENSHOOTER_CLOSED;   // you may want a slightly-open "hold" instead
         final double GATE_PULSE_OPEN = OPENSHOOTER_OPEN; // tune so 1 ball passes, not 2
 
-        final int pulseMs = 200;//130;              // tune: shorter = fewer double-feeds
-        final int stableizeMs = 600;             // startup time to accelorate before shooting
+
+        final int pulseMs = 130;
+        final int stableizeMs = 300;             // startup time to accelorate before shooting
         final int loopSleepMs = 15;
 
         // Spin up
         blockShooter.setPosition(GATE_HOLD);
-        shooter.setVelocity(targetVel);
-
-        //stage1.setPower(0.6);  //0.6, 1.0       // intake
+        shooter.setVelocity(targetVel); //target Velocity
         stage3.setPower(stage3HoldPower);
-
-        telemetry.addData("Ewan", "accelerating shooter");
-        telemetry.update();
-        sleep(stableizeMs);
-        telemetry.addData("Ewan", "Open gate");
-        telemetry.update();
 
         ElapsedTime time_pass = new ElapsedTime();
         time_pass.reset();
         boolean high = true;
-        while(time_pass.milliseconds() <= totalMs - stableizeMs){
+                                    //1500 - stabilize Ms
+        while(time_pass.milliseconds() <= 1800 ){
 
             stage3.setPower(stage3FeedPower);
             blockShooter.setPosition(GATE_PULSE_OPEN);
@@ -450,13 +431,14 @@ public class no2ndstagetest extends LinearOpMode
                 idle();
             }
         }
+
         telemetry.addData("Ewan", "End Shooting");
         telemetry.update();
 
         // Stop / reset
-        stage3.setPower(0);
+//        stage3.setPower(0);
         blockShooter.setPosition(GATE_HOLD);
-        shooter.setVelocity(0);
+//        shooter.setVelocity(0);
         intakeMode = true;
     }
 
