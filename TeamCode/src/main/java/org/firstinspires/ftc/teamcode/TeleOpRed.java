@@ -121,6 +121,7 @@ public class TeleOpRed extends LinearOpMode
     private DcMotor backLeftDrive = null;  //  Used to control the left back drive wheel
     private DcMotor backRightDrive = null;  //  Used to control the right back drive wheel
     private DcMotorEx shooter = null;
+    private DcMotorEx shooter2 = null;
     private DcMotor stage1 = null;
     //    private DcMotor stage2 = null;
     private DcMotorEx stage3 = null;
@@ -133,6 +134,9 @@ public class TeleOpRed extends LinearOpMode
     //private double CAMERASERVO_LOW = 0.72;
     final private double CAMERASERVO_LOW = 0.68;
     final private double SHOOTER_VELOCITY = 2300;//4800;//5000;
+
+    final private double SHOOTER_GEAR_RATIO = 17.0/18.0; //bottom / top
+
 //    private DistanceSensor leftDist;
 //    private DistanceSensor rightDist;
 
@@ -184,7 +188,7 @@ public class TeleOpRed extends LinearOpMode
         double  turn            = 0;        // Desired turning power/speed (-1 to +1)
 
         double shooter_power = 0;
-        double stage1_power = 0.5;
+        double stage1_power = 0.8;//0.5
 //        double stage2_power = 0;
         double stage3_power = 0;
 
@@ -213,7 +217,8 @@ public class TeleOpRed extends LinearOpMode
 
         double pos= CAMERASERVO_LOW;//TEST
 
-        shooter.setVelocity(SHOOTER_VELOCITY);
+//        shooter.setVelocity(SHOOTER_VELOCITY);
+        shootVelocity(SHOOTER_VELOCITY);
         while (opModeIsActive())
         {
             /*
@@ -360,7 +365,7 @@ public class TeleOpRed extends LinearOpMode
             lastYState = gamepad2.y;
             if(intakeMode){
                 //turn on intake power
-                stage1_power = 0.5;//; //0.6 (too low)
+                stage1_power = 0.8;//0.5; //0.6 (too low)
 //                stage2_power = 0.3;//0.5;
                 stage3_power = 0.3;//0.3;
             }
@@ -401,20 +406,21 @@ public class TeleOpRed extends LinearOpMode
         final double GATE_PULSE_OPEN = OPENSHOOTER_OPEN; // tune so 1 ball passes, not 2
 
 
-        final int pulseMs = 130;
-        final int stableizeMs = 300;             // startup time to accelorate before shooting
+        final int pulseMs = 250;
+        //final int stableizeMs = 300;             // startup time to accelorate before shooting
         final int loopSleepMs = 15;
 
         // Spin up
         blockShooter.setPosition(GATE_HOLD);
-        shooter.setVelocity(targetVel); //target Velocity
+//        shooter.setVelocity(targetVel); //target Velocity
+        shootVelocity(targetVel);
         stage3.setPower(stage3HoldPower);
 
         ElapsedTime time_pass = new ElapsedTime();
         time_pass.reset();
         boolean high = true;
         //1500 - stabilize Ms
-        while(time_pass.milliseconds() <= 1800 ){
+        while(time_pass.milliseconds() <= 1000 ){
 
             stage3.setPower(stage3FeedPower);
             blockShooter.setPosition(GATE_PULSE_OPEN);
@@ -485,6 +491,8 @@ public class TeleOpRed extends LinearOpMode
 
         //1. need initial the shooter, stage1, 2, 3, servo
         shooter = hardwareMap.get(DcMotorEx.class, "shooter");
+        shooter2 = hardwareMap.get(DcMotorEx.class, "topShooterMotor");
+
         stage1 = hardwareMap.get(DcMotor.class, "stage1");
 //        stage2 = hardwareMap.get(DcMotor.class, "stage2");
         stage3 = hardwareMap.get(DcMotorEx.class, "stage3");
@@ -509,8 +517,9 @@ public class TeleOpRed extends LinearOpMode
         stage3.setDirection(DcMotor.Direction.REVERSE);
         blockShooter.setDirection(Servo.Direction.REVERSE); //Do we really need this?
 
-        shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooter2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
     }
     //Initialize the AprilTag processor.
     private void initAprilTagAndColorBlob() {
@@ -1049,6 +1058,12 @@ public class TeleOpRed extends LinearOpMode
         stage1.setPower(stage1_power);
 //        stage2.setPower(stage2_power);
         stage3.setPower(stage3_power);
+    }
+
+    public void shootVelocity(double base){
+        shooter.setVelocity(base);
+        shooter2.setVelocity((double) (base * SHOOTER_GEAR_RATIO));
+
     }
 }
 
