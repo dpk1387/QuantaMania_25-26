@@ -133,9 +133,10 @@ public class TeleOpRed extends LinearOpMode
     final private double CAMERASERVO_HIGH = 0.49;//0.55;
     //private double CAMERASERVO_LOW = 0.72;
     final private double CAMERASERVO_LOW = 0.68;
-    final private double SHOOTER_VELOCITY = 2300;//4800;//5000;
+    private double SHOOTER_VELOCITY = 2500;//4800;//5000;
 
     final private double SHOOTER_GEAR_RATIO = 17.0/18.0; //bottom / top
+
 
 //    private DistanceSensor leftDist;
 //    private DistanceSensor rightDist;
@@ -162,11 +163,17 @@ public class TeleOpRed extends LinearOpMode
     private boolean prevB = false;
     private double dodgeDirection = 0.0;   // -1 = left, +1 = right, 0 = no dodge
 
+    private double rangeError = 0; //desiredTag.ftcPose.range;
+    private double headingError =0 ;// desiredTag.ftcPose.bearing;
+    private double yawError = 0; //= desiredTag.ftcPose.yaw;
+
+
     @Override public void runOpMode()
     {
         /*MORE PARAMETER SETTINGS*/
         //desired shoot location, when tag view is not available - ie. robot will blindly aim to return to this location
         double desired_x, desired_y, desired_yaw; // FIELD: x=right, y=forward, deg (0°=+Y)
+        double far_x, far_y, far_yaw;
         double latch_x, latch_y, latch_yaw; //0, 50
         double park_x, park_y, park_yaw;
         if (DESIRED_TAG_ID == 24) {
@@ -174,6 +181,9 @@ public class TeleOpRed extends LinearOpMode
             desired_x = -32; desired_y =  32; desired_yaw =  135; //corresonpindng do DESIRED DISTANCE 50 -- NEED TO CHeck the yaw
             latch_x = 8; latch_y = 66; latch_yaw = 120; //0, 50, 90
             park_x = 38.5; park_y = -35; park_yaw = 90;
+
+            far_x = 48; far_y = 0; far_yaw = 150; //far shooting locations
+            //yaw okay around 155, just a little close to the left side of the goal
         }
 //        else {
 //            //desired_x = -30; desired_y = -30; desired_yaw = 135;
@@ -187,10 +197,8 @@ public class TeleOpRed extends LinearOpMode
         double  strafe          = 0;        // Desired strafe power/speed (-1 to +1)
         double  turn            = 0;        // Desired turning power/speed (-1 to +1)
 
-        double shooter_power = 0;
         double stage1_power = 0.8;//0.5
-//        double stage2_power = 0;
-        double stage3_power = 0;
+        double stage3_power = 0.3;
 
         // Initialize the Apriltag Detection process
         initAprilTagAndColorBlob();
@@ -217,7 +225,6 @@ public class TeleOpRed extends LinearOpMode
 
         double pos= CAMERASERVO_LOW;//TEST
 
-//        shooter.setVelocity(SHOOTER_VELOCITY);
         shootVelocity(SHOOTER_VELOCITY);
         while (opModeIsActive())
         {
@@ -262,8 +269,10 @@ public class TeleOpRed extends LinearOpMode
                         targetFound = true;                         // Yes, we want to use this tag.
                         desiredTag = detection;
                         break;  // don't look any further.
-                    }else
+                    }else{
                         telemetry.addData("Skipping", "Tag ID %d is not desired", detection.id);
+                        desiredTag = null;
+                    }
                 }
             }
             /**************************************************************************************/
@@ -275,6 +284,10 @@ public class TeleOpRed extends LinearOpMode
                 telemetry.addData("Bearing","%3.0f degrees", desiredTag.ftcPose.bearing);
                 telemetry.addData("Yaw","%3.0f degrees", desiredTag.ftcPose.yaw);
                 telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", desiredTag.robotPose.getPosition().x, desiredTag.robotPose.getPosition().y,desiredTag.robotPose.getPosition().z));
+
+                telemetry.addData("yawError", yawError);
+                telemetry.addData("headingError", headingError);
+                telemetry.addData("rangeError", rangeError);
             } else {
                 telemetry.addData("\n>","Drive using joysticks to find valid target\n");
             }
@@ -286,9 +299,9 @@ public class TeleOpRed extends LinearOpMode
                     final double[] yawRange = new double[] {0,15};// 0, 25degrees
                     final double[] distanceRange = new double[] {50,55}; //45, 65 inches
                     // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-                    double rangeError   = (desiredTag.ftcPose.range);
-                    double headingError = desiredTag.ftcPose.bearing;
-                    double yawError     = desiredTag.ftcPose.yaw;
+                    rangeError   = (desiredTag.ftcPose.range);
+                    headingError = desiredTag.ftcPose.bearing;
+                    yawError     = desiredTag.ftcPose.yaw;
                     // Use the speed and turn "gains" to calculate how we want the robot to move.
 
                     if ((rangeError>distanceRange[0] && rangeError<distanceRange[1])) {
@@ -335,6 +348,12 @@ public class TeleOpRed extends LinearOpMode
                         drive = cmd.drive;
                         strafe = cmd.strafe;
                         turn = cmd.turn;
+                    }
+                    else if (gamepad1.right_trigger > 0.5) {
+                            DriveCommand cmd = drivePinpoint(far_x, far_y, far_yaw); //result always valid
+                            drive = cmd.drive;
+                            strafe = cmd.strafe;
+                            turn = cmd.turn;
                     } else {
                         // LB released → reset for next run
                         lbState = LbState.IDLE;
@@ -349,16 +368,13 @@ public class TeleOpRed extends LinearOpMode
                     }
                 }
             // if right bumper is press -> and there is purple ball in sights -> turn and drive toward it
-            if (gamepad1.right_trigger > 0.5) {
-                DriveCommand cmd = autoAcquirePurple();
-                if (cmd.validBlob) {
-                    drive = cmd.drive;
-                    strafe = cmd.strafe;
-                    turn = cmd.turn;
-                }
-            }
 
+
+//            telemetry.addData("yawError", yawError);
+//            telemetry.addData("headingError", headingError);
+//            telemetry.addData("rangeError", rangeError);
             telemetry.update();
+
             /**************************************************************************************/
             if (gamepad2.y && !lastYState)
                 intakeMode = !intakeMode;
@@ -366,17 +382,19 @@ public class TeleOpRed extends LinearOpMode
             if(intakeMode){
                 //turn on intake power
                 stage1_power = 0.8;//0.5; //0.6 (too low)
-//                stage2_power = 0.3;//0.5;
                 stage3_power = 0.3;//0.3;
             }
             if (gamepad2.left_bumper && !shooting){
-                shoot(1100);
+//                shoot(1100);
+                shootBasedOnDistance();
                 shooting = false;
             }
 
             if (gamepad2.right_bumper && !shooting){
                 //shootThree();
-                shoot(2100);
+//                shoot(2100);
+                shootBasedOnDistance();
+
                 shooting = false;
 
             }
@@ -394,9 +412,8 @@ public class TeleOpRed extends LinearOpMode
 
     public void shoot(int totalMs) {
         moveRobot(0, 0, 0); // stops robot in place
-        final double targetVel = 2300; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
-        final double dropMargin = 100; // tune
-        final double recoverMargin = 100; //100;      // tune (smaller than dropMargin)
+        double targetVel = SHOOTER_VELOCITY; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
+        final double recoverMargin = 100+100; //100;      // tune (smaller than dropMargin)
         final double stage3FeedPower = 0.6; //0.6 // tune down if multiple balls sneak
         final double stage3HoldPower = 0.0;
 
@@ -406,8 +423,7 @@ public class TeleOpRed extends LinearOpMode
         final double GATE_PULSE_OPEN = OPENSHOOTER_OPEN; // tune so 1 ball passes, not 2
 
 
-        final int pulseMs = 250;
-        //final int stableizeMs = 300;             // startup time to accelorate before shooting
+        final int pulseMs = 200; //250
         final int loopSleepMs = 15;
 
         // Spin up
@@ -420,6 +436,7 @@ public class TeleOpRed extends LinearOpMode
         time_pass.reset();
         boolean high = true;
         //1500 - stabilize Ms
+
         while(time_pass.milliseconds() <= 1000 ){
 
             stage3.setPower(stage3FeedPower);
@@ -448,6 +465,141 @@ public class TeleOpRed extends LinearOpMode
 //        shooter.setVelocity(0);
         intakeMode = true;
     }
+    public double distanceToVel(double d) {
+        // Convert from distance to velocity in a linear manner
+        final double DMIN = 36.0;
+        final double DMAX = 110.0;
+        final double VEL_MIN = 1900.0;
+        final double VEL_MAX = 2500.0;
+
+        // Clamp distance to [DMIN, DMAX]
+        if (d <= DMIN) return VEL_MIN;
+        if (d >= DMAX) return VEL_MAX;
+
+        // Linear interpolation
+        double t = (d - DMIN) / (DMAX - DMIN);          // t in [0, 1]
+        double vel = VEL_MIN + t * (VEL_MAX - VEL_MIN); // vel in [VEL_MIN, VEL_MAX]
+
+        return vel;
+    }
+    public void shootBasedOnDistance() {
+        /*
+        1. read camera distance + pose
+        2. move robot a lit bit to aim exactly at the April TAG -
+        [REFINE LATER]
+        3. set velocity based on distance
+        4. shoot
+        * */
+        double targetVel = SHOOTER_VELOCITY; //close = 2200. far = 2500.
+
+        //check for desired tag
+        if (desiredTag != null) {
+//            double rangeError = desiredTag.ftcPose.range;
+//            double headingError = desiredTag.ftcPose.bearing;
+//            double yawError = desiredTag.ftcPose.yaw;
+
+            rangeError = desiredTag.ftcPose.range;
+            headingError = desiredTag.ftcPose.bearing;
+            yawError = desiredTag.ftcPose.yaw;
+            //
+            // Use the speed and turn "gains" to calculate how we want the robot to move.
+//            double drive = 0;
+//            double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
+//            double strafe = 0;
+//            moveRobot(drive, strafe, turn);
+
+            quickTurnToTagBearing(24);
+            targetVel = distanceToVel(rangeError);
+        }
+
+        /**SHOOTING**/
+        final double stage3FeedPower = 0.6; //0.6 // tune down if multiple balls sneak
+        final int waitForVelocity = 100;
+        final int waitForShooting = 500+100;///wait for all 3 balls
+        blockShooter.setPosition(OPENSHOOTER_CLOSED);
+        shootVelocity(targetVel);
+        stage3.setPower(stage3FeedPower);
+        sleep(waitForVelocity);
+        //Shoot...
+        blockShooter.setPosition(OPENSHOOTER_OPEN);
+        sleep(waitForShooting);
+        blockShooter.setPosition(OPENSHOOTER_CLOSED);
+
+    }
+    /**
+     * Quick turn-to-yaw using AprilTag. Assumes tag is usually visible.
+     * If tag is not seen at any iteration, this function exits immediately (so you can move on).
+     * Returns true if aligned, false otherwise.
+     */
+    public boolean quickTurnToTagBearing(int DESIRED_TAG_ID) {
+
+        final double TOLERANCE_DEG = 3.0;   // within +/- 3 degrees
+        final double kP = 0.02;             // tune
+        final double MIN_POWER = 0.12;      // tune
+        final double MAX_POWER = 0.45;      // tune
+        final double TIMEOUT_S = 1.5;       // quick timeout
+
+        ElapsedTime timer = new ElapsedTime();
+        timer.reset();
+
+        while (opModeIsActive() && timer.seconds() < TIMEOUT_S) {
+
+            // Find desired tag
+            desiredTag = null;
+            List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+            for (AprilTagDetection detection : currentDetections) {
+                if (detection.metadata != null &&
+                        ((DESIRED_TAG_ID < 0) || (detection.id == DESIRED_TAG_ID))) {
+                    desiredTag = detection;
+                    break;
+                }
+            }
+
+            // If we don't see the tag, stop and move on
+            if (desiredTag == null) {
+                setTurnPower(0.0);
+                return false;
+            }
+
+            rangeError   = desiredTag.ftcPose.range;
+            headingError = desiredTag.ftcPose.bearing;
+            yawError     = desiredTag.ftcPose.yaw;
+            // Done
+            if (Math.abs(headingError) <= TOLERANCE_DEG) {
+                setTurnPower(0.0);
+                return true;
+            }
+
+            // P turn
+            double turnPower = kP * headingError;
+
+            // minimum power
+            if (Math.abs(turnPower) < MIN_POWER) {
+                turnPower = Math.copySign(MIN_POWER, turnPower);
+            }
+
+            // cap
+            turnPower = Math.max(-MAX_POWER, Math.min(MAX_POWER, turnPower));
+
+            setTurnPower(turnPower);
+
+            idle();
+        }
+
+        // timeout
+        setTurnPower(0.0);
+        return false;
+    }
+
+    /** In-place turn motor powers. If direction is wrong, flip signs. */
+    private void setTurnPower(double turnPower) {
+        frontLeftDrive.setPower(-turnPower);
+        backLeftDrive.setPower(-turnPower);
+        frontRightDrive.setPower(turnPower);
+        backRightDrive.setPower(turnPower);
+    }
+
+
 
     public void moveRobot(double x, double y, double yaw) {
         // Calculate wheel powers.
@@ -474,6 +626,7 @@ public class TeleOpRed extends LinearOpMode
         backLeftDrive.setPower(backLeftPower);
         backRightDrive.setPower(backRightPower);
     }
+
     //Init drivermotor
     private void initDriveMotors(){
         // Initialize the hardware variables. Note that the strings used here as parameters
@@ -836,172 +989,6 @@ public class TeleOpRed extends LinearOpMode
         return new DriveCommand(drive, strafe, turn, true);
         //return new DriveCommand(0, 0, 0, true);
     }
-    private DriveCommand autoAcquirePurple() {
-
-        // --- Blob-based constants (kept local so it's easy to reuse elsewhere) ---
-
-        // Image size (change if your stream changes)
-        final int IMG_WIDTH  = 640;
-        final int IMG_HEIGHT = 480;
-
-        // Camera intrinsics for your config (C270 @ 640x480 in this example)
-        final double FX = 822.317;     // focal length in pixels (x)
-        final double CX = 319.495;     // principal point x in pixels
-
-        // Artifact geometry (DECODE ball)
-        final double ARTIFACT_DIAMETER_IN = 5.0;              // adjust if you want
-        final double ARTIFACT_RADIUS_IN   = ARTIFACT_DIAMETER_IN / 2.0;
-
-        // Desired distance
-        final double TARGET_RANGE_IN = 12;//24.0;                  // 2 ft
-
-        // Control gains
-        final double K_DRIVE = 0.03;                          // power per inch of range error
-        final double K_TURN  = 0.02;                          // power per degree of angle error
-
-        final double MAX_DRIVE = 0.5;
-        final double MAX_TURN  = 0.4;
-
-        // Deadbands
-        final double RANGE_TOL_IN  = 1.0;                     // stop driving when |error| < 1"
-        final double ANGLE_TOL_DEG = 1.0;                     // stop turning when |error| < 1°
-
-        // --- Default command: do nothing ---
-        double driveCmd  = 0.0;
-        double strafeCmd = 0.0;
-        double turnCmd   = 0.0;
-
-        // --- Get blobs & pick largest ---
-        /**************************************************************************************/
-        //Detect Color Blob
-        List<ColorBlobLocatorProcessor.Blob> blobs = colorLocator.getBlobs();
-        /*
-         * The list of Blobs can be filtered to remove unwanted Blobs.
-         *   Note:  All contours will be still displayed on the Stream Preview, but only those
-         *          that satisfy the filter conditions will remain in the current list of
-         *          "blobs".  Multiple filters may be used.
-         *
-         * To perform a filter
-         *   ColorBlobLocatorProcessor.Util.filterByCriteria(criteria, minValue, maxValue, blobs);
-         *
-         * The following criteria are currently supported.
-         *
-         * ColorBlobLocatorProcessor.BlobCriteria.BY_CONTOUR_AREA
-         *   A Blob's area is the number of pixels contained within the Contour.  Filter out any
-         *   that are too big or small. Start with a large range and then refine the range based
-         *   on the likely size of the desired object in the viewfinder.
-         *
-         * ColorBlobLocatorProcessor.BlobCriteria.BY_DENSITY
-         *   A blob's density is an indication of how "full" the contour is.
-         *   If you put a rubber band around the contour you would get the "Convex Hull" of the
-         *   contour. The density is the ratio of Contour-area to Convex Hull-area.
-         *
-         * ColorBlobLocatorProcessor.BlobCriteria.BY_ASPECT_RATIO
-         *   A blob's Aspect ratio is the ratio of boxFit long side to short side.
-         *   A perfect Square has an aspect ratio of 1.  All others are > 1
-         *
-         * ColorBlobLocatorProcessor.BlobCriteria.BY_ARC_LENGTH
-         *   A blob's arc length is the perimeter of the blob.
-         *   This can be used in conjunction with an area filter to detect oddly shaped blobs.
-         *
-         * ColorBlobLocatorProcessor.BlobCriteria.BY_CIRCULARITY
-         *   A blob's circularity is how circular it is based on the known area and arc length.
-         *   A perfect circle has a circularity of 1.  All others are < 1
-         */
-        ColorBlobLocatorProcessor.Util.filterByCriteria(
-                ColorBlobLocatorProcessor.BlobCriteria.BY_CONTOUR_AREA,
-                //50, 20000, blobs);  // filter out very small blobs.
-                50, 200000, blobs);  // filter out very small blobs.
-
-        ColorBlobLocatorProcessor.Util.filterByCriteria(
-                ColorBlobLocatorProcessor.BlobCriteria.BY_CIRCULARITY,
-                //0.6, 1, blobs);     /* filter out non-circular blobs.
-                0.5, 1, blobs);     /* filter out non-circular blobs.
-         * NOTE: You may want to adjust the minimum value depending on your use case.
-         * Circularity values will be affected by shadows, and will therefore vary based
-         * on the location of the camera on your robot and venue lighting. It is strongly
-         * encouraged to test your vision on the competition field if your event allows
-         * sensor calibration time.
-         */
-        /*
-         * The list of Blobs can be sorted using the same Blob attributes as listed above.
-         * No more than one sort call should be made.  Sorting can use ascending or descending order.
-         * Here is an example.:
-         *   ColorBlobLocatorProcessor.Util.sortByCriteria(
-         *      ColorBlobLocatorProcessor.BlobCriteria.BY_CONTOUR_AREA, SortOrder.DESCENDING, blobs);
-         */
-        ColorBlobLocatorProcessor.Util.sortByCriteria(
-                ColorBlobLocatorProcessor.BlobCriteria.BY_CONTOUR_AREA,
-                SortOrder.DESCENDING, blobs);
-
-        telemetry.addLine("Circularity Radius Center");
-        // Display the Blob's circularity, and the size (radius) and center location of its circleFit.
-        for (ColorBlobLocatorProcessor.Blob b : blobs) {
-            Circle circleFit = b.getCircle();
-            telemetry.addLine(String.format("%5.3f      %3d     (%3d,%3d)",
-                    b.getCircularity(), (int) circleFit.getRadius(), (int) circleFit.getX(), (int) circleFit.getY()));
-        }
-
-        ColorBlobLocatorProcessor.Blob bestBlob = null;
-        if (!blobs.isEmpty()) {
-            bestBlob = blobs.get(0);
-        }
-
-        if (bestBlob != null) {
-            Circle circle = bestBlob.getCircle();
-
-            if (circle != null) {
-                double centerX_px = circle.getX();
-                double centerY_px = circle.getY();
-                double radius_px  = circle.getRadius();
-                // --- Check if blob is partially outside image (clipped) ---
-                boolean isPartial = (centerX_px - radius_px <= 0) ||
-                        (centerX_px + radius_px >= IMG_WIDTH) ||
-                        (centerY_px - radius_px <= 0) ||
-                        (centerY_px + radius_px >= IMG_HEIGHT);
-                // --- Horizontal alignment: compute angle error from image center ---
-                double dx_px = centerX_px - CX;              // + if blob is to the right
-                double angleErrRad = Math.atan2(dx_px, FX);  // small-angle approx
-                double angleErrDeg = Math.toDegrees(angleErrRad);
-                turnCmd = Range.clip(-angleErrDeg * K_TURN, -MAX_TURN, MAX_TURN);
-
-                if (Math.abs(angleErrDeg) < ANGLE_TOL_DEG) {
-                    turnCmd = 0;
-                }
-                if (isPartial) {
-                    // Partial blob -> ONLY turn to center, do not trust radius for distance
-                    driveCmd  = 0;
-                    strafeCmd = 0;
-
-                    telemetry.addLine("Partial blob: turning only");
-                    telemetry.addData("AngleError", "%.1f", angleErrDeg);
-                } else {
-                    // Full blob in view -> estimate distance from radius
-                    double rangeIn = FX * ARTIFACT_RADIUS_IN / radius_px;
-                    double rangeError = rangeIn - TARGET_RANGE_IN;
-                    driveCmd = Range.clip(rangeError * K_DRIVE, -MAX_DRIVE, MAX_DRIVE);
-
-                    if (Math.abs(rangeError) < RANGE_TOL_IN) {
-                        driveCmd = 0;
-                    }
-
-                    strafeCmd = 0; // still only drive + turn in this behavior
-
-                    telemetry.addLine("Full blob: centering + range control");
-                    telemetry.addData("RangeIn",    "%.1f", rangeIn);
-                    telemetry.addData("RangeError", "%.1f", rangeError);
-                    telemetry.addData("AngleError", "%.1f", angleErrDeg);
-                }
-            } else {
-                telemetry.addLine("Blob found, but no circle fit");
-            }
-        } else {
-            telemetry.addLine("No purple blob detected");
-        }
-
-        // Return the command vector for caller to use
-        return new DriveCommand(driveCmd, strafeCmd, turnCmd, bestBlob != null);
-    }
 
     /**
      * Computes a strafe command to dodge sideways away from closer obstacle.
@@ -1013,45 +1000,48 @@ public class TeleOpRed extends LinearOpMode
      * Returns -1 for strafe left, +1 for strafe right, or 0 for no dodge.
      */
 
-//    private double chooseDodgeDirectionOnce() {
-//        /* LOGIC HERE IS REVERSED!!!!!*/
-//        final double NEAR_THRESHOLD_IN = 18.0;  // tune as needed
-////        double leftIn  = leftDist.getDistance(DistanceUnit.INCH);
-////        double rightIn = rightDist.getDistance(DistanceUnit.INCH);
-//
-//        if (Double.isNaN(leftIn) || Double.isInfinite(leftIn))  leftIn  = 1000;
-//        if (Double.isNaN(rightIn) || Double.isInfinite(rightIn)) rightIn = 1000;
-//
-//        telemetry.addData("Dodge leftIn",  "%.1f", leftIn);
-//        telemetry.addData("Dodge rightIn", "%.1f", rightIn);
-//
-//        boolean leftNear  = leftIn  < NEAR_THRESHOLD_IN;
-//        boolean rightNear = rightIn < NEAR_THRESHOLD_IN;
-//
-//        // Simple rules:
-//        // - If only left is near → slide right (+1)
-//        // - If only right is near → slide left (-1)
-//        // - If both near → slide toward side with more room
-//        // - If neither near → no dodge (0)
-//        if (leftNear && !rightNear) {
-//            telemetry.addLine("Dodge dir chosen: RIGHT (obstacle left)");
-//            return +1.0;
-//        } else if (rightNear && !leftNear) {
-//            telemetry.addLine("Dodge dir chosen: LEFT (obstacle right)");
-//            return -1.0;
-//        } else if (leftNear && rightNear) {
-//            if (leftIn > rightIn) {
-//                telemetry.addLine("Dodge dir chosen: LEFT (more room left)");
-//                return -1.0;
-//            } else {
-//                telemetry.addLine("Dodge dir chosen: RIGHT (more room right)");
-//                return +1.0;
-//            }
-//        } else {
-//            telemetry.addLine("Dodge dir chosen: NONE (no close obstacle)");
-//            return 0.0;
-//        }
-//    }
+    /*
+    private double chooseDodgeDirectionOnce() {
+        // LOGIC HERE IS REVERSED!!!!!
+        final double NEAR_THRESHOLD_IN = 18.0;  // tune as needed
+//        double leftIn  = leftDist.getDistance(DistanceUnit.INCH);
+//        double rightIn = rightDist.getDistance(DistanceUnit.INCH);
+
+        if (Double.isNaN(leftIn) || Double.isInfinite(leftIn))  leftIn  = 1000;
+        if (Double.isNaN(rightIn) || Double.isInfinite(rightIn)) rightIn = 1000;
+
+        telemetry.addData("Dodge leftIn",  "%.1f", leftIn);
+        telemetry.addData("Dodge rightIn", "%.1f", rightIn);
+
+        boolean leftNear  = leftIn  < NEAR_THRESHOLD_IN;
+        boolean rightNear = rightIn < NEAR_THRESHOLD_IN;
+
+        // Simple rules:
+        // - If only left is near → slide right (+1)
+        // - If only right is near → slide left (-1)
+        // - If both near → slide toward side with more room
+        // - If neither near → no dodge (0)
+        if (leftNear && !rightNear) {
+            telemetry.addLine("Dodge dir chosen: RIGHT (obstacle left)");
+            return +1.0;
+        } else if (rightNear && !leftNear) {
+            telemetry.addLine("Dodge dir chosen: LEFT (obstacle right)");
+            return -1.0;
+        } else if (leftNear && rightNear) {
+            if (leftIn > rightIn) {
+                telemetry.addLine("Dodge dir chosen: LEFT (more room left)");
+                return -1.0;
+            } else {
+                telemetry.addLine("Dodge dir chosen: RIGHT (more room right)");
+                return +1.0;
+            }
+        } else {
+            telemetry.addLine("Dodge dir chosen: NONE (no close obstacle)");
+            return 0.0;
+        }
+    }
+    */
+
     /**************************************************************************************/
     //INTAKE
     public void runIntake(double stage1_power, double stage3_power){
