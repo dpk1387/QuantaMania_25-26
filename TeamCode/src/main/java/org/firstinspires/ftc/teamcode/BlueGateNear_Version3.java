@@ -413,7 +413,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
                                         .setTangent(Math.toRadians(3)) // -5
                                         .splineToSplineHeading(new Pose2d(7.5, -29, Math.toRadians(-80)), Math.toRadians(-50))
 
-                                        .splineToLinearHeading(new Pose2d(5.0, -55+5, Math.toRadians(-110)), Math.toRadians(-102))
+                                        .splineToLinearHeading(new Pose2d(5.0, -55+5-3, Math.toRadians(-110)), Math.toRadians(-102))
                                         .setTangent(Math.toRadians(90))
                                         //.setTangent(Math.toRadians(32)) //15
                                         //go to intake balls
@@ -489,12 +489,12 @@ public class BlueGateNear_Version3 extends LinearOpMode {
 
                                 //get the inner most 3 balls
                                 drive.actionBuilder(newShootPose)
-                                        .setTangent(Math.toRadians(0)) //45 //60
+                                        .setTangent(Math.toRadians(-100)) //45 //60
                                         //go into
                                         //.splineToLinearHeading(new Pose2d(-12, 44,  Math.toRadians(90)), Math.toRadians(100))
                                         //.splineToLinearHeading(new Pose2d(-11, 56,  Math.toRadians(90)), Math.toRadians(80))
                                         .splineToSplineHeading(new Pose2d(-12, -36,  Math.toRadians(-85)), Math.toRadians(-85))
-                                        .splineToLinearHeading(new Pose2d(-13.5, -53-3, Math.toRadians(-100)), Math.toRadians(-115))
+                                        .splineToLinearHeading(new Pose2d(-16, -53-6, Math.toRadians(-100)), Math.toRadians(-115))
 
                                         //go back to shooting
                                         .splineToSplineHeading(newShootPose, Math.toRadians(-225)) //-135 //go into
