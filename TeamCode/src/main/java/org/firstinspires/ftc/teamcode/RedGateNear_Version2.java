@@ -482,6 +482,9 @@ public class RedGateNear_Version2 extends LinearOpMode {
             } catch (Exception e) {
                 telemetry.addData("Error", e.getMessage());
             }
+            blockShooter.setPosition(OPENSHOOTER_CLOSED);
+            break; ///quite the opmode loop
+
         }
     }
     private void initMotors(){

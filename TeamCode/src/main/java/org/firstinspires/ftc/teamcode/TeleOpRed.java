@@ -132,7 +132,8 @@ public class TeleOpRed extends LinearOpMode
     private Servo cameraServo = null;
     final private double CAMERASERVO_HIGH = 0.49;//0.55;
     //private double CAMERASERVO_LOW = 0.72;
-    final private double CAMERASERVO_LOW = 0.68;
+    //final
+    // private double CAMERASERVO_LOW = 0.68;
     private double SHOOTER_VELOCITY = 2500;//4800;//5000;
 
     final private double SHOOTER_GEAR_RATIO = 17.0/18.0; //bottom / top
@@ -223,7 +224,9 @@ public class TeleOpRed extends LinearOpMode
         boolean lastYState = false;  // The previous state of the Y button
         boolean shooting = false;
 
-        double pos= CAMERASERVO_LOW;//TEST
+        cameraServo.setPosition(CAMERASERVO_HIGH);
+
+        //double pos= CAMERASERVO_LOW;//TEST
 
         shootVelocity(SHOOTER_VELOCITY);
         while (opModeIsActive())
@@ -252,10 +255,10 @@ public class TeleOpRed extends LinearOpMode
                 setBlobExposureAuto();
             }
             //set camera position
-            if (gamepad1.left_bumper) cameraServo.setPosition(CAMERASERVO_HIGH);
-            if (gamepad1.right_trigger > 0.5) {
-                cameraServo.setPosition(CAMERASERVO_LOW);
+            if (gamepad1.left_bumper) {
+                cameraServo.setPosition(CAMERASERVO_HIGH);
             }
+
             /**************************************************************************************/
             targetFound = false;
             desiredTag  = null;
@@ -494,36 +497,41 @@ public class TeleOpRed extends LinearOpMode
 
         //check for desired tag
         if (desiredTag != null) {
-//            double rangeError = desiredTag.ftcPose.range;
-//            double headingError = desiredTag.ftcPose.bearing;
-//            double yawError = desiredTag.ftcPose.yaw;
-
             rangeError = desiredTag.ftcPose.range;
             headingError = desiredTag.ftcPose.bearing;
             yawError = desiredTag.ftcPose.yaw;
-            //
-            // Use the speed and turn "gains" to calculate how we want the robot to move.
-//            double drive = 0;
-//            double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-//            double strafe = 0;
-//            moveRobot(drive, strafe, turn);
-
-            quickTurnToTagBearing(24);
+            quickTurnToTagBearing(DESIRED_TAG_ID);
             targetVel = distanceToVel(rangeError);
         }
 
         /**SHOOTING**/
-        final double stage3FeedPower = 0.6; //0.6 // tune down if multiple balls sneak
-        final int waitForVelocity = 100;
-        final int waitForShooting = 500+100;///wait for all 3 balls
+        final double    stage3FeedPower = 0.8;
+        final double    lowRecoverMargin = 100; //100;      // tune (smaller than dropMargin)
+        final long      loopSleepMs = 15;
+        final double    totalShootingTime = 1000 - 300; //1000-200
+        final long      pulseMs = 250;
+
+        //prepare all the shooter
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         shootVelocity(targetVel);
         stage3.setPower(stage3FeedPower);
-        sleep(waitForVelocity);
-        //Shoot...
-        blockShooter.setPosition(OPENSHOOTER_OPEN);
-        sleep(waitForShooting);
-        blockShooter.setPosition(OPENSHOOTER_CLOSED);
+
+
+        ElapsedTime time_pass = new ElapsedTime();
+        time_pass.reset();
+        while(time_pass.milliseconds() <= totalShootingTime){
+            //wait
+            while (opModeIsActive() && shooter.getVelocity() < targetVel - lowRecoverMargin) { //shooter.getVelocity() < targetVel - lowRecoverMargin && shooter.getVelocity() > targetVel + highRecoverMargin
+                sleep(loopSleepMs);
+                idle();
+            }
+
+            stage3.setPower(stage3FeedPower);
+            blockShooter.setPosition(OPENSHOOTER_OPEN);
+            sleep(pulseMs);
+            // 3) Immediately block the next ball -- but open rightaway if the speed is ok
+            blockShooter.setPosition(OPENSHOOTER_CLOSED);
+        }
 
     }
     /**
@@ -532,11 +540,10 @@ public class TeleOpRed extends LinearOpMode
      * Returns true if aligned, false otherwise.
      */
     public boolean quickTurnToTagBearing(int DESIRED_TAG_ID) {
-
         final double TOLERANCE_DEG = 3.0;   // within +/- 3 degrees
         final double kP = 0.02;             // tune
         final double MIN_POWER = 0.12;      // tune
-        final double MAX_POWER = 0.45;      // tune
+        final double MAX_POWER = 0.6;      // tune
         final double TIMEOUT_S = 1.5;       // quick timeout
 
         ElapsedTime timer = new ElapsedTime();
