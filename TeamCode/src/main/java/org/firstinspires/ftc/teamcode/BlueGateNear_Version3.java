@@ -9,6 +9,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -56,7 +57,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
     final private double OPENSHOOTER_CLOSED = 1.0; // OPENSHOOTER_OPEN + 28//0.55
     final private double CAMERASERVO_HIGH = 0.55;
     final private double CAMERASERVO_LOW = 0.68;
-    final private double SHOOTER_VELOCITY = 2100-100; //2100 //2200 //2150
+    final private double SHOOTER_VELOCITY = 2000; //2000 //2100 //2200 //2150
 
     final private double SHOOTER_GEAR_RATIO = 17.0/18.0;
     /* INIT */
@@ -308,7 +309,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
                 // Optionally log something
                 packet.put("intake Delay", "");
                 // Fire three balls in sequence (blocking, similar to SleepAction(3))
-                sleep(500-250); //550 //750 //1000 //1500
+                sleep(400-75); //550 //750 //1000 //1500
 
                 initialized = true;
             }
@@ -331,7 +332,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
                 // Optionally log something
                 packet.put("intake Delay", "");
                 // Fire three balls in sequence (blocking, similar to SleepAction(3))
-                sleep(400-200); //1500
+                sleep(350-50); //1500
 
                 initialized = true;
             }
@@ -380,16 +381,21 @@ public class BlueGateNear_Version3 extends LinearOpMode {
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         runtime.reset();
         telemetryThread.start();
-        double shootX = -23, shootY = -23; //-29, 29
+        double shootX = -14, shootY = -14; //-29, 29
         //-29, -29 //-27.5, -27.5 //-28, 28 //30, 30
         double newShootX = -11, newShootY = -20; // -20, -20//-19, -19 // -23, -23
         //-27, -27//-24, -24 //-21, 21 //-16, 16 //-13, 13
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(-135));
         Pose2d newShootPose = new Pose2d(newShootX, newShootY, Math.toRadians(-143)); //-150 //-135
 
-        // FROM RED:  Pose2d classifierPose = new Pose2d(7.5+0.2+0.5, 64+2,  Math.toRadians(120)); //120-6 //120
-        Pose2d classifierPose = new Pose2d(7.5+0.2+0.5, -64-2,  Math.toRadians(240)); //240 //-120
+        double lastShootX = -30, lastShootY = -11;
+        Pose2d lastShootPose = new Pose2d(lastShootX, lastShootY, Math.toRadians(-126));
 
+        // FROM RED:  Pose2d classifierPose = new Pose2d(7.5+0.2+0.5, 64+2,  Math.toRadians(120)); //120-6 //120
+        Pose2d classifierPose = new Pose2d(7.5+0.2, -64-2,  Math.toRadians(240)); //235d //-120
+        double newClassifierX = 7.5+0.2+1.2;
+        double newClassifierY = -64;
+        Pose2d newClassifierPose = new Pose2d(newClassifierX, newClassifierY, Math.toRadians(235));
         while (opModeIsActive()){
             telemetry.addData("Shooter Velocity", shooter.getVelocity());
             telemetry.update();
@@ -401,7 +407,9 @@ public class BlueGateNear_Version3 extends LinearOpMode {
                                 startIntake(0.9, 0.3),
                                 //go to shooting place
                                 drive.actionBuilder(startPose)
-                                        .strafeTo(new Vector2d(newShootX, newShootY))
+                                        //.strafeTo(new Vector2d(newShootX, newShootY))
+                                        .strafeTo(new Vector2d(shootX, shootY))
+                                        //.splineToLinearHeading(newShootPose,Math.toRadians(45))
                                         .build(),
                                 //shooterWait(), //let shooter accelerate
                                 shootAll(), //shoot 3 balls
@@ -413,7 +421,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
                                         .setTangent(Math.toRadians(3)) // -5
                                         .splineToSplineHeading(new Pose2d(7.5, -29, Math.toRadians(-80)), Math.toRadians(-50))
 
-                                        .splineToLinearHeading(new Pose2d(5.0, -55+5-3, Math.toRadians(-110)), Math.toRadians(-102))
+                                        .splineToLinearHeading(new Pose2d(5.0, -55, Math.toRadians(-110)), Math.toRadians(-102))
                                         .setTangent(Math.toRadians(90))
                                         //.setTangent(Math.toRadians(32)) //15
                                         //go to intake balls
@@ -422,7 +430,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
                                         //go to shoot
 
                                         //.setTangent(Math.toRadians(-100))
-                                        .splineToSplineHeading(new Pose2d(0, -31, Math.toRadians(-120)), Math.toRadians(135)) //200
+                                        //.splineToSplineHeading(new Pose2d(0, -31, Math.toRadians(-120)), Math.toRadians(135)) //200
                                         .splineToLinearHeading(newShootPose, Math.toRadians(170)) //-160, -200
                                         .build(),
                                 shootAll(), //shoot balls
@@ -437,11 +445,13 @@ public class BlueGateNear_Version3 extends LinearOpMode {
 
                                         //.setTangent(Math.toRadians(25)) //15
                                         .splineToLinearHeading(classifierPose, Math.toRadians(-95)) //80 //85 //95 //go into
+                                        .strafeTo(new Vector2d(newClassifierX, newClassifierY))
+
                                         .build(),
                                 //wait at the classifier to intake balls
                                 intakeWait1(),
                                 //go to shoot
-                                drive.actionBuilder(classifierPose)
+                                drive.actionBuilder(newClassifierPose)
                                         .setTangent(Math.toRadians(95)) //-100 //-90
                                         .splineToLinearHeading(newShootPose, Math.toRadians(175)) //-160 //-155 //200 //go into
                                         .build(),
@@ -454,13 +464,14 @@ public class BlueGateNear_Version3 extends LinearOpMode {
                                         .setTangent(Math.toRadians(15)) //25 //15
                                         .splineToLinearHeading(classifierPose, Math.toRadians(-95)) //85 //95 //go into
                                         //Pose2d classifierPose = new Pose2d(7.5+0.2+0.5, -64-2,  Math.toRadians(240)); //240 //-120
-                                        .strafeTo(new Vector2d(7.5+0.2+0.5+3, -64-2+2))
+                                        //.strafeTo(new Vector2d(7.5+0.2+1.2, -64-2+2))
+                                        .strafeTo(new Vector2d(newClassifierX, newClassifierY))
 
                                         .build(),
                                 //wait at the classifier to intake balls
                                 intakeWait2(),
                                 //go to shoot
-                                drive.actionBuilder(classifierPose)
+                                drive.actionBuilder(newClassifierPose)
                                         .setTangent(Math.toRadians(95)) //-95 //-90
                                         .splineToLinearHeading(newShootPose, Math.toRadians(175)) //-155 //200 //go into
                                         .build(),
@@ -473,13 +484,15 @@ public class BlueGateNear_Version3 extends LinearOpMode {
                                         .setTangent(Math.toRadians(15)) //25 //15
                                         .splineToLinearHeading(classifierPose, Math.toRadians(-95)) //85 //95 //go into
                                         //Pose2d classifierPose = new Pose2d(7.5+0.2+0.5, -64-2,  Math.toRadians(240)); //240 //-120
-                                        .strafeTo(new Vector2d(7.5+0.2+0.5+3, -64-2+2))
+                                        //.strafeTo(new Vector2d(7.5+0.2+1.2, -64-2+2))
+                                        .strafeTo(new Vector2d(newClassifierX, newClassifierY))
+
 
                                         .build(),
                                 //wait at the classifier to intake balls
                                 intakeWait2(),
                                 //go to shoot
-                                drive.actionBuilder(classifierPose)
+                                drive.actionBuilder(newClassifierPose)
                                         .setTangent(Math.toRadians(95)) //-95 //-90
                                         .splineToLinearHeading(newShootPose, Math.toRadians(175)) //-155 //200 //go into
                                         .build(),
@@ -494,18 +507,26 @@ public class BlueGateNear_Version3 extends LinearOpMode {
                                         //.splineToLinearHeading(new Pose2d(-12, 44,  Math.toRadians(90)), Math.toRadians(100))
                                         //.splineToLinearHeading(new Pose2d(-11, 56,  Math.toRadians(90)), Math.toRadians(80))
                                         .splineToSplineHeading(new Pose2d(-12, -36,  Math.toRadians(-85)), Math.toRadians(-85))
-                                        .splineToLinearHeading(new Pose2d(-16, -53-6, Math.toRadians(-100)), Math.toRadians(-115))
+                                        .splineToLinearHeading(new Pose2d(-22, -53-4, Math.toRadians(-100)), Math.toRadians(-115))
 
                                         //go back to shooting
-                                        .splineToSplineHeading(newShootPose, Math.toRadians(-225)) //-135 //go into
+                                        .splineToSplineHeading(lastShootPose, Math.toRadians(-225)) //-135 //go into
+                                        //.splineToSplineHeading(new Pose2d(-20, -20, Math.toRadians(-140)), Math.toRadians(-115))
                                         .build(),
-                                shootAll(), //shoot 3 balls
-                                //closeGate(),
 
-                                //get out of launch zone
-                                drive.actionBuilder(shootPose)
-                                        .strafeTo(new Vector2d(-5, -32))
-                                        .build()
+                                shootAll()
+
+                                /*new ParallelAction(
+                                        drive.actionBuilder(
+                                                new Pose2d(-20, -20, Math.toRadians(-140))
+                                        )
+                                                .splineToLinearHeading(lastShootPose, Math.toRadians(135))
+                                                .build(),
+
+                                        shootAll()
+                                )*/
+
+
                         )
                 );
                 telemetry.addData("Trajectory", "Executed Successfully");
