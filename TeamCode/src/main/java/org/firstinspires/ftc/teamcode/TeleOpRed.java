@@ -179,7 +179,7 @@ public class TeleOpRed extends LinearOpMode
         double park_x, park_y, park_yaw;
         if (DESIRED_TAG_ID == 24) {
             //desired_x = -30; desired_y =  30; desired_yaw =  45;
-            desired_x = -32; desired_y =  32; desired_yaw =  135; //corresonpindng do DESIRED DISTANCE 50 -- NEED TO CHeck the yaw
+            desired_x = -23; desired_y =  23; desired_yaw =  135; //corresonpindng do DESIRED DISTANCE 50 -- NEED TO CHeck the yaw
             latch_x = 8; latch_y = 66; latch_yaw = 120; //0, 50, 90
             park_x = 38.5; park_y = -35; park_yaw = 90;
 
@@ -231,6 +231,9 @@ public class TeleOpRed extends LinearOpMode
         shootVelocity(SHOOTER_VELOCITY);
         while (opModeIsActive())
         {
+            telemetry.addData("velocity (top)", shooter2.getVelocity());
+            telemetry.addData("velocity (bottom)", shooter.getVelocity());
+
             /*
             //TEST CODE -- Test servo -- open it to fine turn servo
 
@@ -300,7 +303,7 @@ public class TeleOpRed extends LinearOpMode
                 if (targetFound) {
 
                     final double[] yawRange = new double[] {0,15};// 0, 25degrees
-                    final double[] distanceRange = new double[] {50,55}; //45, 65 inches
+                    final double[] distanceRange = new double[] {60,65}; //50, 55 //45, 65 inches
                     // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
                     rangeError   = (desiredTag.ftcPose.range);
                     headingError = desiredTag.ftcPose.bearing;
@@ -426,7 +429,7 @@ public class TeleOpRed extends LinearOpMode
         final double GATE_PULSE_OPEN = OPENSHOOTER_OPEN; // tune so 1 ball passes, not 2
 
 
-        final int pulseMs = 200; //250
+        final int pulseMs = 250; //200
         final int loopSleepMs = 15;
 
         // Spin up
@@ -471,9 +474,9 @@ public class TeleOpRed extends LinearOpMode
     public double distanceToVel(double d) {
         // Convert from distance to velocity in a linear manner
         final double DMIN = 36.0;
-        final double DMAX = 110.0;
+        final double DMAX = 100;//110.0;
         final double VEL_MIN = 1900.0;
-        final double VEL_MAX = 2500.0;
+        final double VEL_MAX = 2500.0; //2550.0
 
         // Clamp distance to [DMIN, DMAX]
         if (d <= DMIN) return VEL_MIN;
@@ -509,7 +512,7 @@ public class TeleOpRed extends LinearOpMode
         final double    lowRecoverMargin = 100; //100;      // tune (smaller than dropMargin)
         final long      loopSleepMs = 15;
         final double    totalShootingTime = 1000 - 300; //1000-200
-        final long      pulseMs = 250;
+        final long      pulseMs = 250; //250
 
         //prepare all the shooter
         blockShooter.setPosition(OPENSHOOTER_CLOSED);

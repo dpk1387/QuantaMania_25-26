@@ -307,8 +307,8 @@ public class BlueGateNear_Version4 extends LinearOpMode {
                 //go into
                 //.splineToLinearHeading(new Pose2d(-12, 44,  Math.toRadians(90)), Math.toRadians(100))
                 //.splineToLinearHeading(new Pose2d(-11, 56,  Math.toRadians(90)), Math.toRadians(80))
-                .splineToSplineHeading(new Pose2d(-15, -30,  Math.toRadians(-90)), Math.toRadians(-90))
-                .splineToSplineHeading(new Pose2d(-15, -52, Math.toRadians(-90)), Math.toRadians(-90))
+                .splineToSplineHeading(new Pose2d(-17, -30,  Math.toRadians(-90)), Math.toRadians(-90))
+                .splineToSplineHeading(new Pose2d(-17, -52, Math.toRadians(-90)), Math.toRadians(-90))
                 //go back to shooting
                 .splineToSplineHeading(lastShootPose, Math.toRadians(-225)) //-135 //go into
                 //.splineToSplineHeading(new Pose2d(-20, -20, Math.toRadians(-140)), Math.toRadians(-115))
