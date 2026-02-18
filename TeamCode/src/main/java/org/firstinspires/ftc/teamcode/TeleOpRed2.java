@@ -37,11 +37,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
-import com.qualcomm.robotcore.util.SortOrder;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -55,7 +53,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
-import org.firstinspires.ftc.vision.opencv.Circle;
 import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
 import org.firstinspires.ftc.vision.opencv.ColorRange;
 
@@ -98,9 +95,9 @@ import java.util.concurrent.TimeUnit;
  * V6 - Add Intake
  */
 
-@TeleOp(name="TeleOp Red", group = "Concept")
+@TeleOp(name="TeleOp Red 2", group = "Concept")
 //@Disabled
-public class TeleOpRed extends LinearOpMode
+public class TeleOpRed2 extends LinearOpMode
 {
     // Adjust these numbers to suit your robot. Should be from 30 - 55 inches
     final double DESIRED_DISTANCE = 40;//35;//45;//12.0; //  this is how close the camera should get to the target (inches)
@@ -108,9 +105,9 @@ public class TeleOpRed extends LinearOpMode
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
     //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
-    final double SPEED_GAIN  =  0.10;//0.02  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-    final double STRAFE_GAIN = 0.03; //0.03;//0.015 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
-    final double TURN_GAIN   =  0.03;//0.04;//0.02  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    final double SPEED_GAIN  =  0.4;//0.2;//0.10;//0.02  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    final double STRAFE_GAIN = 0.06;//0.03; //0.03;//0.015 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
+    final double TURN_GAIN   = 0.06;// 0.03;//0.04;//0.02  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
     final double MAX_AUTO_SPEED = 0.9;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_STRAFE= 0.9;   //  Clip the strafing speed to this max value (adjust for your robot)
@@ -474,11 +471,9 @@ public class TeleOpRed extends LinearOpMode
     public double distanceToVel(double d) {
         // Convert from distance to velocity in a linear manner
         final double DMIN = 36.0;
-        //final double DMAX = 110;//110.0;
-        final double DMAX = 100;//110.0;
-
-        final double VEL_MIN = 1900.0;
-        final double VEL_MAX = 2500.0; //2550.0
+        final double DMAX = 110;//110.0;
+        final double VEL_MIN = 1900;//1700.0;
+        final double VEL_MAX = 2400;//2500.0; //2550.0
 
         // Clamp distance to [DMIN, DMAX]
         if (d <= DMIN) return VEL_MIN;
@@ -510,11 +505,10 @@ public class TeleOpRed extends LinearOpMode
         }
 
         /**SHOOTING**/
-        //final double    stage3FeedPower = 0.4;
-        final double    stage3FeedPower = 0.8;
+        final double    stage3FeedPower = 0.4;
         final double    lowRecoverMargin = 100; //100;      // tune (smaller than dropMargin)
         final long      loopSleepMs = 15;
-        final double    totalShootingTime = 1000 - 300; //1000-200
+        final double    totalShootingTime = 1500;//1000 - 300; //1000-200
         final long      pulseMs = 250; //250
 
         //prepare all the shooter
@@ -528,7 +522,7 @@ public class TeleOpRed extends LinearOpMode
         while(time_pass.milliseconds() <= totalShootingTime){
             //wait
             while (opModeIsActive() && shooter.getVelocity() < targetVel - lowRecoverMargin) { //shooter.getVelocity() < targetVel - lowRecoverMargin && shooter.getVelocity() > targetVel + highRecoverMargin
-                //stage3.setPower(0);
+                stage3.setPower(0);
                 sleep(loopSleepMs);
                 idle();
             }
