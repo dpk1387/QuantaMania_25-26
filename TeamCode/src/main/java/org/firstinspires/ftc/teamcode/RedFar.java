@@ -18,8 +18,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.opencv.core.Mat;
-
 @Autonomous(name = "RED FAR - LZ FIRST", group = "Autonomous")
 @Config
 public class RedFar extends LinearOpMode {
@@ -139,29 +137,6 @@ public class RedFar extends LinearOpMode {
         return new intakeDelay1();
     }
 
-    public class intakeDelay2 implements Action {
-        private boolean initialized = false;
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket packet) {
-            if (!initialized) {
-                // Optionally log something
-                packet.put("intake Delay", "");
-                // Fire three balls in sequence (blocking, similar to SleepAction(3))
-                sleep(350-50); //1500
-
-                initialized = true;
-            }
-            // Returning false tells Road Runner this action is finished
-            return false;
-        }
-    }
-
-    // Convenience factory so you can just write shootAll() in your SequentialAction
-    public Action intakeWait2() {
-        return new intakeDelay2();
-    }
-
     /// ***********************************************************************************
     @Override
     public void runOpMode() {
@@ -201,18 +176,39 @@ public class RedFar extends LinearOpMode {
                 .splineToLinearHeading(shootPose, Math.toRadians(90))
                 .build();
 
-        // Traj 4: shoot pose -> 3rd row -> shoot pose
-        Action traj4_thirdRow = drive.actionBuilder(shootPose)
-                .splineToLinearHeading(new Pose2d(36, 28, Math.toRadians(90)), Math.toRadians(135))
-                .strafeTo(new Vector2d(36, 42))
+        // Traj 4: shoot pose -> loading zone
+        Action traj4_toLoadingZone = drive.actionBuilder(shootPose)//
+                .splineToLinearHeading(loadZonePose, Math.toRadians(180))
                 .build();
 
-        Action traj5 = drive.actionBuilder(new Pose2d(36, 42, Math.toRadians(90)))
+
+        // Traj 5: loading zone -> shoot pose
+        Action traj5 = drive.actionBuilder(loadZonePose)
+                .setTangent(Math.toRadians(90))
+                .splineToLinearHeading(shootPose, Math.toRadians(90))
+                .build();
+
+        // Traj 6: shoot pose -> loading zone
+        Action traj6_toLoadingZone = drive.actionBuilder(shootPose)//
+                .splineToLinearHeading(loadZonePose, Math.toRadians(180))
+                .build();
+
+
+        // Traj 7: loading zone -> shoot pose
+        Action traj7 = drive.actionBuilder(loadZonePose)
+                .setTangent(Math.toRadians(90))
+                .splineToLinearHeading(shootPose, Math.toRadians(90))
+                .build();
+
+        // Traj 6: shoot pose -> 3rd row -> shoot pose
+        Action traj8_thirdRow = drive.actionBuilder(shootPose)
+                .splineToLinearHeading(new Pose2d(40, 28, Math.toRadians(90)), Math.toRadians(135))
+                .splineToLinearHeading(new Pose2d(40, 52, Math.toRadians(90)), Math.toRadians(90))
                 .splineToLinearHeading(shootPose, Math.toRadians(110))
                 .build();
 
-        // Traj 5: shoot pose -> classifier (SECOND TIME)
-        Action traj6_leaveLaunchZone = drive.actionBuilder(shootPose)
+        // Traj 7: shoot pose -> classifier (SECOND TIME)
+        Action traj9_leaveLaunchZone = drive.actionBuilder(shootPose)
                 .strafeTo(new Vector2d(46, 24))
                 .build();
 
@@ -261,15 +257,28 @@ public class RedFar extends LinearOpMode {
                                 intakeWait1(), // wait for intake at loading zone
 
                                 traj3, // back to shooting position
-
                                 shootAll(),
 
-                                traj4_thirdRow, //get artifacts from third row
+                                traj4_toLoadingZone,
+                                // shootAll() and startIntake() are now inside traj2 via afterDisp
+
+                                intakeWait1(), // wait for intake at loading zone
 
                                 traj5, // back to shooting position
                                 shootAll(),
 
-                                traj6_leaveLaunchZone // leave launch zone for leave points
+                                traj6_toLoadingZone,
+                                // shootAll() and startIntake() are now inside traj2 via afterDisp
+
+                                intakeWait1(), // wait for intake at loading zone
+
+                                traj7, // back to shooting position
+                                shootAll(),
+
+                                traj8_thirdRow, //get artifacts from third row, go to shoot
+                                shootAll(),
+
+                                traj9_leaveLaunchZone // leave launch zone for leave points
                         )
                 );
                 telemetry.addData("Trajectory", "Executed Successfully");
@@ -351,7 +360,7 @@ public class RedFar extends LinearOpMode {
         // Stop / reset
         stage3.setPower(0);
         blockShooter.setPosition(GATE_HOLD);
-        startIntake(0.8, 0.3); //start intake
+        startIntake(1, 0.3); //start intake
 
         /*
         final double targetVel = SHOOTER_VELOCITY + 200; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
