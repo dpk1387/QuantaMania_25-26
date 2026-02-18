@@ -23,7 +23,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name = "BLUE NEAR AUTONOMOUS - 4", group = "Autonomous")
+@Autonomous(name = "BLUE NEAR 18", group = "Autonomous")
 @Config
 public class BlueGateNear_Version4 extends LinearOpMode {
     /* HARDWARE */

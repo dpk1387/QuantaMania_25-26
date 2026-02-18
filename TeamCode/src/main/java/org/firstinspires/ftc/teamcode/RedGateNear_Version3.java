@@ -18,7 +18,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name = "RED NEAR AUTONOMOUS - 3", group = "Autonomous")
+@Autonomous(name = "RED NEAR 18", group = "Autonomous")
 @Config
 public class RedGateNear_Version3 extends LinearOpMode {
     /* HARDWARE */
@@ -30,7 +30,7 @@ public class RedGateNear_Version3 extends LinearOpMode {
     private Servo blockShooter = null;
     final private double OPENSHOOTER_OPEN = 0.8; //0.19 //0.3;
     final private double OPENSHOOTER_CLOSED = 1.0; // OPENSHOOTER_OPEN + 28//0.55
-    final private double SHOOTER_VELOCITY = 2000; //2000 //2100 //2200 //2150
+    final private double SHOOTER_VELOCITY = 1975; //2000 //2100 //2200 //2150
 
     final private double SHOOTER_GEAR_RATIO = 17.0/18.0;
     /* INIT */
@@ -186,14 +186,14 @@ public class RedGateNear_Version3 extends LinearOpMode {
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(135));
         Pose2d newShootPose = new Pose2d(newShootX, newShootY, Math.toRadians(139)); //-150 //-135
 
-        double lastShootX = -28, lastShootY = 11;
+        double lastShootX = -32, lastShootY = 17;
         Pose2d lastShootPose = new Pose2d(lastShootX, lastShootY, Math.toRadians(126));
 
         // FROM RED:  Pose2d classifierPose = new Pose2d(7.5+0.2+0.5, 64+2,  Math.toRadians(120)); //120-6 //120
-        Pose2d classifierPose = new Pose2d(7.5+0.2, 64+2-1-2,  Math.toRadians(120)); //235d //-120
-        double newClassifierX = 10; //7.5+0.2+1.2-1
-        double newClassifierY = 60-2; //64-1-2
-        Pose2d newClassifierPose = new Pose2d(newClassifierX, newClassifierY, Math.toRadians(110)); //122
+        Pose2d classifierPose = new Pose2d(7.5+0.2, 64-1-0.5,  Math.toRadians(120)); //235d //-120
+        double newClassifierX = 7.5+1;
+        double newClassifierY = 60+2.5-0.5; //64-1-2
+        Pose2d newClassifierPose = new Pose2d(newClassifierX, newClassifierY, Math.toRadians(110-5)); //122
 
         double stage1power = 0.8;
         double stage3power = 0.1;
@@ -229,10 +229,10 @@ public class RedGateNear_Version3 extends LinearOpMode {
         // FIX 4: afterDisp(999) triggers shootAll() as robot arrives at newShootPose.
         Action traj2 = drive.actionBuilder(shootPose)//
                 //.setTangent(Math.toRadians(3)) // -5
-                .splineToSplineHeading(new Pose2d(13, 22, Math.toRadians(110)), Math.toRadians(45))
+                .splineToSplineHeading(new Pose2d(14, 22, Math.toRadians(110)), Math.toRadians(45))
                 //.strafeTo(new Vector2d(8, -22))
 
-                .splineToLinearHeading(new Pose2d(13, 55, Math.toRadians(90)), Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(14, 55, Math.toRadians(90)), Math.toRadians(90))
 
                 //go to shoot
                 .splineToSplineHeading(newShootPose, Math.toRadians(-170)) //-160, -200
@@ -258,7 +258,7 @@ public class RedGateNear_Version3 extends LinearOpMode {
         // Traj 5: shoot pose -> classifier (SECOND TIME)
         Action traj5_toClassifier2 = drive.actionBuilder(newShootPose)
                 .setTangent(Math.toRadians(-15)) //25 //15
-                .splineToLinearHeading(classifierPose, Math.toRadians(-95)) //85 //95 //go into
+                .splineToLinearHeading(classifierPose, Math.toRadians(95)) //85 //95 //go into
                 .strafeTo(new Vector2d(newClassifierX, newClassifierY))
                 .build();
 
@@ -479,10 +479,6 @@ public class RedGateNear_Version3 extends LinearOpMode {
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
         //ALREADY set in the driver
-//        frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-//        backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-//        frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
-//        backRightDrive.setDirection(DcMotor.Direction.FORWARD);
 
         shooter.setDirection(DcMotorEx.Direction.REVERSE);
         shooter2.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -492,8 +488,7 @@ public class RedGateNear_Version3 extends LinearOpMode {
         blockShooter.setDirection(Servo.Direction.REVERSE); //Do we really need this?
 
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        shooter2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public void shootN(int count) {
@@ -540,7 +535,7 @@ public class RedGateNear_Version3 extends LinearOpMode {
         stage3.setPower(0);
         blockShooter.setPosition(GATE_HOLD);
         startIntake(0.8, 0.3); //start intake
-        //*/
+
         /*
         final double targetVel = SHOOTER_VELOCITY + 200; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
         final double stage3FeedPower = 0.8;    //tune down if multiple balls sneak
