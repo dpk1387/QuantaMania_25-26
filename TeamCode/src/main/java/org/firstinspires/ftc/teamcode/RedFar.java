@@ -157,7 +157,7 @@ public class RedFar extends LinearOpMode {
         Pose2d loadZonePose = new Pose2d(60, 62, Math.toRadians(80));
 
         double stage1power = 0.8;
-        double stage3power = 0.1;
+        double stage3power = 0.4;
 
         // Traj 1: start -> shoot position
         Action traj1 = drive.actionBuilder(startPose)
