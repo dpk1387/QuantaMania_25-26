@@ -20,7 +20,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.opencv.core.Mat;
 
-@Autonomous(name = "RED FAR", group = "Autonomous")
+@Autonomous(name = "RED FAR - LZ FIRST", group = "Autonomous")
 @Config
 public class RedFar extends LinearOpMode {
     /* HARDWARE */
@@ -170,28 +170,21 @@ public class RedFar extends LinearOpMode {
         telemetry.update();
         telemetry.update();
 
-        Pose2d startPose = new Pose2d(60, 11, Math.toRadians(180));
+        Pose2d startPose = new Pose2d(62, 11, Math.toRadians(180));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
 
         initMotors();
-        // initAprilTagAndColorBlob();
 
-        // -------------------------------------------------------------------------
-        // FIX 1: Define all poses and variables BEFORE waitForStart() so trajectories
-        //         can be pre-built during the init phase. This eliminates the per-segment
-        //         build-time pause that occurred at every actionBuilder boundary.
-        // -------------------------------------------------------------------------
         double shootX = 54, shootY = 13;
 
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(155));
 
-        Pose2d loadZonePose = new Pose2d(62, 62, Math.toRadians(90));
+        Pose2d loadZonePose = new Pose2d(60, 62, Math.toRadians(80));
 
         double stage1power = 0.8;
         double stage3power = 0.1;
 
         // Traj 1: start -> shoot position
-        // (strafeTo is fine here since it's the opening move with no prior tangent)
         Action traj1 = drive.actionBuilder(startPose)
                 .splineToLinearHeading(shootPose, Math.toRadians(170))
                 .build();
@@ -220,7 +213,7 @@ public class RedFar extends LinearOpMode {
 
         // Traj 5: shoot pose -> classifier (SECOND TIME)
         Action traj6_leaveLaunchZone = drive.actionBuilder(shootPose)
-                .strafeTo(new Vector2d(30, 20))
+                .strafeTo(new Vector2d(46, 24))
                 .build();
 
         telemetry.addData("Status", "Initialized");
@@ -318,7 +311,7 @@ public class RedFar extends LinearOpMode {
         //*
         final double targetVel = SHOOTER_VELOCITY + 100; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
         final double lowRecoverMargin = 100; //100;      // tune (smaller than dropMargin)
-        final double stage3FeedPower = 0.6;    //tune down if multiple balls sneak
+        final double stage3FeedPower = 0.3;    //tune down if multiple balls sneak
         final double stage3HoldPower = 0.0;
 
         startIntake(0.9, 0.3); //start intake to move thing up
@@ -326,7 +319,7 @@ public class RedFar extends LinearOpMode {
         final double GATE_HOLD = OPENSHOOTER_CLOSED;   // you may want a slightly-open "hold" instead
         final double GATE_PULSE_OPEN = OPENSHOOTER_OPEN; // tune so 1 ball passes, not 2
 
-        final int pulseMs = 250; //180;//400;//130;              // tune: shorter = fewer double-feeds
+        final int pulseMs = 200; //250 //180;//400;//130;              // tune: shorter = fewer double-feeds
         // final int stableMs = 120;             // require speed stable before feeding next ball
         final int loopSleepMs = 15;
 
@@ -339,9 +332,10 @@ public class RedFar extends LinearOpMode {
         ElapsedTime time_pass = new ElapsedTime();
         time_pass.reset();
 
-        while(time_pass.milliseconds() <= 1000-300){ //1000-200
+        while(time_pass.milliseconds() <= 2000){ //1000-300 //1000-200
             // 4) Wait for recovery enough to avoid weak/overpowered 2nd/3rd shots.getVelocity()
             while (opModeIsActive() && shooter.getVelocity() < targetVel - lowRecoverMargin) { //shooter.getVelocity() < targetVel - lowRecoverMargin && shooter.getVelocity() > targetVel + highRecoverMargin
+                stage3.setPower(0);
                 sleep(loopSleepMs);
                 idle();
             }
