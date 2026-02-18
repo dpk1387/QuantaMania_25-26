@@ -394,8 +394,9 @@ public class BlueGateNear_Version4 extends LinearOpMode {
             } catch (Exception e) {
                 telemetry.addData("Error", e.getMessage());
             }
-            //*/
            /*
+           //no trajectory code
+
             try {
                 Actions.runBlocking(
                         new SequentialAction(
@@ -472,18 +473,10 @@ public class BlueGateNear_Version4 extends LinearOpMode {
             }
             //*/
             blockShooter.setPosition(OPENSHOOTER_CLOSED);
-            break; ///quite the opmode loop
+            break; ///quit the Opmode loop --> it won't go back to the top
         }
     }
     private void initMotors(){
-        // Initialize the hardware variables. Note that the strings used here as parameters
-        // to 'get' must match the names assigned during the robot configuration.
-        // step (using the FTC Robot Controller app on the phone).
-
-        //cameraServo = hardwareMap.get(Servo.class, "cameraServo");
-        // leftDist  = hardwareMap.get(DistanceSensor.class, "leftDistanceSensor");
-        // rightDist = hardwareMap.get(DistanceSensor.class, "rightDistanceSensor");
-
         //1. need initial the shooter, stage1, 2, 3, servo
         shooter = hardwareMap.get(DcMotorEx.class, "shooter");
         shooter2 = hardwareMap.get(DcMotorEx.class, "topShooterMotor");
@@ -504,33 +497,26 @@ public class BlueGateNear_Version4 extends LinearOpMode {
         shooter.setDirection(DcMotorEx.Direction.REVERSE);
         shooter2.setDirection(DcMotorSimple.Direction.FORWARD);
         stage1.setDirection(DcMotor.Direction.REVERSE);
-        // stage2.setDirection(DcMotor.Direction.REVERSE);
         stage3.setDirection(DcMotor.Direction.REVERSE);
         blockShooter.setDirection(Servo.Direction.REVERSE); //Do we really need this?
-
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public void shootN(int count) {
         //*
         final double targetVel = SHOOTER_VELOCITY + 100; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
-        final double lowRecoverMargin = 100; //100;      // tune (smaller than dropMargin)
-        final double stage3FeedPower = 0.6;    //tune down if multiple balls sneak
+        final double lowRecoverMargin = 100; //100;
+        final double stage3FeedPower = 0.6; //tune down if multiple balls sneak
         final double stage3HoldPower = 0.0;
 
-        startIntake(0.9, 0.3); //start intake to move thing up
+        startIntake(0.8, 0.3); //start intake to move thing up
 
-        final double GATE_HOLD = OPENSHOOTER_CLOSED;   // you may want a slightly-open "hold" instead
-        final double GATE_PULSE_OPEN = OPENSHOOTER_OPEN; // tune so 1 ball passes, not 2
-
-        final int pulseMs = 250; //180;//400;//130;              // tune: shorter = fewer double-feeds
-        // final int stableMs = 120;             // require speed stable before feeding next ball
+        final int pulseMs = 250; //180;//400;//130;
         final int loopSleepMs = 15;
 
-        // Spin up
-        blockShooter.setPosition(GATE_HOLD);
+        //spin up
+        blockShooter.setPosition(OPENSHOOTER_CLOSED);
         shootVelocity(targetVel);
         stage3.setPower(stage3HoldPower);
 
@@ -546,23 +532,22 @@ public class BlueGateNear_Version4 extends LinearOpMode {
             }
 
             stage3.setPower(stage3FeedPower);
-            blockShooter.setPosition(GATE_PULSE_OPEN);
+            blockShooter.setPosition(OPENSHOOTER_OPEN);
             sleep(pulseMs);
 
             // 3) Immediately block the next ball
-            blockShooter.setPosition(GATE_HOLD);
+            blockShooter.setPosition(OPENSHOOTER_CLOSED);
         }
 
         // Stop / reset
         stage3.setPower(0);
-        blockShooter.setPosition(GATE_HOLD);
+        blockShooter.setPosition(OPENSHOOTER_CLOSED);
         startIntake(0.8, 0.3); //start intake
-        //*/
         /*
         final double targetVel = SHOOTER_VELOCITY + 200; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
         final double stage3FeedPower = 0.8;    //tune down if multiple balls sneak
         startIntake(0.9, 0.5); //start intake
-        final int pulseMs = 700; //180;//400;//130;              // tune: shorter = fewer double-feeds
+        final int pulseMs = 700; //180;//400;//130;
         // Spin up
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         shootVelocity(targetVel);
@@ -575,7 +560,6 @@ public class BlueGateNear_Version4 extends LinearOpMode {
         startIntake(1.0, 0.5); //start intake
         //blockShooter.setPosition(OPENSHOOTER_CLOSED);
         //*/
-
     }
 
     //running intake
@@ -588,6 +572,5 @@ public class BlueGateNear_Version4 extends LinearOpMode {
     public void shootVelocity(double base){
         shooter.setVelocity(base);
         shooter2.setVelocity((double) (base * SHOOTER_GEAR_RATIO));
-
     }
 }
