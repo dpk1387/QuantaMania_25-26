@@ -49,27 +49,27 @@ public class BlueGateNear_Version3 extends LinearOpMode {
     // private DcMotor stage2 = null;
     private DcMotor stage3 = null;
     private Servo blockShooter = null;
-    private Servo cameraServo = null;
+    //private Servo cameraServo = null;
     //private DistanceSensor leftDist = null;
     //private DistanceSensor rightDist = null;
-    GoBildaPinpointDriver pinpoint = null;
+    //GoBildaPinpointDriver pinpoint = null;
     final private double OPENSHOOTER_OPEN = 0.8; //0.19 //0.3;
     final private double OPENSHOOTER_CLOSED = 1.0; // OPENSHOOTER_OPEN + 28//0.55
-    final private double CAMERASERVO_HIGH = 0.55;
-    final private double CAMERASERVO_LOW = 0.68;
+    //final private double CAMERASERVO_HIGH = 0.55;
+    //final private double CAMERASERVO_LOW = 0.68;
     final private double SHOOTER_VELOCITY = 2000; //2000 //2100 //2200 //2150
 
     final private double SHOOTER_GEAR_RATIO = 17.0/18.0;
     /* INIT */
-    private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
-    private static final int DESIRED_TAG_ID = 24;//RED //20;//BLUE//24;// -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
-    private VisionPortal visionPortal;               // Used to manage the video source.
-    private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
-    private AprilTagDetection desiredTag = null;     // Used to hold the data for a detected AprilTag
-    private Position cameraPosition =  new Position(DistanceUnit.INCH, 0, 5, 13.5, 0); //middle, 5 inch forward, 13.5 height
-    private YawPitchRollAngles cameraOrientation = new YawPitchRollAngles(AngleUnit.DEGREES, 0, -75, 0, 0);//-90
+    //private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
+    //private static final int DESIRED_TAG_ID = 24;//RED //20;//BLUE//24;// -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
+    //private VisionPortal visionPortal;               // Used to manage the video source.
+    //private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
+    //private AprilTagDetection desiredTag = null;     // Used to hold the data for a detected AprilTag
+    //private Position cameraPosition =  new Position(DistanceUnit.INCH, 0, 5, 13.5, 0); //middle, 5 inch forward, 13.5 height
+    //private YawPitchRollAngles cameraOrientation = new YawPitchRollAngles(AngleUnit.DEGREES, 0, -75, 0, 0);//-90
 
-    private ColorBlobLocatorProcessor colorLocator;
+    //private ColorBlobLocatorProcessor colorLocator;
     private ElapsedTime runtime = new ElapsedTime();
 
     /*
@@ -218,28 +218,28 @@ public class BlueGateNear_Version3 extends LinearOpMode {
         return new PowerShooter();
     }
 
-    //closes the shooter gate
-    public class moveGate implements Action {
-        private boolean initialized = false;
+//    //closes the shooter gate
+//    public class moveGate implements Action {
+//        private boolean initialized = false;
+//
+//        @Override
+//        public boolean run(@NonNull TelemetryPacket packet) {
+//            if (!initialized) {
+//                // Optionally log something
+//                packet.put("Action", "Closing gate");
+//                blockShooter.setPosition(OPENSHOOTER_CLOSED);
+//                //sleep(100);
+//
+//                initialized = true;
+//            }
+//            // Returning false tells Road Runner this action is finished
+//            return false;
+//        }
+//    }
 
-        @Override
-        public boolean run(@NonNull TelemetryPacket packet) {
-            if (!initialized) {
-                // Optionally log something
-                packet.put("Action", "Closing gate");
-                blockShooter.setPosition(OPENSHOOTER_CLOSED);
-                //sleep(100);
-
-                initialized = true;
-            }
-            // Returning false tells Road Runner this action is finished
-            return false;
-        }
-    }
-
-    public Action closeGate() {
-        return new moveGate();
-    }
+//    public Action closeGate() {
+//        return new moveGate();
+//    }
     //run the intake
     public class startIntakeAction implements Action {
         private boolean initialized = false;
@@ -247,6 +247,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
         public startIntakeAction(double s1_in, double s3_in){
             s1 = s1_in;
             s3 = s3_in;
+            blockShooter.setPosition(OPENSHOOTER_CLOSED);
         }
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
@@ -265,39 +266,39 @@ public class BlueGateNear_Version3 extends LinearOpMode {
         return new startIntakeAction(s1, s3);
     }
 
-    public class delay implements Action {
-        private boolean initialized = false;
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket packet) {
-            long wait = 100;
-            if (!initialized) {
-                // Optionally log something
-                packet.put("Delay", "");
-                // Fire three balls in sequence (blocking, similar to SleepAction(3))
-                shootVelocity(SHOOTER_VELOCITY);
-
-                sleep(wait);
-
-//                while (shooter.getVelocity() < SHOOTER_VELOCITY-75) {
-//                    telemetry.addData("Shooter Vel", "%5.2f", shooter.getVelocity());
-//                    telemetry.update();
-//                    sleep(15);
-//                    idle();
-//                }
-                //sleep(500); //sleep before moving to next position
-
-                initialized = true;
-            }
-            // Returning false tells Road Runner this action is finished
-            return false;
-        }
-    }
-
-    // Convenience factory so you can just write shootAll() in your SequentialAction
-    public Action shooterWait() {
-        return new delay();
-    }
+//    public class delay implements Action {
+//        private boolean initialized = false;
+//
+//        @Override
+//        public boolean run(@NonNull TelemetryPacket packet) {
+//            long wait = 100;
+//            if (!initialized) {
+//                // Optionally log something
+//                packet.put("Delay", "");
+//                // Fire three balls in sequence (blocking, similar to SleepAction(3))
+//                shootVelocity(SHOOTER_VELOCITY);
+//
+//                sleep(wait);
+//
+////                while (shooter.getVelocity() < SHOOTER_VELOCITY-75) {
+////                    telemetry.addData("Shooter Vel", "%5.2f", shooter.getVelocity());
+////                    telemetry.update();
+////                    sleep(15);
+////                    idle();
+////                }
+//                //sleep(500); //sleep before moving to next position
+//
+//                initialized = true;
+//            }
+//            // Returning false tells Road Runner this action is finished
+//            return false;
+//        }
+//    }
+//
+//    // Convenience factory so you can just write shootAll() in your SequentialAction
+//    public Action shooterWait() {
+//        return new delay();
+//    }
 
 
     public class intakeDelay1 implements Action {
@@ -396,15 +397,18 @@ public class BlueGateNear_Version3 extends LinearOpMode {
         double newClassifierX = 7.5+0.2+1.2;
         double newClassifierY = -64;
         Pose2d newClassifierPose = new Pose2d(newClassifierX, newClassifierY, Math.toRadians(235));
+
+        double stage1power = 0.8;
+        double stage3power = 0.5;
         while (opModeIsActive()){
             telemetry.addData("Shooter Velocity", shooter.getVelocity());
             telemetry.update();
-
+            //*
             try {
                 Actions.runBlocking(
                         new SequentialAction(
                                 startShooter(),
-                                startIntake(0.9, 0.3),
+                                startIntake(stage1power, stage3power),
                                 //go to shooting place
                                 drive.actionBuilder(startPose)
                                         //.strafeTo(new Vector2d(newShootX, newShootY))
@@ -413,16 +417,17 @@ public class BlueGateNear_Version3 extends LinearOpMode {
                                         .build(),
                                 //shooterWait(), //let shooter accelerate
                                 shootAll(), //shoot 3 balls
-                                //closeGate(),
-                                startIntake(0.9, 0.3), //start intake
+                                startIntake(stage1power, stage3power), //start intake
 
                                 //get the middle row balls
                                 drive.actionBuilder(newShootPose)
-                                        .setTangent(Math.toRadians(3)) // -5
-                                        .splineToSplineHeading(new Pose2d(7.5, -29, Math.toRadians(-80)), Math.toRadians(-50))
+                                        //.setTangent(Math.toRadians(3)) // -5
+                                        //.splineToSplineHeading(new Pose2d(7.5, -29, Math.toRadians(-90)), Math.toRadians(-90))
+                                        .strafeTo(new Vector2d(8, -22))
 
-                                        .splineToLinearHeading(new Pose2d(5.0, -55, Math.toRadians(-110)), Math.toRadians(-102))
-                                        .setTangent(Math.toRadians(90))
+
+                                        .splineToLinearHeading(new Pose2d(7.5, -55, Math.toRadians(-90)), Math.toRadians(-90))
+                                        //.splineToSplineHeading(new Pose2d(7.5, -57, Math.toRadians(-90)), Math.toRadians(-90))
                                         //.setTangent(Math.toRadians(32)) //15
                                         //go to intake balls
                                         //.splineToSplineHeading(new Pose2d(12, 42, Math.toRadians(90)), Math.toRadians(90)) //_, _,_, 95
@@ -431,11 +436,11 @@ public class BlueGateNear_Version3 extends LinearOpMode {
 
                                         //.setTangent(Math.toRadians(-100))
                                         //.splineToSplineHeading(new Pose2d(0, -31, Math.toRadians(-120)), Math.toRadians(135)) //200
-                                        .splineToLinearHeading(newShootPose, Math.toRadians(170)) //-160, -200
+                                        .splineToSplineHeading(newShootPose, Math.toRadians(170)) //-160, -200
                                         .build(),
                                 shootAll(), //shoot balls
                                 //closeGate(),
-                                startIntake(0.9, 0.3),
+                                startIntake(stage1power, stage3power),
 
                                 //INTAKE FROM CLASSIFIER
                                 //----------FIRST TIME
@@ -457,7 +462,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
                                         .build(),
                                 shootAll(), //shoot all
                                 //closeGate(),
-                                startIntake(0.9, 0.3), //intake again if time
+                                startIntake(stage1power, stage3power), //intake again if time
 
                                 //--------SECOND TIME
                                 drive.actionBuilder(newShootPose)
@@ -477,7 +482,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
                                         .build(),
                                 shootAll(), //shoot all
                                 //closeGate(),
-                                startIntake(0.9, 0.3), //intake again if time
+                                startIntake(stage1power, stage3power), //intake again if time
 
                                 //--------THIRD TIME
                                 drive.actionBuilder(newShootPose)
@@ -498,17 +503,16 @@ public class BlueGateNear_Version3 extends LinearOpMode {
                                         .build(),
                                 shootAll(), //shoot all
                                 //closeGate(),
-                                startIntake(0.9, 0.3), //intake again if time
+                                startIntake(stage1power, stage3power), //intake again if time
 
                                 //get the inner most 3 balls
                                 drive.actionBuilder(newShootPose)
-                                        .setTangent(Math.toRadians(-100)) //45 //60
+                                        .setTangent(Math.toRadians(-145))//-100)) //45 //60
                                         //go into
                                         //.splineToLinearHeading(new Pose2d(-12, 44,  Math.toRadians(90)), Math.toRadians(100))
                                         //.splineToLinearHeading(new Pose2d(-11, 56,  Math.toRadians(90)), Math.toRadians(80))
-                                        .splineToSplineHeading(new Pose2d(-12, -36,  Math.toRadians(-85)), Math.toRadians(-85))
-                                        .splineToLinearHeading(new Pose2d(-22, -53-4, Math.toRadians(-100)), Math.toRadians(-115))
-
+                                        .splineToSplineHeading(new Pose2d(-15, -30,  Math.toRadians(-90)), Math.toRadians(-90))
+                                        .splineToSplineHeading(new Pose2d(-15, -55, Math.toRadians(-90)), Math.toRadians(-90))
                                         //go back to shooting
                                         .splineToSplineHeading(lastShootPose, Math.toRadians(-225)) //-135 //go into
                                         //.splineToSplineHeading(new Pose2d(-20, -20, Math.toRadians(-140)), Math.toRadians(-115))
@@ -516,23 +520,91 @@ public class BlueGateNear_Version3 extends LinearOpMode {
 
                                 shootAll()
 
-                                /*new ParallelAction(
-                                        drive.actionBuilder(
-                                                new Pose2d(-20, -20, Math.toRadians(-140))
-                                        )
-                                                .splineToLinearHeading(lastShootPose, Math.toRadians(135))
-                                                .build(),
-
-                                        shootAll()
-                                )*/
-
-
                         )
                 );
                 telemetry.addData("Trajectory", "Executed Successfully");
             } catch (Exception e) {
                 telemetry.addData("Error", e.getMessage());
             }
+            //*/
+           /*
+            try {
+                Actions.runBlocking(
+                        new SequentialAction(
+                                startShooter(),
+                                startIntake(stage1power, 0.3),
+                                //go to shooting place
+                                drive.actionBuilder(startPose)
+                                        .strafeTo(new Vector2d(shootX, shootY))
+                                        .afterDisp(999, new SequentialAction(shootAll(), startIntake(stage1power, 0.3)))
+                                        .build(),
+
+                                //get the middle row balls
+                                drive.actionBuilder(newShootPose)
+                                        .setTangent(Math.toRadians(3))
+                                        .splineToSplineHeading(new Pose2d(7.5, -29, Math.toRadians(-80)), Math.toRadians(-50))
+                                        .splineToLinearHeading(new Pose2d(5.0, -55, Math.toRadians(-110)), Math.toRadians(-102))
+                                        .setTangent(Math.toRadians(90))
+                                        .splineToLinearHeading(newShootPose, Math.toRadians(170))
+                                        .afterDisp(999, new SequentialAction(shootAll(), startIntake(stage1power, 0.3)))
+                                        .build(),
+
+                                //----------FIRST TIME at classifier
+                                drive.actionBuilder(newShootPose)
+                                        .setTangent(Math.toRadians(15))
+                                        .splineToLinearHeading(classifierPose, Math.toRadians(-95))
+                                        .strafeTo(new Vector2d(newClassifierX, newClassifierY))
+                                        .build(),
+                                intakeWait1(),
+                                drive.actionBuilder(newClassifierPose)
+                                        .setTangent(Math.toRadians(95))
+                                        .splineToLinearHeading(newShootPose, Math.toRadians(175))
+                                        .afterDisp(999, new SequentialAction(shootAll(), startIntake(stage1power, 0.3)))
+                                        .build(),
+
+                                //--------SECOND TIME at classifier
+                                drive.actionBuilder(newShootPose)
+                                        .setTangent(Math.toRadians(15))
+                                        .splineToLinearHeading(classifierPose, Math.toRadians(-95))
+                                        .strafeTo(new Vector2d(newClassifierX, newClassifierY))
+                                        .build(),
+                                intakeWait2(),
+                                drive.actionBuilder(newClassifierPose)
+                                        .setTangent(Math.toRadians(95))
+                                        .splineToLinearHeading(newShootPose, Math.toRadians(175))
+                                        .afterDisp(999, new SequentialAction(shootAll(), startIntake(stage1power, 0.3)))
+                                        .build(),
+
+                                //--------THIRD TIME at classifier
+                                drive.actionBuilder(newShootPose)
+                                        .setTangent(Math.toRadians(15))
+                                        .splineToLinearHeading(classifierPose, Math.toRadians(-95))
+                                        .strafeTo(new Vector2d(newClassifierX, newClassifierY))
+                                        .build(),
+                                intakeWait2(),
+                                drive.actionBuilder(newClassifierPose)
+                                        .setTangent(Math.toRadians(95))
+                                        .splineToLinearHeading(newShootPose, Math.toRadians(175))
+                                        .afterDisp(999, new SequentialAction(shootAll(), startIntake(stage1power, 0.3)))
+                                        .build(),
+
+                                //get the inner most 3 balls
+                                drive.actionBuilder(newShootPose)
+                                        .setTangent(Math.toRadians(-100))
+                                        .splineToSplineHeading(new Pose2d(-12, -36, Math.toRadians(-85)), Math.toRadians(-85))
+                                        .splineToLinearHeading(new Pose2d(-22, -53-4, Math.toRadians(-100)), Math.toRadians(-115))
+                                        .splineToSplineHeading(lastShootPose, Math.toRadians(-225))
+                                        .afterDisp(999, shootAll())
+                                        .build()
+                        )
+                );
+                telemetry.addData("Trajectory", "Executed Successfully");
+            } catch (Exception e) {
+                telemetry.addData("Error", e.getMessage());
+            }
+            //*/
+            blockShooter.setPosition(OPENSHOOTER_CLOSED);
+            break; ///quite the opmode loop
         }
     }
     private void initMotors(){
@@ -540,7 +612,7 @@ public class BlueGateNear_Version3 extends LinearOpMode {
         // to 'get' must match the names assigned during the robot configuration.
         // step (using the FTC Robot Controller app on the phone).
 
-        cameraServo = hardwareMap.get(Servo.class, "cameraServo");
+        //cameraServo = hardwareMap.get(Servo.class, "cameraServo");
         // leftDist  = hardwareMap.get(DistanceSensor.class, "leftDistanceSensor");
         // rightDist = hardwareMap.get(DistanceSensor.class, "rightDistanceSensor");
 
@@ -573,169 +645,170 @@ public class BlueGateNear_Version3 extends LinearOpMode {
 //        shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
     //Initialize the AprilTag processor.
-    private void initAprilTagAndColorBlob() {
-        /******************************************************************************************/
-        // Create the AprilTag processor by using a builder.
-        aprilTag = new AprilTagProcessor.Builder()
-                .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
-                .setCameraPose(cameraPosition, cameraOrientation)
-                .setLensIntrinsics(822.317, 822.317, 319.495, 242.502)
-                .build();
-
-        // Adjust Image Decimation to trade-off detection-range for detection-rate.
-        // e.g. Some typical detection data using a Logitech C920 WebCam
-        // Decimation = 1 ..  Detect 2" Tag from 10 feet away at 10 Frames per second
-        // Decimation = 2 ..  Detect 2" Tag from 6  feet away at 22 Frames per second
-        // Decimation = 3 ..  Detect 2" Tag from 4  feet away at 30 Frames Per Second
-        // Decimation = 3 ..  Detect 5" Tag from 10 feet away at 30 Frames Per Second
-        // Note: Decimation can be changed on-the-fly to adapt during a match.
-        aprilTag.setDecimation(2);
-        /******************************************************************************************/
-        /* Build a "Color Locator" vision processor based on the ColorBlobLocatorProcessor class.
-         * - Specify the color range you are looking for. Use a predefined color, or create your own
-         *
-         *   .setTargetColorRange(ColorRange.BLUE)     // use a predefined color match
-         *     Available colors are: RED, BLUE, YELLOW, GREEN, ARTIFACT_GREEN, ARTIFACT_PURPLE
-         *   .setTargetColorRange(new ColorRange(ColorSpace.YCrCb,  // or define your own color match
-         *                                       new Scalar( 32, 176,  0),
-         *                                       new Scalar(255, 255, 132)))
-         *
-         * - Focus the color locator by defining a RegionOfInterest (ROI) which you want to search.
-         *     This can be the entire frame, or a sub-region defined using:
-         *     1) standard image coordinates or 2) a normalized +/- 1.0 coordinate system.
-         *     Use one form of the ImageRegion class to define the ROI.
-         *       ImageRegion.entireFrame()
-         *       ImageRegion.asImageCoordinates(50, 50,  150, 150)  100x100 pixels at upper left corner
-         *       ImageRegion.asUnityCenterCoordinates(-0.5, 0.5, 0.5, -0.5)  50% width/height in center
-         *
-         * - Define which contours are included.
-         *   You can get ALL the contours, ignore contours that are completely inside another contour.
-         *     .setContourMode(ColorBlobLocatorProcessor.ContourMode.ALL_FLATTENED_HIERARCHY)
-         *     .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)
-         *     EXTERNAL_ONLY helps to avoid bright reflection spots from breaking up solid colors.
-         *
-         * - Turn the displays of contours ON or OFF.
-         *     Turning these on helps debugging but takes up valuable CPU time.
-         *        .setDrawContours(true)                Draws an outline of each contour.
-         *        .setEnclosingCircleColor(int color)   Draws a circle around each contour. 0 to disable.
-         *        .setBoxFitColor(int color)            Draws a rectangle around each contour. 0 to disable. ON by default.
-         *
-         *
-         * - include any pre-processing of the image or mask before looking for Blobs.
-         *     There are some extra processing you can include to improve the formation of blobs.
-         *     Using these features requires an understanding of how they may effect the final
-         *     blobs.  The "pixels" argument sets the NxN kernel size.
-         *        .setBlurSize(int pixels)
-         *        Blurring an image helps to provide a smooth color transition between objects,
-         *        and smoother contours.  The higher the number, the more blurred the image becomes.
-         *        Note:  Even "pixels" values will be incremented to satisfy the "odd number" requirement.
-         *        Blurring too much may hide smaller features.  A size of 5 is good for a 320x240 image.
-         *
-         *     .setErodeSize(int pixels)
-         *        Erosion removes floating pixels and thin lines so that only substantive objects remain.
-         *        Erosion can grow holes inside regions, and also shrink objects.
-         *        "pixels" in the range of 2-4 are suitable for low res images.
-         *
-         *     .setDilateSize(int pixels)
-         *        Dilation makes objects and lines more visible by filling in small holes, and making
-         *        filled shapes appear larger. Dilation is useful for joining broken parts of an
-         *        object, such as when removing noise from an image.
-         *        "pixels" in the range of 2-4 are suitable for low res images.
-         *
-         *        .setMorphOperationType(MorphOperationType morphOperationType)
-         *        This defines the order in which the Erode/Dilate actions are performed.
-         *        OPENING:    Will Erode and then Dilate which will make small noise blobs go away
-         *        CLOSING:    Will Dilate and then Erode which will tend to fill in any small holes in blob edges.
-         */
-        colorLocator = new ColorBlobLocatorProcessor.Builder()
-                .setTargetColorRange(ColorRange.ARTIFACT_PURPLE)   // Use a predefined color match
-                .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)
-                //.setRoi(ImageRegion.asUnityCenterCoordinates(-0.75, 0.75, 0.75, -0.75))
-                .setDrawContours(true)   // Show contours on the Stream Preview
-                .setBoxFitColor(0)       // Disable the drawing of rectangles
-                .setCircleFitColor(Color.rgb(255, 255, 0)) // Draw a circle
-//                .setBlurSize(5)          // Smooth the transitions between different colors in image
-//                // the following options have been added to fill in perimeter holes.
-//                .setDilateSize(15)       // Expand blobs to fill any divots on the edges
-//                .setErodeSize(15)        // Shrink blobs back to original size
-                //.setMorphOperationType(ColorBlobLocatorProcessor.MorphOperationType.CLOSING)
-                .setBlurSize(3)             // smaller blur
-                .setDilateSize(3)           // much smaller than 15
-                .setErodeSize(3)
-                .setMorphOperationType(ColorBlobLocatorProcessor.MorphOperationType.OPENING)
-
-                .build();
-
-        /******************************************************************************************/
-        // Create the vision portal by using a builder.
-        if (USE_WEBCAM) {
-            visionPortal = new VisionPortal.Builder()
-                    .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-                    .setCameraResolution(new Size(640, 480))
-                    .addProcessor(aprilTag)
-                    .addProcessor(colorLocator)
-                    .build();
-        } else {
-            visionPortal = new VisionPortal.Builder()
-                    .setCamera(BuiltinCameraDirection.BACK)
-                    .setCameraResolution(new Size(640, 480))
-                    .addProcessor(aprilTag)
-                    .addProcessor(colorLocator)
-                    .build();
-        }
-    }
-    /*Manually set the camera gain and exposure.  This can only be called AFTER calling initAprilTag(), and only works for Webcams; */
-    private void  setManualExposure(int exposureMS, int gain) {
-        // Wait for the camera to be open, then use the controls
-
-        if (visionPortal == null) {
-            return;
-        }
-
-        // Make sure camera is streaming before we try to set the exposure controls
-        if (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {
-            telemetry.addData("Camera", "Waiting");
-            telemetry.update();
-            while (!isStopRequested() && (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING)) {
-                sleep(20);
-            }
-            telemetry.addData("Camera", "Ready");
-            telemetry.update();
-        }
-
-        // Set camera controls unless we are stopping.
-        if (!isStopRequested())
-        {
-            ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
-            if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
-                exposureControl.setMode(ExposureControl.Mode.Manual);
-                sleep(50);
-            }
-            exposureControl.setExposure((long)exposureMS, TimeUnit.MILLISECONDS);
-            sleep(20);
-            GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
-            gainControl.setGain(gain);
-            sleep(20);
-        }
-    }
-
-    private void setBlobExposureAuto() {
-        if (visionPortal == null) return;
-
-        ExposureControl exposureControl =
-                visionPortal.getCameraControl(ExposureControl.class);
-        GainControl gainControl =
-                visionPortal.getCameraControl(GainControl.class);
-
-        if (exposureControl != null) {
-            exposureControl.setMode(ExposureControl.Mode.Auto);
-        }
-
-        // Optional: some drivers like to cap gain to reduce noise, if supported
-        // if (gainControl != null) { gainControl.setGain(someMaxValue); }
-    }
+//    private void initAprilTagAndColorBlob() {
+//        /******************************************************************************************/
+//        // Create the AprilTag processor by using a builder.
+//        aprilTag = new AprilTagProcessor.Builder()
+//                .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
+//                .setCameraPose(cameraPosition, cameraOrientation)
+//                .setLensIntrinsics(822.317, 822.317, 319.495, 242.502)
+//                .build();
+//
+//        // Adjust Image Decimation to trade-off detection-range for detection-rate.
+//        // e.g. Some typical detection data using a Logitech C920 WebCam
+//        // Decimation = 1 ..  Detect 2" Tag from 10 feet away at 10 Frames per second
+//        // Decimation = 2 ..  Detect 2" Tag from 6  feet away at 22 Frames per second
+//        // Decimation = 3 ..  Detect 2" Tag from 4  feet away at 30 Frames Per Second
+//        // Decimation = 3 ..  Detect 5" Tag from 10 feet away at 30 Frames Per Second
+//        // Note: Decimation can be changed on-the-fly to adapt during a match.
+//        aprilTag.setDecimation(2);
+//        /******************************************************************************************/
+//        /* Build a "Color Locator" vision processor based on the ColorBlobLocatorProcessor class.
+//         * - Specify the color range you are looking for. Use a predefined color, or create your own
+//         *
+//         *   .setTargetColorRange(ColorRange.BLUE)     // use a predefined color match
+//         *     Available colors are: RED, BLUE, YELLOW, GREEN, ARTIFACT_GREEN, ARTIFACT_PURPLE
+//         *   .setTargetColorRange(new ColorRange(ColorSpace.YCrCb,  // or define your own color match
+//         *                                       new Scalar( 32, 176,  0),
+//         *                                       new Scalar(255, 255, 132)))
+//         *
+//         * - Focus the color locator by defining a RegionOfInterest (ROI) which you want to search.
+//         *     This can be the entire frame, or a sub-region defined using:
+//         *     1) standard image coordinates or 2) a normalized +/- 1.0 coordinate system.
+//         *     Use one form of the ImageRegion class to define the ROI.
+//         *       ImageRegion.entireFrame()
+//         *       ImageRegion.asImageCoordinates(50, 50,  150, 150)  100x100 pixels at upper left corner
+//         *       ImageRegion.asUnityCenterCoordinates(-0.5, 0.5, 0.5, -0.5)  50% width/height in center
+//         *
+//         * - Define which contours are included.
+//         *   You can get ALL the contours, ignore contours that are completely inside another contour.
+//         *     .setContourMode(ColorBlobLocatorProcessor.ContourMode.ALL_FLATTENED_HIERARCHY)
+//         *     .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)
+//         *     EXTERNAL_ONLY helps to avoid bright reflection spots from breaking up solid colors.
+//         *
+//         * - Turn the displays of contours ON or OFF.
+//         *     Turning these on helps debugging but takes up valuable CPU time.
+//         *        .setDrawContours(true)                Draws an outline of each contour.
+//         *        .setEnclosingCircleColor(int color)   Draws a circle around each contour. 0 to disable.
+//         *        .setBoxFitColor(int color)            Draws a rectangle around each contour. 0 to disable. ON by default.
+//         *
+//         *
+//         * - include any pre-processing of the image or mask before looking for Blobs.
+//         *     There are some extra processing you can include to improve the formation of blobs.
+//         *     Using these features requires an understanding of how they may effect the final
+//         *     blobs.  The "pixels" argument sets the NxN kernel size.
+//         *        .setBlurSize(int pixels)
+//         *        Blurring an image helps to provide a smooth color transition between objects,
+//         *        and smoother contours.  The higher the number, the more blurred the image becomes.
+//         *        Note:  Even "pixels" values will be incremented to satisfy the "odd number" requirement.
+//         *        Blurring too much may hide smaller features.  A size of 5 is good for a 320x240 image.
+//         *
+//         *     .setErodeSize(int pixels)
+//         *        Erosion removes floating pixels and thin lines so that only substantive objects remain.
+//         *        Erosion can grow holes inside regions, and also shrink objects.
+//         *        "pixels" in the range of 2-4 are suitable for low res images.
+//         *
+//         *     .setDilateSize(int pixels)
+//         *        Dilation makes objects and lines more visible by filling in small holes, and making
+//         *        filled shapes appear larger. Dilation is useful for joining broken parts of an
+//         *        object, such as when removing noise from an image.
+//         *        "pixels" in the range of 2-4 are suitable for low res images.
+//         *
+//         *        .setMorphOperationType(MorphOperationType morphOperationType)
+//         *        This defines the order in which the Erode/Dilate actions are performed.
+//         *        OPENING:    Will Erode and then Dilate which will make small noise blobs go away
+//         *        CLOSING:    Will Dilate and then Erode which will tend to fill in any small holes in blob edges.
+//         */
+//        colorLocator = new ColorBlobLocatorProcessor.Builder()
+//                .setTargetColorRange(ColorRange.ARTIFACT_PURPLE)   // Use a predefined color match
+//                .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)
+//                //.setRoi(ImageRegion.asUnityCenterCoordinates(-0.75, 0.75, 0.75, -0.75))
+//                .setDrawContours(true)   // Show contours on the Stream Preview
+//                .setBoxFitColor(0)       // Disable the drawing of rectangles
+//                .setCircleFitColor(Color.rgb(255, 255, 0)) // Draw a circle
+////                .setBlurSize(5)          // Smooth the transitions between different colors in image
+////                // the following options have been added to fill in perimeter holes.
+////                .setDilateSize(15)       // Expand blobs to fill any divots on the edges
+////                .setErodeSize(15)        // Shrink blobs back to original size
+//                //.setMorphOperationType(ColorBlobLocatorProcessor.MorphOperationType.CLOSING)
+//                .setBlurSize(3)             // smaller blur
+//                .setDilateSize(3)           // much smaller than 15
+//                .setErodeSize(3)
+//                .setMorphOperationType(ColorBlobLocatorProcessor.MorphOperationType.OPENING)
+//
+//                .build();
+//
+//        /******************************************************************************************/
+//        // Create the vision portal by using a builder.
+//        if (USE_WEBCAM) {
+//            visionPortal = new VisionPortal.Builder()
+//                    .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+//                    .setCameraResolution(new Size(640, 480))
+//                    .addProcessor(aprilTag)
+//                    .addProcessor(colorLocator)
+//                    .build();
+//        } else {
+//            visionPortal = new VisionPortal.Builder()
+//                    .setCamera(BuiltinCameraDirection.BACK)
+//                    .setCameraResolution(new Size(640, 480))
+//                    .addProcessor(aprilTag)
+//                    .addProcessor(colorLocator)
+//                    .build();
+//        }
+//    }
+//    /*Manually set the camera gain and exposure.  This can only be called AFTER calling initAprilTag(), and only works for Webcams; */
+//    private void  setManualExposure(int exposureMS, int gain) {
+//        // Wait for the camera to be open, then use the controls
+//
+//        if (visionPortal == null) {
+//            return;
+//        }
+//
+//        // Make sure camera is streaming before we try to set the exposure controls
+//        if (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {
+//            telemetry.addData("Camera", "Waiting");
+//            telemetry.update();
+//            while (!isStopRequested() && (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING)) {
+//                sleep(20);
+//            }
+//            telemetry.addData("Camera", "Ready");
+//            telemetry.update();
+//        }
+//
+//        // Set camera controls unless we are stopping.
+//        if (!isStopRequested())
+//        {
+//            ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
+//            if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
+//                exposureControl.setMode(ExposureControl.Mode.Manual);
+//                sleep(50);
+//            }
+//            exposureControl.setExposure((long)exposureMS, TimeUnit.MILLISECONDS);
+//            sleep(20);
+//            GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
+//            gainControl.setGain(gain);
+//            sleep(20);
+//        }
+//    }
+//
+//    private void setBlobExposureAuto() {
+//        if (visionPortal == null) return;
+//
+//        ExposureControl exposureControl =
+//                visionPortal.getCameraControl(ExposureControl.class);
+//        GainControl gainControl =
+//                visionPortal.getCameraControl(GainControl.class);
+//
+//        if (exposureControl != null) {
+//            exposureControl.setMode(ExposureControl.Mode.Auto);
+//        }
+//
+//        // Optional: some drivers like to cap gain to reduce noise, if supported
+//        // if (gainControl != null) { gainControl.setGain(someMaxValue); }
+//    }
 
     public void shootN(int count) {
+        //*
         final double targetVel = SHOOTER_VELOCITY + 100; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
         final double dropMargin = 100;         // tune
         final double lowRecoverMargin = 100; //100;      // tune (smaller than dropMargin)
@@ -783,7 +856,26 @@ public class BlueGateNear_Version3 extends LinearOpMode {
         // Stop / reset
         stage3.setPower(0);
         blockShooter.setPosition(GATE_HOLD);
-        startIntake(0.9, 0.3); //start intake
+        startIntake(0.8, 0.3); //start intake
+        //*/
+        /*
+        final double targetVel = SHOOTER_VELOCITY + 200; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
+        final double stage3FeedPower = 0.8;    //tune down if multiple balls sneak
+        startIntake(0.9, 0.5); //start intake
+        final int pulseMs = 700; //180;//400;//130;              // tune: shorter = fewer double-feeds
+        // Spin up
+        blockShooter.setPosition(OPENSHOOTER_CLOSED);
+        shootVelocity(targetVel);
+
+        stage3.setPower(stage3FeedPower);
+        blockShooter.setPosition(OPENSHOOTER_OPEN);
+        sleep(pulseMs);
+
+
+        startIntake(1.0, 0.5); //start intake
+        //blockShooter.setPosition(OPENSHOOTER_CLOSED);
+        //*/
+
     }
 
     //running intake
