@@ -128,16 +128,10 @@ public class TeleOpRed2 extends LinearOpMode
 
     private Servo cameraServo = null;
     final private double CAMERASERVO_HIGH = 0.49;//0.55;
-    //private double CAMERASERVO_LOW = 0.72;
-    //final
-    // private double CAMERASERVO_LOW = 0.68;
+    //final private double CAMERASERVO_LOW = 0.68;
     private double SHOOTER_VELOCITY = 2500;//4800;//5000;
 
     final private double SHOOTER_GEAR_RATIO = 17.0/18.0; //bottom / top
-
-
-//    private DistanceSensor leftDist;
-//    private DistanceSensor rightDist;
 
     boolean intakeMode = false;
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
@@ -158,9 +152,6 @@ public class TeleOpRed2 extends LinearOpMode
     ///
     private ColorBlobLocatorProcessor colorLocator;
     //obstacle avoidance
-    private boolean prevB = false;
-    private double dodgeDirection = 0.0;   // -1 = left, +1 = right, 0 = no dodge
-
     private double rangeError = 0; //desiredTag.ftcPose.range;
     private double headingError =0 ;// desiredTag.ftcPose.bearing;
     private double yawError = 0; //= desiredTag.ftcPose.yaw;
@@ -176,19 +167,16 @@ public class TeleOpRed2 extends LinearOpMode
         double park_x, park_y, park_yaw;
         if (DESIRED_TAG_ID == 24) {
             //desired_x = -30; desired_y =  30; desired_yaw =  45;
-            desired_x = -23; desired_y =  23; desired_yaw =  135; //corresonpindng do DESIRED DISTANCE 50 -- NEED TO CHeck the yaw
+            //shoot close
+            desired_x = -23; desired_y =  23; desired_yaw =  135; //corresponding to DESIRED DISTANCE 50 -- NEED TO CHeck the yaw
+            //clear classifier
             latch_x = 8; latch_y = 66; latch_yaw = 120; //0, 50, 90
+            //parking position
             park_x = 38.5; park_y = -35; park_yaw = 90;
-
+            //shooting from far
             far_x = 48; far_y = 0; far_yaw = 150; //far shooting locations
             //yaw okay around 155, just a little close to the left side of the goal
         }
-//        else {
-//            //desired_x = -30; desired_y = -30; desired_yaw = 135;
-//            desired_x = -32; desired_y = -32; desired_yaw = 225;
-//            latch_x = 0; latch_y = -46; latch_yaw = -90; //0, 50
-//            park_x = 38.5; park_y = 35; park_yaw = -90;
-//        }
 
         boolean targetFound     = false;    // Set to true when an AprilTag target is detected
         double  drive           = 0;        // Desired forward power/speed (-1 to +1)
@@ -231,18 +219,7 @@ public class TeleOpRed2 extends LinearOpMode
             telemetry.addData("velocity (top)", shooter2.getVelocity());
             telemetry.addData("velocity (bottom)", shooter.getVelocity());
 
-            /*
-            //TEST CODE -- Test servo -- open it to fine turn servo
 
-            if (gamepad1.dpad_up) {
-                pos += 0.01;
-            } else if (gamepad1.dpad_down) {
-                pos -= 0.01;
-            }
-            pos = Range.clip(pos, 0.0, 1.0);
-            cameraServo.setPosition(pos);
-            telemetry.addData("cameraServo position", cameraServo.getPosition());
-            //*/
             // set camera exposure
             if (gamepad1.left_bumper && !aprilTagMode) {
                 aprilTagMode = true;
@@ -259,7 +236,6 @@ public class TeleOpRed2 extends LinearOpMode
                 cameraServo.setPosition(CAMERASERVO_HIGH);
             }
 
-            /**************************************************************************************/
             targetFound = false;
             desiredTag  = null;
             // Step through the list of detected tags and look for a matching tag
@@ -278,9 +254,9 @@ public class TeleOpRed2 extends LinearOpMode
                     }
                 }
             }
-            /**************************************************************************************/
+
             // Tell the driver what we see, and what to do.
-            if (targetFound) {
+            if (targetFound) { //if AprilTag visible
                 telemetry.addData("\n>","HOLD Left-Bumper to Drive to Target\n");
                 telemetry.addData("Found", "ID %d (%s)", desiredTag.id, desiredTag.metadata.name);
                 telemetry.addData("Range",  "%5.1f inches", desiredTag.ftcPose.range);
@@ -298,7 +274,7 @@ public class TeleOpRed2 extends LinearOpMode
             // If Left Bumper is being pressed, AND we have found the desired target, Drive to target Automatically .
             if (gamepad1.left_bumper) {
                 if (targetFound) {
-
+                    //range of homing + AprilTag
                     final double[] yawRange = new double[] {0,15};// 0, 25degrees
                     final double[] distanceRange = new double[] {60,65}; //50, 55 //45, 65 inches
                     // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
@@ -307,12 +283,16 @@ public class TeleOpRed2 extends LinearOpMode
                     yawError     = desiredTag.ftcPose.yaw;
                     // Use the speed and turn "gains" to calculate how we want the robot to move.
 
+                    //stop driving if in range
                     if ((rangeError>distanceRange[0] && rangeError<distanceRange[1])) {
                         drive = 0;
-                    } else drive   = Range.clip((rangeError - (distanceRange[0] + distanceRange[1])/2)*SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+                    } else {
+                        drive   = Range.clip((rangeError - (distanceRange[0] + distanceRange[1])/2)*SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+                    }
 
                     turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
 
+                    //angle flexibility
                     if (!(yawError>yawRange[0] && yawError<yawRange[1])) {
                         strafe = Range.clip(-(yawError - (yawRange[0] + yawRange[1])/2) * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
                     } else strafe = 0;
@@ -345,7 +325,7 @@ public class TeleOpRed2 extends LinearOpMode
                     strafe = cmd.strafe;
                     turn = cmd.turn;
                 } else {
-                    //if lef trigger is press and final 20 second
+                    //if left trigger is press and final 20 second
                     if (gamepad1.left_trigger > 0.5) {
                         DriveCommand cmd = drivePinpoint(park_x, park_y, park_yaw); //result always valid
                         drive = cmd.drive;
@@ -370,49 +350,27 @@ public class TeleOpRed2 extends LinearOpMode
                         telemetry.addData("Manual", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
                     }
                 }
-            // if right bumper is press -> and there is purple ball in sights -> turn and drive toward it
-
-
-//            telemetry.addData("yawError", yawError);
-//            telemetry.addData("headingError", headingError);
-//            telemetry.addData("rangeError", rangeError);
             telemetry.update();
 
-            /**************************************************************************************/
-            if (gamepad2.y && !lastYState)
-                intakeMode = !intakeMode;
-            lastYState = gamepad2.y;
-            if(intakeMode){
-                //turn on intake power
-                stage1_power = 0.8;//0.5; //0.6 (too low)
-                stage3_power = 0.3;//0.3;
-            }
             if (gamepad2.left_bumper && !shooting){
-//                shoot(1100);
                 shootBasedOnDistance();
                 shooting = false;
             }
 
             if (gamepad2.right_bumper && !shooting){
-                //shootThree();
-//                shoot(2100);
                 shootBasedOnDistance();
-
                 shooting = false;
-
             }
-
-            /**************************************************************************************/
             // Apply desired axes motions to the drivetrain.
             moveRobot(drive, strafe, turn);
+
             //Apply power to stage1, stage2, stage3
             runIntake(stage1_power, stage3_power);
             sleep(10);
         }
     }
-    /**************************************************************************************/
-    //Move robot according to desired axes motions: Positive X is forward,  Positive Y is strafe left, Positive Yaw is counter-clockwise
 
+    //OLD SHOOTING FUNCTION
     public void shoot(int totalMs) {
         moveRobot(0, 0, 0); // stops robot in place
         double targetVel = SHOOTER_VELOCITY; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
@@ -468,6 +426,7 @@ public class TeleOpRed2 extends LinearOpMode
 //        shooter.setVelocity(0);
         intakeMode = true;
     }
+    //calculate how much vel based on distance
     public double distanceToVel(double d) {
         // Convert from distance to velocity in a linear manner
         final double DMIN = 36.0;
@@ -476,10 +435,15 @@ public class TeleOpRed2 extends LinearOpMode
         final double VEL_MAX = 2400;//2500.0; //2550.0
 
         // Clamp distance to [DMIN, DMAX]
-        if (d <= DMIN) return VEL_MIN;
-        if (d >= DMAX) return VEL_MAX;
+        if (d <= DMIN) {
+            return VEL_MIN;
+        }
+        if (d >= DMAX){
+            return VEL_MAX;
+        }
 
         // Linear interpolation
+        //t is given distance
         double t = (d - DMIN) / (DMAX - DMIN);          // t in [0, 1]
         double vel = VEL_MIN + t * (VEL_MAX - VEL_MIN); // vel in [VEL_MIN, VEL_MAX]
 
@@ -493,7 +457,7 @@ public class TeleOpRed2 extends LinearOpMode
         3. set velocity based on distance
         4. shoot
         * */
-        double targetVel = SHOOTER_VELOCITY; //close = 2200. far = 2500.
+        double targetVel = SHOOTER_VELOCITY;
 
         //check for desired tag
         if (desiredTag != null) {
@@ -503,43 +467,40 @@ public class TeleOpRed2 extends LinearOpMode
             quickTurnToTagBearing(DESIRED_TAG_ID);
             targetVel = distanceToVel(rangeError);
         }
-
         /**SHOOTING**/
         final double    stage3FeedPower = 0.4;
-        final double    lowRecoverMargin = 100; //100;      // tune (smaller than dropMargin)
+        final double    lowRecoverMargin = 100; //100;
         final long      loopSleepMs = 15;
         final double    totalShootingTime = 1500;//1000 - 300; //1000-200
         final long      pulseMs = 250; //250
 
-        //prepare all the shooter
+        //prepare all the shooter stuff
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
         shootVelocity(targetVel);
         stage3.setPower(stage3FeedPower);
-
 
         ElapsedTime time_pass = new ElapsedTime();
         time_pass.reset();
         while(time_pass.milliseconds() <= totalShootingTime){
             //wait
-            while (opModeIsActive() && shooter.getVelocity() < targetVel - lowRecoverMargin) { //shooter.getVelocity() < targetVel - lowRecoverMargin && shooter.getVelocity() > targetVel + highRecoverMargin
-                stage3.setPower(0);
+            while (opModeIsActive() && shooter.getVelocity() < targetVel - lowRecoverMargin) {
+                stage3.setPower(0); //don't prematurely kick ball
                 sleep(loopSleepMs);
                 idle();
             }
-
             stage3.setPower(stage3FeedPower);
             blockShooter.setPosition(OPENSHOOTER_OPEN);
-            sleep(pulseMs);
-            // 3) Immediately block the next ball -- but open rightaway if the speed is ok
+            sleep(pulseMs);   // 3) Immediately block the next ball -- but open right away if the speed is ok
+
             blockShooter.setPosition(OPENSHOOTER_CLOSED);
         }
-
     }
     /**
      * Quick turn-to-yaw using AprilTag. Assumes tag is usually visible.
      * If tag is not seen at any iteration, this function exits immediately (so you can move on).
      * Returns true if aligned, false otherwise.
      */
+    //correction while shooting method
     public boolean quickTurnToTagBearing(int DESIRED_TAG_ID) {
         final double TOLERANCE_DEG = 1.5;//3.0;   // within +/- 3 degrees
         final double kP = 0.02;             // tune
@@ -551,7 +512,6 @@ public class TeleOpRed2 extends LinearOpMode
         timer.reset();
 
         while (opModeIsActive() && timer.seconds() < TIMEOUT_S) {
-
             // Find desired tag
             desiredTag = null;
             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
@@ -562,35 +522,29 @@ public class TeleOpRed2 extends LinearOpMode
                     break;
                 }
             }
-
             // If we don't see the tag, stop and move on
             if (desiredTag == null) {
                 setTurnPower(0.0);
                 return false;
             }
-
+            //recalculate errors
             rangeError   = desiredTag.ftcPose.range;
             headingError = desiredTag.ftcPose.bearing;
             yawError     = desiredTag.ftcPose.yaw;
-            // Done
+            // Done, permission to shoot now
             if (Math.abs(headingError) <= TOLERANCE_DEG) {
                 setTurnPower(0.0);
                 return true;
             }
-
             // P turn
             double turnPower = kP * headingError;
-
             // minimum power
             if (Math.abs(turnPower) < MIN_POWER) {
                 turnPower = Math.copySign(MIN_POWER, turnPower);
             }
-
             // cap
             turnPower = Math.max(-MAX_POWER, Math.min(MAX_POWER, turnPower));
-
             setTurnPower(turnPower);
-
             idle();
         }
 
@@ -598,7 +552,6 @@ public class TeleOpRed2 extends LinearOpMode
         setTurnPower(0.0);
         return false;
     }
-
     /** In-place turn motor powers. If direction is wrong, flip signs. */
     private void setTurnPower(double turnPower) {
         frontLeftDrive.setPower(-turnPower);
@@ -606,10 +559,8 @@ public class TeleOpRed2 extends LinearOpMode
         frontRightDrive.setPower(turnPower);
         backRightDrive.setPower(turnPower);
     }
-
-
-
     public void moveRobot(double x, double y, double yaw) {
+        //mecanum drive
         // Calculate wheel powers.
         double frontLeftPower    =  x - y - yaw;
         double frontRightPower   =  x + y + yaw;
@@ -634,8 +585,7 @@ public class TeleOpRed2 extends LinearOpMode
         backLeftDrive.setPower(backLeftPower);
         backRightDrive.setPower(backRightPower);
     }
-
-    //Init drivermotor
+    //Init motors
     private void initDriveMotors(){
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must match the names assigned during the robot configuration.
@@ -997,7 +947,6 @@ public class TeleOpRed2 extends LinearOpMode
         return new DriveCommand(drive, strafe, turn, true);
         //return new DriveCommand(0, 0, 0, true);
     }
-
     /**
      * Computes a strafe command to dodge sideways away from closer obstacle.
      * Uses two REV 2M distance sensors at 45° left/right.
@@ -1007,8 +956,8 @@ public class TeleOpRed2 extends LinearOpMode
      * Decide initial dodge direction based on current distances.
      * Returns -1 for strafe left, +1 for strafe right, or 0 for no dodge.
      */
-
     /*
+    //NO NEED ANYMORE --> no more distance sensors
     private double chooseDodgeDirectionOnce() {
         // LOGIC HERE IS REVERSED!!!!!
         final double NEAR_THRESHOLD_IN = 18.0;  // tune as needed
@@ -1049,16 +998,13 @@ public class TeleOpRed2 extends LinearOpMode
         }
     }
     */
-
     /**************************************************************************************/
     //INTAKE
     public void runIntake(double stage1_power, double stage3_power){
         stage1.setPower(stage1_power);
-//        stage2.setPower(stage2_power);
         stage3.setPower(stage3_power);
     }
-
-    public void shootVelocity(double base){
+    public void shootVelocity(double base){   //run shooters with gear ratio
         shooter.setVelocity(base);
         shooter2.setVelocity((double) (base * SHOOTER_GEAR_RATIO));
 
