@@ -272,6 +272,7 @@ public class TeleOpRed3 extends LinearOpMode
                 telemetry.addData("headingError", headingError);
                 telemetry.addData("rangeError", rangeError);
 
+
                 // --- Continuous Pinpoint update from AprilTag (always, not just during auto) ---
                 // Only update when tag detection is confident: close enough and reasonably aligned
                 double tagYaw   = desiredTag.ftcPose.yaw;
@@ -524,7 +525,7 @@ public class TeleOpRed3 extends LinearOpMode
         long      loopSleepMs = 15;
         double    totalShootingTime = 1500;//1000 - 300; //1000-200
         long      pulseMs = 250; //250
-        // ADJUST THE Stage3 powemanually
+        // ADJUST THE Stage3 power manually
         //*
         pinpoint.update();
         Pose2D p = pinpoint.getPosition();
