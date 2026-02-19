@@ -95,9 +95,9 @@ import java.util.concurrent.TimeUnit;
  * V6 - Add Intake
  */
 
-@TeleOp(name="TeleOp Red 2", group = "Concept")
+@TeleOp(name="TeleOp Red 3", group = "Concept")
 //@Disabled
-public class TeleOpRed2 extends LinearOpMode
+public class TeleOpRed3 extends LinearOpMode
 {
     // Adjust these numbers to suit your robot. Should be from 30 - 55 inches
     final double DESIRED_DISTANCE = 40;//35;//45;//12.0; //  this is how close the camera should get to the target (inches)
@@ -218,7 +218,11 @@ public class TeleOpRed2 extends LinearOpMode
         {
             telemetry.addData("velocity (top)", shooter2.getVelocity());
             telemetry.addData("velocity (bottom)", shooter.getVelocity());
+            pinpoint.update();
 
+            Pose2D p = pinpoint.getPosition();
+            double cur_left = p.getY(DistanceUnit.INCH);
+            telemetry.addData("cur_left (bottom)", cur_left);
 
             // set camera exposure
             if (gamepad1.left_bumper && !aprilTagMode) {
@@ -267,12 +271,46 @@ public class TeleOpRed2 extends LinearOpMode
                 telemetry.addData("yawError", yawError);
                 telemetry.addData("headingError", headingError);
                 telemetry.addData("rangeError", rangeError);
+
+                // --- Continuous Pinpoint update from AprilTag (always, not just during auto) ---
+                // Only update when tag detection is confident: close enough and reasonably aligned
+                double tagYaw   = desiredTag.ftcPose.yaw;
+                double tagRange = desiredTag.ftcPose.range;
+                final double TAG_UPDATE_MAX_RANGE   = 80.0;  // inches — tag too far = less accurate
+                final double TAG_UPDATE_MAX_YAW_DEG = 25.0;  // degrees — too oblique = less accurate
+                if (tagRange < TAG_UPDATE_MAX_RANGE && Math.abs(tagYaw) < TAG_UPDATE_MAX_YAW_DEG) {
+                    Position rp = desiredTag.robotPose.getPosition();
+                    YawPitchRollAngles ro = desiredTag.robotPose.getOrientation();
+                    double x_fwd  = fieldX_to_pfwd(rp.x, rp.y);
+                    double y_left = fieldY_to_pleft(rp.x, rp.y);
+                    double h_rr   = ro.getYaw(AngleUnit.DEGREES);
+                    pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, x_fwd, y_left, AngleUnit.DEGREES, h_rr));
+                    telemetry.addData("Pinpoint updated from tag", "range=%.1f yaw=%.1f", tagRange, tagYaw);
+                }
             } else {
                 telemetry.addData("\n>","Drive using joysticks to find valid target\n");
             }
             /**************************************************************************************/
+            // Always reset drive commands each loop — prevents stale auto values bleeding into manual
+            drive  = 0;
+            strafe = 0;
+            turn   = 0;
+
+            // Deadzone threshold - prevents tiny residual joystick values from moving robot
+            // Raised to 0.10 to absorb stick drift after impact/vibration
+            final double STICK_DEADZONE = 0.10;
+            double rawFwd  = -gamepad1.left_stick_y;
+            double rawLeft = -gamepad1.left_stick_x;
+            double rawTurn = -gamepad1.right_stick_x;
+            boolean driverOverride = (Math.abs(rawFwd)  > STICK_DEADZONE ||
+                    Math.abs(rawLeft) > STICK_DEADZONE ||
+                    Math.abs(rawTurn) > STICK_DEADZONE);
+            // Log raw joystick values to help diagnose stick drift incidents
+            telemetry.addData("Joy raw fwd/left/turn", "%.3f / %.3f / %.3f", rawFwd, rawLeft, rawTurn);
+
             // If Left Bumper is being pressed, AND we have found the desired target, Drive to target Automatically .
-            if (gamepad1.left_bumper) {
+            // Driver can always override any auto mode by touching the joystick.
+            if (!driverOverride && gamepad1.left_bumper) {
                 if (targetFound) {
                     //range of homing + AprilTag
                     final double[] yawRange = new double[] {0,15};// 0, 25degrees
@@ -306,8 +344,7 @@ public class TeleOpRed2 extends LinearOpMode
                         YawPitchRollAngles ro = desiredTag.robotPose.getOrientation();
                         double x_fwd    = fieldX_to_pfwd(rp.x, rp.y);
                         double y_left   = fieldY_to_pleft(rp.x, rp.y);
-                        double h_rr     = ro.getYaw(AngleUnit.DEGREES);
-                        //double h_rr  = heading_field_to_rr(ro.getYaw(AngleUnit.DEGREES));
+                        double h_rr     = ro.getYaw(AngleUnit.DEGREES); // field convention matches Pinpoint native storage
                         pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, x_fwd, y_left, AngleUnit.DEGREES, h_rr));
                         telemetry.addData("UPDATE pinpoint from", "rp_x %5.2f, rp_y %5.2f, ro_yaw %5.2f ", rp.x, rp.y, ro.getYaw(AngleUnit.DEGREES));
                     }
@@ -318,72 +355,60 @@ public class TeleOpRed2 extends LinearOpMode
                     strafe = cmd.strafe;
                     turn = cmd.turn;
                 }
-            } else
+            } else if (!driverOverride && gamepad1.right_bumper) {
                 //if right bumper is pressed -> go to the location to release the latch
-                if (gamepad1.right_bumper){
-                    DriveCommand cmd = drivePinpoint( latch_x, latch_y, latch_yaw); //result always valid
-                    drive = cmd.drive;
-                    strafe = cmd.strafe;
-                    turn = cmd.turn;
-                } else {
-                    //if left trigger is press and final 20 second
-                    if (gamepad1.left_trigger > 0.5) {
-                        DriveCommand cmd = drivePinpoint(park_x, park_y, park_yaw); //result always valid
-                        drive = cmd.drive;
-                        strafe = cmd.strafe;
-                        turn = cmd.turn;
-                    }
-                    else if (gamepad1.right_trigger > 0.5) {
-                            DriveCommand cmd = drivePinpoint(far_x, far_y, far_yaw); //result always valid
-                            drive = cmd.drive;
-                            strafe = cmd.strafe;
-                            turn = cmd.turn;
-                    } else {
-                        // LB released → reset for next run
-                        lbState = LbState.IDLE;
-                        yawStableCount = 0;
-                        //*
-                        // drive using manual POV Joystick mode.  Slow things down to make the robot more controlable.
-                        drive = -gamepad1.left_stick_y / 1.5;  // Reduce drive rate to 50%.
-                        strafe = -gamepad1.left_stick_x / 1.5;  // Reduce strafe rate to 50%.
-                        turn = -gamepad1.right_stick_x / 2.0;  // Reduce turn rate to 33%.
-                        telemetry.addData("Manual", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-                        /*/
-                        /*
+                DriveCommand cmd = drivePinpoint( latch_x, latch_y, latch_yaw); //result always valid
+                drive = cmd.drive;
+                strafe = cmd.strafe;
+                turn = cmd.turn;
+            } else if (!driverOverride && gamepad1.left_trigger > 0.5) {
+                //if left trigger is pressed - park
+                DriveCommand cmd = drivePinpoint(park_x, park_y, park_yaw); //result always valid
+                drive = cmd.drive;
+                strafe = cmd.strafe;
+                turn = cmd.turn;
+            } else {
+                // Manual drive (also handles driverOverride escape from any auto mode)
+                // LB released → reset auto state for next run
+                lbState = LbState.IDLE;
+                yawStableCount = 0;
 
-                        // --- Field Centric Manual Drive ---
-                        double y = -gamepad1.left_stick_y / 1.5;   // forward
-                        double x = -gamepad1.left_stick_x / 1.5;   // left
-                        turn = -gamepad1.right_stick_x / 2.0;      // rotation
+                // Apply deadzone to raw joystick values
+                double joyFwd  = (Math.abs(rawFwd)  > STICK_DEADZONE ? rawFwd  : 0.0) / 1.5;
+                double joyLeft = (Math.abs(rawLeft) > STICK_DEADZONE ? rawLeft : 0.0) / 1.5;
+                turn           = (Math.abs(rawTurn) > STICK_DEADZONE ? rawTurn : 0.0) / 2.0;
 
-                        // Get robot heading from Pinpoint (RR frame)
-                        pinpoint.update();
-                        double botHeadingRad = Math.toRadians(pinpoint.getPosition().getHeading(AngleUnit.DEGREES));
+                // --- Field Centric Manual Drive ---
+                // Heading already read from pinpoint.update() at top of loop - reuse p
+                double botHeading = p.getHeading(AngleUnit.RADIANS);
 
+                // Rotate field-frame joystick into robot frame.
+                // Standard 2D rotation: robot_vec = R(-botHeading) * field_vec
+                double fwdRobot  =  joyFwd  * Math.cos(botHeading) + joyLeft * Math.sin(botHeading);
+                double leftRobot = -joyFwd  * Math.sin(botHeading) + joyLeft * Math.cos(botHeading);
 
-                        // Rotate joystick vector by negative heading
-                        double rotX = x * Math.cos(-botHeadingRad) - y * Math.sin(-botHeadingRad);
-                        double rotY = x * Math.sin(-botHeadingRad) + y * Math.cos(-botHeadingRad);
-
-                        // Assign rotated values
-                        drive = rotY;
-                        strafe = rotX;
-
-                         */
-                    }
-                }
+                drive  = fwdRobot;
+                strafe = leftRobot;
+                telemetry.addData("Manual", "Drive %5.2f, Strafe %5.2f, Turn %5.2f", drive, strafe, turn);
+            }
             telemetry.update();
 
             if (gamepad2.left_bumper && !shooting){
-                moveRobot(0, 0, 0);
+                moveRobot(0, 0, 0); // stop drive motors before shooting sequence
                 shootBasedOnDistance();
+                // Reset drive commands — they were computed before this blocking call
+                // and would otherwise be re-applied to moveRobot below
+                drive = 0; strafe = 0; turn = 0;
                 moveRobot(0, 0, 0);
                 shooting = false;
             }
 
             if (gamepad2.right_bumper && !shooting){
-                moveRobot(0, 0, 0);
+                moveRobot(0, 0, 0); // stop drive motors before shooting sequence
                 shootBasedOnDistance();
+                // Reset drive commands — they were computed before this blocking call
+                // and would otherwise be re-applied to moveRobot below
+                drive = 0; strafe = 0; turn = 0;
                 moveRobot(0, 0, 0);
                 shooting = false;
             }
@@ -494,7 +519,7 @@ public class TeleOpRed2 extends LinearOpMode
             targetVel = distanceToVel(rangeError);
         }
         /**SHOOTING**/
-        double    stage3FeedPower = 0.6;
+        double    stage3FeedPower = 0.4;
         double    lowRecoverMargin = 100; //100;
         long      loopSleepMs = 15;
         double    totalShootingTime = 1500;//1000 - 300; //1000-200
@@ -521,10 +546,12 @@ public class TeleOpRed2 extends LinearOpMode
         ElapsedTime time_pass = new ElapsedTime();
         time_pass.reset();
         while(time_pass.milliseconds() <= totalShootingTime){
-            //wait
-            while (opModeIsActive() && shooter.getVelocity() < targetVel - lowRecoverMargin
-                    && time_pass.milliseconds() <= totalShootingTime
-            ) {
+            //wait for shooter to reach speed — with timeout so a stalled/slow motor can't lock forever
+            ElapsedTime spinUpTimer = new ElapsedTime();
+            final double SPINUP_TIMEOUT_MS = 2000; // if not up to speed in 2s, shoot anyway
+            while (opModeIsActive()
+                    && shooter.getVelocity() < targetVel - lowRecoverMargin
+                    && spinUpTimer.milliseconds() < SPINUP_TIMEOUT_MS) {
                 stage3.setPower(0); //don't prematurely kick ball
                 sleep(loopSleepMs);
                 idle();
@@ -536,7 +563,7 @@ public class TeleOpRed2 extends LinearOpMode
             blockShooter.setPosition(OPENSHOOTER_CLOSED);
         }
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
-        runIntake(0.8, 0.6);
+        runIntake(0.8, 0.4);
     }
     /**
      * Quick turn-to-yaw using AprilTag. Assumes tag is usually visible.
@@ -602,13 +629,14 @@ public class TeleOpRed2 extends LinearOpMode
         frontRightDrive.setPower(turnPower);
         backRightDrive.setPower(turnPower);
     }
-    public void moveRobot(double x, double y, double yaw) {
+    // drive = forward (+1 = forward), strafe = lateral (+1 = left), yaw = rotation (+1 = CCW)
+    public void moveRobot(double drive, double strafe, double yaw) {
         //mecanum drive
         // Calculate wheel powers.
-        double frontLeftPower    =  x - y - yaw;
-        double frontRightPower   =  x + y + yaw;
-        double backLeftPower     =  x + y - yaw;
-        double backRightPower    =  x - y + yaw;
+        double frontLeftPower    =  drive - strafe - yaw;
+        double frontRightPower   =  drive + strafe + yaw;
+        double backLeftPower     =  drive + strafe - yaw;
+        double backRightPower    =  drive - strafe + yaw;
 
         // Normalize wheel powers to be less than 1.0
         double max = Math.max(Math.abs(frontLeftPower), Math.abs(frontRightPower));
@@ -1053,4 +1081,3 @@ public class TeleOpRed2 extends LinearOpMode
 
     }
 }
-

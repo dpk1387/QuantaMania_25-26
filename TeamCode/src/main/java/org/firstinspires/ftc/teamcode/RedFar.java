@@ -337,7 +337,6 @@ public class RedFar extends LinearOpMode {
         final double targetVel = SHOOTER_VELOCITY; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
         final double lowRecoverMargin = 100+100; //100;      // tune (smaller than dropMargin)
         final double stage3FeedPower = 0.3;    //tune down if multiple balls sneak
-        final double stage3HoldPower = 0.0;
 
         startIntake(0.9, 0.3); //start intake to move thing up
 
