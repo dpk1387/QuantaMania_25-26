@@ -255,39 +255,39 @@ public class RedGateNear_Version3 extends LinearOpMode {
                 .afterDisp(999, new SequentialAction(shootAll(), startIntake(stage1power, stage3power))) // FIX 4
                 .build();
 
-        // Traj 5: shoot pose -> classifier (SECOND TIME)
-        Action traj5_toClassifier2 = drive.actionBuilder(newShootPose)
-                .setTangent(Math.toRadians(-15)) //25 //15
-                .splineToLinearHeading(classifierPose, Math.toRadians(95)) //85 //95 //go into
-                .strafeTo(new Vector2d(newClassifierX, newClassifierY))
-                .build();
+//        // Traj 5: shoot pose -> classifier (SECOND TIME)
+//        Action traj5_toClassifier2 = drive.actionBuilder(newShootPose)
+//                .setTangent(Math.toRadians(-15)) //25 //15
+//                .splineToLinearHeading(classifierPose, Math.toRadians(95)) //85 //95 //go into
+//                .strafeTo(new Vector2d(newClassifierX, newClassifierY))
+//                .build();
+//
+//        // Traj 6: classifier -> shoot pose (SECOND TIME)
+//        // FIX 4: afterDisp(999) fires shootAll() + startIntake as robot reaches newShootPose
+//        Action traj6_toShoot2 = drive.actionBuilder(newClassifierPose)
+//                .setTangent(Math.toRadians(-95)) //-95 //-90
+//                .splineToLinearHeading(newShootPose, Math.toRadians(-175)) //-155 //200 //go into
+//                .afterDisp(999, new SequentialAction(shootAll(), startIntake(stage1power, stage3power))) // FIX 4
+//                .build();
+//
+//        // Traj 7: shoot pose -> classifier (THIRD TIME)
+//        Action traj7_toClassifier3 = drive.actionBuilder(newShootPose)
+//                .setTangent(Math.toRadians(-15)) //25 //15
+//                .splineToLinearHeading(classifierPose, Math.toRadians(95)) //85 //95 //go into
+//                .strafeTo(new Vector2d(newClassifierX, newClassifierY))
+//                .build();
+//
+//        // Traj 8: classifier -> shoot pose (THIRD TIME)
+//        // FIX 4: afterDisp(999) fires shootAll() + startIntake as robot reaches newShootPose
+//        Action traj8_toShoot3 = drive.actionBuilder(newClassifierPose)
+//                .setTangent(Math.toRadians(-95)) //-95 //-90
+//                .splineToLinearHeading(newShootPose, Math.toRadians(-175)) //-155 //200 //go into
+//                .afterDisp(999, new SequentialAction(shootAll(), startIntake(stage1power, stage3power))) // FIX 4
+//                .build();
 
-        // Traj 6: classifier -> shoot pose (SECOND TIME)
-        // FIX 4: afterDisp(999) fires shootAll() + startIntake as robot reaches newShootPose
-        Action traj6_toShoot2 = drive.actionBuilder(newClassifierPose)
-                .setTangent(Math.toRadians(-95)) //-95 //-90
-                .splineToLinearHeading(newShootPose, Math.toRadians(-175)) //-155 //200 //go into
-                .afterDisp(999, new SequentialAction(shootAll(), startIntake(stage1power, stage3power))) // FIX 4
-                .build();
-
-        // Traj 7: shoot pose -> classifier (THIRD TIME)
-        Action traj7_toClassifier3 = drive.actionBuilder(newShootPose)
-                .setTangent(Math.toRadians(-15)) //25 //15
-                .splineToLinearHeading(classifierPose, Math.toRadians(95)) //85 //95 //go into
-                .strafeTo(new Vector2d(newClassifierX, newClassifierY))
-                .build();
-
-        // Traj 8: classifier -> shoot pose (THIRD TIME)
-        // FIX 4: afterDisp(999) fires shootAll() + startIntake as robot reaches newShootPose
-        Action traj8_toShoot3 = drive.actionBuilder(newClassifierPose)
-                .setTangent(Math.toRadians(-95)) //-95 //-90
-                .splineToLinearHeading(newShootPose, Math.toRadians(-175)) //-155 //200 //go into
-                .afterDisp(999, new SequentialAction(shootAll(), startIntake(stage1power, stage3power))) // FIX 4
-                .build();
-
-        // Traj 9: shoot pose -> inner balls -> last shoot pose
+        // Traj 5: shoot pose -> inner balls -> last shoot pose
         // FIX 4: afterDisp(999) fires shootAll() as robot arrives at lastShootPose
-        Action traj9_innerBalls = drive.actionBuilder(newShootPose)
+        Action traj5_innerBalls = drive.actionBuilder(newShootPose)
                 .setTangent(Math.toRadians(145))//-100)) //45 //60
                 //go into
                 .splineToSplineHeading(new Pose2d(-17, 30,  Math.toRadians(90)), Math.toRadians(90))
@@ -353,22 +353,22 @@ public class RedGateNear_Version3 extends LinearOpMode {
                                 //--------SECOND TIME
                                 // --- Traj 5+6: get balls from classifier, go shoot ---
                                 // FIX 4: shootAll()+startIntake fires via afterDisp inside traj6
-                                traj5_toClassifier2,
+                                traj3_toClassifier,
                                 intakeWait2(), //wait at the classifier to intake balls
-                                traj6_toShoot2,
+                                traj4_toShoot1,
                                 // shootAll() and startIntake() are now inside traj6 via afterDisp
 
                                 //--------THIRD TIME
                                 // --- Traj 7+8: get balls from classifier, go shoot ---
                                 // FIX 4: shootAll()+startIntake fires via afterDisp inside traj8
-                                traj7_toClassifier3,
+                                traj3_toClassifier,
                                 intakeWait2(), //wait at the classifier to intake balls
-                                traj8_toShoot3,
+                                traj4_toShoot1,
                                 // shootAll() and startIntake() are now inside traj8 via afterDisp
 
-                                // --- Traj 9: get the inner most 3 balls -> last shoot ---
+                                // --- Traj 5: get the inner most 3 balls -> last shoot ---
                                 // FIX 4: shootAll() fires via afterDisp at lastShootPose
-                                traj9_innerBalls
+                                traj5_innerBalls
                                 // shootAll() is now inside traj9 via afterDisp
 
                         )

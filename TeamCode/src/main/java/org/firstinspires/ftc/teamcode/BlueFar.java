@@ -171,7 +171,7 @@ public class BlueFar extends LinearOpMode {
         // Traj 2: shoot pose -> loading zone
         Action traj2_toLoadingZone = drive.actionBuilder(shootPose)
                 //.splineToLinearHeading(loadZonePose, Math.toRadians(approachingTangent))
-                .setTangent(Math.toRadians(90))
+                .setTangent(Math.toRadians(-90))
                 .splineToSplineHeading(new Pose2d(55, -55, Math.toRadians(-90)), Math.toRadians(-90))
                 .splineToLinearHeading(new Pose2d(64, -64, Math.toRadians(-45)), Math.toRadians(-90))
 
@@ -179,52 +179,52 @@ public class BlueFar extends LinearOpMode {
 
 
         // Traj 3: loading zone -> shoot pose
-        Action traj3 = drive.actionBuilder(loadZonePose)
+        Action traj3_loadZoneToShoot = drive.actionBuilder(loadZonePose)
                 .setTangent(Math.toRadians(-90))
                 .splineToLinearHeading(shootPose, Math.toRadians(-90))
                 .build();
 
-        // Traj 4: shoot pose -> loading zone
-        Action traj4_toLoadingZone = drive.actionBuilder(shootPose)//
-//                .splineToLinearHeading(loadZonePose, Math.toRadians(approachingTangent))
-                .setTangent(Math.toRadians(-90))
-                .splineToSplineHeading(new Pose2d(55, -55, Math.toRadians(-90)), Math.toRadians(-90))
-                .splineToLinearHeading(new Pose2d(64, -64, Math.toRadians(-45)), Math.toRadians(-90))
+//        // Traj 4: shoot pose -> loading zone
+//        Action traj4_toLoadingZone = drive.actionBuilder(shootPose)//
+////                .splineToLinearHeading(loadZonePose, Math.toRadians(approachingTangent))
+//                .setTangent(Math.toRadians(-90))
+//                .splineToSplineHeading(new Pose2d(55, -55, Math.toRadians(-90)), Math.toRadians(-90))
+//                .splineToLinearHeading(new Pose2d(64, -64, Math.toRadians(-45)), Math.toRadians(-90))
+//
+//                .build();
+//
+//
+//        // Traj 5: loading zone -> shoot pose
+//        Action traj5 = drive.actionBuilder(loadZonePose)
+//                .setTangent(Math.toRadians(-90))
+//                .splineToLinearHeading(shootPose, Math.toRadians(-90))
+//                .build();
+//
+//        // Traj 6: shoot pose -> loading zone
+//        Action traj6_toLoadingZone = drive.actionBuilder(shootPose)//
+////                .splineToLinearHeading(loadZonePose, Math.toRadians(approachingTangent))
+//                .setTangent(Math.toRadians(-90))
+//                .splineToSplineHeading(new Pose2d(55, -55, Math.toRadians(-90)), Math.toRadians(-90))
+//                .splineToLinearHeading(new Pose2d(64, -64, Math.toRadians(-45)), Math.toRadians(-90))
+//
+//                .build();
+//
+//
+//        // Traj 7: loading zone -> shoot pose
+//        Action traj7 = drive.actionBuilder(loadZonePose)
+//                .setTangent(Math.toRadians(-90))
+//                .splineToLinearHeading(shootPose, Math.toRadians(-90))
+//                .build();
 
-                .build();
-
-
-        // Traj 5: loading zone -> shoot pose
-        Action traj5 = drive.actionBuilder(loadZonePose)
-                .setTangent(Math.toRadians(-90))
-                .splineToLinearHeading(shootPose, Math.toRadians(-90))
-                .build();
-
-        // Traj 6: shoot pose -> loading zone
-        Action traj6_toLoadingZone = drive.actionBuilder(shootPose)//
-//                .splineToLinearHeading(loadZonePose, Math.toRadians(approachingTangent))
-                .setTangent(Math.toRadians(-90))
-                .splineToSplineHeading(new Pose2d(55, -55, Math.toRadians(-90)), Math.toRadians(-90))
-                .splineToLinearHeading(new Pose2d(64, -64, Math.toRadians(-45)), Math.toRadians(-90))
-
-                .build();
-
-
-        // Traj 7: loading zone -> shoot pose
-        Action traj7 = drive.actionBuilder(loadZonePose)
-                .setTangent(Math.toRadians(-90))
-                .splineToLinearHeading(shootPose, Math.toRadians(-90))
-                .build();
-
-        // Traj 8: shoot pose -> 3rd row -> shoot pose
-        Action traj8_thirdRow = drive.actionBuilder(shootPose)
+        // Traj 4: shoot pose -> 3rd row -> shoot pose
+        Action traj4_thirdRow = drive.actionBuilder(shootPose)
                 .splineToSplineHeading(new Pose2d(40+1.5, -28+8, Math.toRadians(-90)), Math.toRadians(-90))
                 .splineToLinearHeading(new Pose2d(40+1.5, -52-4, Math.toRadians(-90)), Math.toRadians(-90))
                 .splineToSplineHeading(shootPose, Math.toRadians(-110))
                 .build();
 
-        // Traj 9: shoot pose -> classifier (SECOND TIME)
-        Action traj9_leaveLaunchZone = drive.actionBuilder(shootPose)
+        // Traj 5: shoot pose -> classifier (SECOND TIME)
+        Action traj5_leaveLaunchZone = drive.actionBuilder(shootPose)
                 .strafeTo(new Vector2d(46, -24))
                 .build();
 
@@ -272,29 +272,29 @@ public class BlueFar extends LinearOpMode {
 
                                 intakeWait1(), // wait for intake at loading zone
 
-                                traj3, // back to shooting position
+                                traj3_loadZoneToShoot, // back to shooting position
                                 shootAll(),
 
-                                traj4_toLoadingZone,
+                                traj2_toLoadingZone,
                                 // shootAll() and startIntake() are now inside traj2 via afterDisp
 
                                 intakeWait1(), // wait for intake at loading zone
 
-                                traj5, // back to shooting position
+                                traj3_loadZoneToShoot, // back to shooting position
                                 shootAll(),
 
-                                traj6_toLoadingZone,
+                                traj2_toLoadingZone,
                                 // shootAll() and startIntake() are now inside traj2 via afterDisp
 
                                 intakeWait1(), // wait for intake at loading zone
 
-                                traj7, // back to shooting position
+                                traj3_loadZoneToShoot, // back to shooting position
                                 shootAll(),
 
-                                traj8_thirdRow, //get artifacts from third row, go to shoot
+                                traj4_thirdRow, //get artifacts from third row, go to shoot
                                 shootAll(),
 
-                                traj9_leaveLaunchZone // leave launch zone for leave points
+                                traj5_leaveLaunchZone // leave launch zone for leave points
                         )
                 );
                 telemetry.addData("Trajectory", "Executed Successfully");
