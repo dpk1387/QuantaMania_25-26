@@ -156,17 +156,25 @@ public class RedFar extends LinearOpMode {
 
         Pose2d loadZonePose = new Pose2d(60, 62, Math.toRadians(80));
 
+        int approachingTangent = 90; //45; //0; //180
+
         double stage1power = 0.8;
         double stage3power = 0.4;
 
         // Traj 1: start -> shoot position
         Action traj1 = drive.actionBuilder(startPose)
+
                 .splineToLinearHeading(shootPose, Math.toRadians(170))
+
                 .build();
 
         // Traj 2: shoot pose -> loading zone
-        Action traj2_toLoadingZone = drive.actionBuilder(shootPose)//
-                .splineToLinearHeading(loadZonePose, Math.toRadians(180))
+        Action traj2_toLoadingZone = drive.actionBuilder(shootPose)
+                //.splineToLinearHeading(loadZonePose, Math.toRadians(approachingTangent))
+                .setTangent(Math.toRadians(90))
+                .splineToSplineHeading(new Pose2d(55, 55, Math.toRadians(90)), Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(64, 64, Math.toRadians(45)), Math.toRadians(90))
+
                 .build();
 
 
@@ -178,7 +186,11 @@ public class RedFar extends LinearOpMode {
 
         // Traj 4: shoot pose -> loading zone
         Action traj4_toLoadingZone = drive.actionBuilder(shootPose)//
-                .splineToLinearHeading(loadZonePose, Math.toRadians(180))
+//                .splineToLinearHeading(loadZonePose, Math.toRadians(approachingTangent))
+                .setTangent(Math.toRadians(90))
+                .splineToSplineHeading(new Pose2d(55, 55, Math.toRadians(90)), Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(64, 64, Math.toRadians(45)), Math.toRadians(90))
+
                 .build();
 
 
@@ -190,7 +202,11 @@ public class RedFar extends LinearOpMode {
 
         // Traj 6: shoot pose -> loading zone
         Action traj6_toLoadingZone = drive.actionBuilder(shootPose)//
-                .splineToLinearHeading(loadZonePose, Math.toRadians(180))
+//                .splineToLinearHeading(loadZonePose, Math.toRadians(approachingTangent))
+                .setTangent(Math.toRadians(90))
+                .splineToSplineHeading(new Pose2d(55, 55, Math.toRadians(90)), Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(64, 64, Math.toRadians(45)), Math.toRadians(90))
+
                 .build();
 
 
@@ -202,9 +218,9 @@ public class RedFar extends LinearOpMode {
 
         // Traj 6: shoot pose -> 3rd row -> shoot pose
         Action traj8_thirdRow = drive.actionBuilder(shootPose)
-                .splineToLinearHeading(new Pose2d(40, 28, Math.toRadians(90)), Math.toRadians(135))
-                .splineToLinearHeading(new Pose2d(40, 52, Math.toRadians(90)), Math.toRadians(90))
-                .splineToLinearHeading(shootPose, Math.toRadians(110))
+                .splineToSplineHeading(new Pose2d(40+1.5, 28-8, Math.toRadians(90)), Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(40+1.5, 52+4, Math.toRadians(90)), Math.toRadians(90))
+                .splineToSplineHeading(shootPose, Math.toRadians(110))
                 .build();
 
         // Traj 7: shoot pose -> classifier (SECOND TIME)
@@ -318,30 +334,27 @@ public class RedFar extends LinearOpMode {
 
     public void shootN(int count) {
         //*
-        final double targetVel = SHOOTER_VELOCITY + 100; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
-        final double lowRecoverMargin = 100; //100;      // tune (smaller than dropMargin)
+        final double targetVel = SHOOTER_VELOCITY; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
+        final double lowRecoverMargin = 100+100; //100;      // tune (smaller than dropMargin)
         final double stage3FeedPower = 0.3;    //tune down if multiple balls sneak
         final double stage3HoldPower = 0.0;
 
         startIntake(0.9, 0.3); //start intake to move thing up
 
-        final double GATE_HOLD = OPENSHOOTER_CLOSED;   // you may want a slightly-open "hold" instead
-        final double GATE_PULSE_OPEN = OPENSHOOTER_OPEN; // tune so 1 ball passes, not 2
-
-        final int pulseMs = 200; //250 //180;//400;//130;              // tune: shorter = fewer double-feeds
+        final int pulseMs = 250; //250 //180;//400;//130;              // tune: shorter = fewer double-feeds
         // final int stableMs = 120;             // require speed stable before feeding next ball
         final int loopSleepMs = 15;
 
         // Spin up
-        blockShooter.setPosition(GATE_HOLD);
+        blockShooter.setPosition(OPENSHOOTER_CLOSED);
         shootVelocity(targetVel);
-        stage3.setPower(stage3HoldPower);
+        stage3.setPower(stage3FeedPower);
 
         // sleep(600);
         ElapsedTime time_pass = new ElapsedTime();
         time_pass.reset();
 
-        while(time_pass.milliseconds() <= 2000){ //1000-300 //1000-200
+        while(time_pass.milliseconds() <= 2200){ //1000-300 //1000-200
             // 4) Wait for recovery enough to avoid weak/overpowered 2nd/3rd shots.getVelocity()
             while (opModeIsActive() && shooter.getVelocity() < targetVel - lowRecoverMargin) { //shooter.getVelocity() < targetVel - lowRecoverMargin && shooter.getVelocity() > targetVel + highRecoverMargin
                 stage3.setPower(0);
@@ -350,16 +363,16 @@ public class RedFar extends LinearOpMode {
             }
 
             stage3.setPower(stage3FeedPower);
-            blockShooter.setPosition(GATE_PULSE_OPEN);
+            blockShooter.setPosition(OPENSHOOTER_OPEN);
             sleep(pulseMs);
 
             // 3) Immediately block the next ball
-            blockShooter.setPosition(GATE_HOLD);
+            blockShooter.setPosition(OPENSHOOTER_CLOSED);
         }
 
         // Stop / reset
-        stage3.setPower(0);
-        blockShooter.setPosition(GATE_HOLD);
+//        stage3.setPower(0);
+        blockShooter.setPosition(OPENSHOOTER_CLOSED);
         startIntake(1, 0.3); //start intake
 
         /*
