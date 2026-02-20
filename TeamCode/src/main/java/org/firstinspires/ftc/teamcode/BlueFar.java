@@ -20,7 +20,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name = "RED FAR - LZ FIRST", group = "Autonomous")
 @Config
-public class RedFar extends LinearOpMode {
+public class BlueFar extends LinearOpMode {
     /* HARDWARE */
     private DcMotorEx shooter = null;
     private DcMotorEx shooter2 = null;
@@ -145,18 +145,18 @@ public class RedFar extends LinearOpMode {
         telemetry.update();
         telemetry.update();
 
-        Pose2d startPose = new Pose2d(62, 11, Math.toRadians(180));
+        Pose2d startPose = new Pose2d(62, -11, Math.toRadians(180));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
 
         initMotors();
 
-        double shootX = 54, shootY = 13;
+        double shootX = 54, shootY = -13;
 
-        Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(155));
+        Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(-155));
 
-        Pose2d loadZonePose = new Pose2d(60, 62, Math.toRadians(80));
+        Pose2d loadZonePose = new Pose2d(60, -62, Math.toRadians(-80));
 
-        int approachingTangent = 90; //45; //0; //180
+        int approachingTangent = -90; //45; //0; //180
 
         double stage1power = 0.8;
         double stage3power = 0.4;
@@ -164,68 +164,68 @@ public class RedFar extends LinearOpMode {
         // Traj 1: start -> shoot position
         Action traj1 = drive.actionBuilder(startPose)
 
-                .splineToLinearHeading(shootPose, Math.toRadians(170))
+                .splineToLinearHeading(shootPose, Math.toRadians(-170))
 
                 .build();
 
         // Traj 2: shoot pose -> loading zone
         Action traj2_toLoadingZone = drive.actionBuilder(shootPose)
                 //.splineToLinearHeading(loadZonePose, Math.toRadians(approachingTangent))
-                .setTangent(Math.toRadians(90))
-                .splineToSplineHeading(new Pose2d(55, 55, Math.toRadians(90)), Math.toRadians(90))
-                .splineToLinearHeading(new Pose2d(64, 64, Math.toRadians(45)), Math.toRadians(90))
+                .setTangent(Math.toRadians(-90))
+                .splineToSplineHeading(new Pose2d(55, -55, Math.toRadians(-90)), Math.toRadians(-90))
+                .splineToLinearHeading(new Pose2d(64, -64, Math.toRadians(-45)), Math.toRadians(-90))
 
                 .build();
 
 
         // Traj 3: loading zone -> shoot pose
         Action traj3_loadZoneToShoot = drive.actionBuilder(loadZonePose)
-                .setTangent(Math.toRadians(90))
-                .splineToLinearHeading(shootPose, Math.toRadians(90))
+                .setTangent(Math.toRadians(-90))
+                .splineToLinearHeading(shootPose, Math.toRadians(-90))
                 .build();
 
 //        // Traj 4: shoot pose -> loading zone
 //        Action traj4_toLoadingZone = drive.actionBuilder(shootPose)//
 ////                .splineToLinearHeading(loadZonePose, Math.toRadians(approachingTangent))
-//                .setTangent(Math.toRadians(90))
-//                .splineToSplineHeading(new Pose2d(55, 55, Math.toRadians(90)), Math.toRadians(90))
-//                .splineToLinearHeading(new Pose2d(64, 64, Math.toRadians(45)), Math.toRadians(90))
+//                .setTangent(Math.toRadians(-90))
+//                .splineToSplineHeading(new Pose2d(55, -55, Math.toRadians(-90)), Math.toRadians(-90))
+//                .splineToLinearHeading(new Pose2d(64, -64, Math.toRadians(-45)), Math.toRadians(-90))
 //
 //                .build();
-
-
+//
+//
 //        // Traj 5: loading zone -> shoot pose
 //        Action traj5 = drive.actionBuilder(loadZonePose)
-//                .setTangent(Math.toRadians(90))
-//                .splineToLinearHeading(shootPose, Math.toRadians(90))
+//                .setTangent(Math.toRadians(-90))
+//                .splineToLinearHeading(shootPose, Math.toRadians(-90))
 //                .build();
-
+//
 //        // Traj 6: shoot pose -> loading zone
 //        Action traj6_toLoadingZone = drive.actionBuilder(shootPose)//
 ////                .splineToLinearHeading(loadZonePose, Math.toRadians(approachingTangent))
-//                .setTangent(Math.toRadians(90))
-//                .splineToSplineHeading(new Pose2d(55, 55, Math.toRadians(90)), Math.toRadians(90))
-//                .splineToLinearHeading(new Pose2d(64, 64, Math.toRadians(45)), Math.toRadians(90))
+//                .setTangent(Math.toRadians(-90))
+//                .splineToSplineHeading(new Pose2d(55, -55, Math.toRadians(-90)), Math.toRadians(-90))
+//                .splineToLinearHeading(new Pose2d(64, -64, Math.toRadians(-45)), Math.toRadians(-90))
 //
 //                .build();
-
-
+//
+//
 //        // Traj 7: loading zone -> shoot pose
 //        Action traj7 = drive.actionBuilder(loadZonePose)
-//                .setTangent(Math.toRadians(90))
-//                .splineToLinearHeading(shootPose, Math.toRadians(90))
+//                .setTangent(Math.toRadians(-90))
+//                .splineToLinearHeading(shootPose, Math.toRadians(-90))
 //                .build();
 
         // Traj 4: shoot pose -> 3rd row -> shoot pose
         Action traj4_thirdRow = drive.actionBuilder(shootPose)
-                .splineToSplineHeading(new Pose2d(40+1.5, 28-8, Math.toRadians(90)), Math.toRadians(90))
-                .splineToLinearHeading(new Pose2d(40+1.5, 52+4, Math.toRadians(90)), Math.toRadians(90))
-                .splineToSplineHeading(shootPose, Math.toRadians(110))
+                .splineToSplineHeading(new Pose2d(40+1.5, -28+8, Math.toRadians(-90)), Math.toRadians(-90))
+                .splineToLinearHeading(new Pose2d(40+1.5, -52-4, Math.toRadians(-90)), Math.toRadians(-90))
+                .splineToSplineHeading(shootPose, Math.toRadians(-110))
                 .build();
 
         // Traj 5: shoot pose -> classifier (SECOND TIME)
         Action traj5_leaveLaunchZone = drive.actionBuilder(shootPose)
-                .strafeTo(new Vector2d(46, 24))
+                .strafeTo(new Vector2d(46, -24))
                 .build();
 
         telemetry.addData("Status", "Initialized");
