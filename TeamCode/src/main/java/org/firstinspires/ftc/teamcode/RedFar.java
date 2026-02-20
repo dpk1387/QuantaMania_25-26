@@ -142,8 +142,8 @@ public class RedFar extends LinearOpMode {
 
         initMotors();
 
-        double shootX = 54, shootY = 13;
-        Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(155));
+        double shootX = 54, shootY = 14;
+        Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(157));
 
         Pose2d loadZonePose = new Pose2d(64, 64, Math.toRadians(45));
 
@@ -369,7 +369,7 @@ public class RedFar extends LinearOpMode {
         while(time_pass.milliseconds() <=1800 /*2200*/){
             // 4) Wait for recovery enough to avoid weak/overpowered 2nd/3rd shots.getVelocity()
             while (opModeIsActive() && shooter.getVelocity() < targetVel - lowRecoverMargin) {
-                stage3.setPower(0.2);
+                stage3.setPower(0.3); //0.2
                 sleep(loopSleepMs);
                 idle();
             }
@@ -383,7 +383,7 @@ public class RedFar extends LinearOpMode {
         }
 
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
-        startIntake(0.9, 0.3); //start intake
+        startIntake(1.0, 0.3); //start intake
 
         /*
         final double targetVel = SHOOTER_VELOCITY + 200; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
