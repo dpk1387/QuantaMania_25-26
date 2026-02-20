@@ -9,7 +9,6 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -118,6 +117,7 @@ public class BlueGateNear_Version4 extends LinearOpMode {
         return new startIntakeAction(s1, s3);
     }
 
+
     public class intakeDelay1 implements Action {
         private boolean initialized = false;
 
@@ -193,8 +193,6 @@ public class BlueGateNear_Version4 extends LinearOpMode {
 
         // FROM RED:  Pose2d classifierPose = new Pose2d(7.5+0.2+0.5, 64+2,  Math.toRadians(120)); //120-6 //120
         Pose2d classifierPose = new Pose2d(7.7, -64-2,  Math.toRadians(240)); //235d //-120
-
-        //pose to move back a bit
         double newClassifierX = 7.7+2, newClassifierY = -64+0.5;
         Pose2d newClassifierPose = new Pose2d(newClassifierX, newClassifierY, Math.toRadians(235+12));
 
@@ -223,7 +221,6 @@ public class BlueGateNear_Version4 extends LinearOpMode {
         Action traj1 = drive.actionBuilder(startPose)
                 .strafeTo(new Vector2d(shootX, shootY))
                 .afterDisp(999, new SequentialAction(shootAll(), startIntake(stage1power, stage3power)))
-
                 .build();
 
         Action traj2 = drive.actionBuilder(shootPose)//
@@ -233,31 +230,29 @@ public class BlueGateNear_Version4 extends LinearOpMode {
                 .afterDisp(999, new SequentialAction(shootAll(), startIntake(stage1power, stage3power))) // FIX 4
                 .build();
 
-        //CYCLE 1
+        /*****CYCLE 1*****/
         // Traj 3: shoot pose -> classifier (FIRST TIME)
         Action traj3_toClassifier1 = drive.actionBuilder(newShootPose)
                 .setTangent(Math.toRadians(15))
-                //.setTangent(Math.toRadians(25)) //15
                 .splineToLinearHeading(classifierPose, Math.toRadians(-95)) //80 //85 //95 //go into
                 .strafeTo(new Vector2d(newClassifierX, newClassifierY))
-                .afterDisp(999, new SequentialAction(intakeWait2())) // FIX 4
+                .afterDisp(999, new SequentialAction(intakeWait2()))
                 .build();
 
         // Traj 4: classifier -> shoot pose, with shootAll() overlapping arrival (FIRST TIME)
         Action traj4_toShoot1 = drive.actionBuilder(newClassifierPose)
                 .setTangent(Math.toRadians(95)) //-100 //-90
                 .splineToLinearHeading(newShootPose, Math.toRadians(175)) //-160 //-155 //200 //go into
-                .afterDisp(999, new SequentialAction(shootAll(), startIntake(stage1power, stage3power))) // FIX 4
+                .afterDisp(999, new SequentialAction(shootAll(), startIntake(stage1power, stage3power)))
                 .build();
 
-        //CYCLE 2
+        /*****CYCLE 2*****/
         // Traj 3: shoot pose -> classifier (FIRST TIME)
         Action traj3_toClassifier2 = drive.actionBuilder(newShootPose)
                 .setTangent(Math.toRadians(15))
-                //.setTangent(Math.toRadians(25)) //15
                 .splineToLinearHeading(classifierPose, Math.toRadians(-95)) //80 //85 //95 //go into
                 .strafeTo(new Vector2d(newClassifierX, newClassifierY))
-                .afterDisp(999, new SequentialAction(intakeWait2())) // FIX 4
+                .afterDisp(999, new SequentialAction(intakeWait2()))
                 .build();
 
         // Traj 4: classifier -> shoot pose, with shootAll() overlapping arrival (FIRST TIME)
@@ -267,21 +262,20 @@ public class BlueGateNear_Version4 extends LinearOpMode {
                 .afterDisp(999, new SequentialAction(shootAll(), startIntake(stage1power, stage3power))) // FIX 4
                 .build();
 
-        //CYCLE 3
+        /*****CYCLE 3*****/
         // Traj 3: shoot pose -> classifier (FIRST TIME)
         Action traj3_toClassifier3 = drive.actionBuilder(newShootPose)
                 .setTangent(Math.toRadians(15))
-                //.setTangent(Math.toRadians(25)) //15
                 .splineToLinearHeading(classifierPose, Math.toRadians(-95)) //80 //85 //95 //go into
                 .strafeTo(new Vector2d(newClassifierX, newClassifierY))
-                .afterDisp(999, new SequentialAction(intakeWait2())) // FIX 4
+                .afterDisp(999, new SequentialAction(intakeWait2()))
                 .build();
 
         // Traj 4: classifier -> shoot pose, with shootAll() overlapping arrival (FIRST TIME)
         Action traj4_toShoot3 = drive.actionBuilder(newClassifierPose)
                 .setTangent(Math.toRadians(95)) //-100 //-90
                 .splineToLinearHeading(newShootPose, Math.toRadians(175)) //-160 //-155 //200 //go into
-                .afterDisp(999, new SequentialAction(shootAll(), startIntake(stage1power, stage3power))) // FIX 4
+                .afterDisp(999, new SequentialAction(shootAll(), startIntake(stage1power, stage3power)))
                 .build();
 
 //        // Traj 5: shoot pose -> classifier (SECOND TIME)
@@ -473,6 +467,14 @@ public class BlueGateNear_Version4 extends LinearOpMode {
         }
     }
     private void initMotors(){
+        // Initialize the hardware variables. Note that the strings used here as parameters
+        // to 'get' must match the names assigned during the robot configuration.
+        // step (using the FTC Robot Controller app on the phone).
+
+        //cameraServo = hardwareMap.get(Servo.class, "cameraServo");
+        // leftDist  = hardwareMap.get(DistanceSensor.class, "leftDistanceSensor");
+        // rightDist = hardwareMap.get(DistanceSensor.class, "rightDistanceSensor");
+
         //1. need initial the shooter, stage1, 2, 3, servo
         shooter = hardwareMap.get(DcMotorEx.class, "shooter");
         shooter2 = hardwareMap.get(DcMotorEx.class, "topShooterMotor");
@@ -496,7 +498,7 @@ public class BlueGateNear_Version4 extends LinearOpMode {
         stage3.setDirection(DcMotor.Direction.REVERSE);
         blockShooter.setDirection(Servo.Direction.REVERSE); //Do we really need this?
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooter2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public void shootN(int count) {
@@ -555,6 +557,7 @@ public class BlueGateNear_Version4 extends LinearOpMode {
         startIntake(1.0, 0.5); //start intake
         //blockShooter.setPosition(OPENSHOOTER_CLOSED);
         //*/
+
     }
 
     //running intake
@@ -567,5 +570,6 @@ public class BlueGateNear_Version4 extends LinearOpMode {
     public void shootVelocity(double base){
         shooter.setVelocity(base);
         shooter2.setVelocity((double) (base * SHOOTER_GEAR_RATIO));
+
     }
 }

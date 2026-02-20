@@ -32,6 +32,7 @@ public class BlueFar extends LinearOpMode {
     final private double OPENSHOOTER_CLOSED = 0.5; // OPENSHOOTER_OPEN + 28//0.55
     final private double SHOOTER_VELOCITY = 2500; //2000 //2100 //2200 //2150
     final private double SHOOTER_GEAR_RATIO = 17.0/18.0;
+
     /* INIT */
     private ElapsedTime runtime = new ElapsedTime();
     //SHOOTING CLASS
