@@ -391,6 +391,7 @@ public class TeleOpRed3 extends LinearOpMode
                 strafe = leftRobot;
                 telemetry.addData("Manual", "Drive %5.2f, Strafe %5.2f, Turn %5.2f", drive, strafe, turn);
             }
+            telemetry.addData("shooter gate position", blockShooter.getPosition());
             telemetry.update();
 
             if (gamepad2.left_bumper && !shooting){
