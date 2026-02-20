@@ -34,7 +34,7 @@ public class RedGateNear_Version3 extends LinearOpMode {
     private Servo blockShooter = null;
     final private double OPENSHOOTER_OPEN = 0.3; //0.19 //0.3;
     final private double OPENSHOOTER_CLOSED = 0.5; // OPENSHOOTER_OPEN + 28//0.55
-    final private double SHOOTER_VELOCITY = 2000; //1950; //1900; //2100 //2200 //2150
+    final private double SHOOTER_VELOCITY = 1925; //1950; //1900; //2100 //2200 //2150
 
     final private double SHOOTER_GEAR_RATIO = 17.0/18.0;
     /* INIT */
@@ -186,10 +186,10 @@ public class RedGateNear_Version3 extends LinearOpMode {
         double shootX = -14, shootY = 14; //-29, 29
         double newShootX = -11, newShootY = 20; // -20, -20//-19, -19 // -23, -23
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(135));
-        Pose2d newShootPose = new Pose2d(newShootX, newShootY, Math.toRadians(143)); //-150 //-135
+        Pose2d newShootPose = new Pose2d(newShootX, newShootY, Math.toRadians(141)); //-150 //-135
 
         double lastShootX = -32, lastShootY = 13; //17
-        Pose2d lastShootPose = new Pose2d(lastShootX, lastShootY, Math.toRadians(126));
+        Pose2d lastShootPose = new Pose2d(lastShootX, lastShootY, Math.toRadians(124));
 
         // FROM RED:  Pose2d classifierPose = new Pose2d(7.5+0.2+0.5, 64+2,  Math.toRadians(120)); //120-6 //120
         Pose2d classifierPose = new Pose2d(7.7, 64+1,  Math.toRadians(120)); //235d //-120
@@ -537,7 +537,7 @@ public class RedGateNear_Version3 extends LinearOpMode {
 
         // Stop / reset
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
-        startIntake(0.8, 0.3); //start intake
+        startIntake(0.95, 0.3); //start intake
         /*
         final double targetVel = SHOOTER_VELOCITY + 200; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
         final double stage3FeedPower = 0.8;    //tune down if multiple balls sneak
