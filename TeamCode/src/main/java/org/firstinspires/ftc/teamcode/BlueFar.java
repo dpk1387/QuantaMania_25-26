@@ -18,7 +18,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name = "RED FAR - LZ FIRST", group = "Autonomous")
+@Autonomous(name = "BLUE FAR - LZ FIRST", group = "Autonomous")
 @Config
 public class BlueFar extends LinearOpMode {
     /* HARDWARE */
@@ -28,8 +28,8 @@ public class BlueFar extends LinearOpMode {
     // private DcMotor stage2 = null;
     private DcMotor stage3 = null;
     private Servo blockShooter = null;
-    final private double OPENSHOOTER_OPEN = 0.8; //0.19 //0.3;
-    final private double OPENSHOOTER_CLOSED = 1.0; // OPENSHOOTER_OPEN + 28//0.55
+    final private double OPENSHOOTER_OPEN = 0.3; //0.19 //0.3;
+    final private double OPENSHOOTER_CLOSED = 0.5; // OPENSHOOTER_OPEN + 28//0.55
     final private double SHOOTER_VELOCITY = 2500; //2000 //2100 //2200 //2150
 
     final private double SHOOTER_GEAR_RATIO = 17.0/18.0;
@@ -154,7 +154,7 @@ public class BlueFar extends LinearOpMode {
 
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(-155));
 
-        Pose2d loadZonePose = new Pose2d(60, -62, Math.toRadians(-80));
+        Pose2d loadZonePose = new Pose2d(64, -64, Math.toRadians(-45));
 
         int approachingTangent = -90; //45; //0; //180
 
@@ -174,7 +174,6 @@ public class BlueFar extends LinearOpMode {
                 .setTangent(Math.toRadians(-90))
                 .splineToSplineHeading(new Pose2d(55, -55, Math.toRadians(-90)), Math.toRadians(-90))
                 .splineToLinearHeading(new Pose2d(64, -64, Math.toRadians(-45)), Math.toRadians(-90))
-
                 .build();
 
 
@@ -266,6 +265,10 @@ public class BlueFar extends LinearOpMode {
                                 shootAll(), //shoot 3 balls
                                 startIntake(stage1power, stage3power), //start intake
 
+                                //get third row first
+                                traj4_thirdRow, //get artifacts from third row, go to shoot
+                                shootAll(),
+
                                 // --- Traj 2+3: go to loading zone, go shoot
                                 traj2_toLoadingZone,
                                 // shootAll() and startIntake() are now inside traj2 via afterDisp
@@ -291,8 +294,7 @@ public class BlueFar extends LinearOpMode {
                                 traj3_loadZoneToShoot, // back to shooting position
                                 shootAll(),
 
-                                traj4_thirdRow, //get artifacts from third row, go to shoot
-                                shootAll(),
+
 
                                 traj5_leaveLaunchZone // leave launch zone for leave points
                         )

@@ -33,8 +33,8 @@ public class BlueGateNear_Version4 extends LinearOpMode {
     // private DcMotor stage2 = null;
     private DcMotor stage3 = null;
     private Servo blockShooter = null;
-    final private double OPENSHOOTER_OPEN = 0.8; //0.19 //0.3;
-    final private double OPENSHOOTER_CLOSED = 1.0; // OPENSHOOTER_OPEN + 28//0.55
+    final private double OPENSHOOTER_OPEN = 0.3; //0.19 //0.3;
+    final private double OPENSHOOTER_CLOSED = 0.5; // OPENSHOOTER_OPEN + 28//0.55
     final private double SHOOTER_VELOCITY = 2000; //2000 //2100 //2200 //2150
 
     final private double SHOOTER_GEAR_RATIO = 17.0/18.0;
