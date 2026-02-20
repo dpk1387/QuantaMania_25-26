@@ -142,7 +142,7 @@ public class BlueFar extends LinearOpMode {
 
         initMotors();
 
-        double shootX = 54, shootY = -13;
+        double shootX = 54, shootY = -14;
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(-157));
 
         Pose2d loadZonePose = new Pose2d(64, -64, Math.toRadians(-45));

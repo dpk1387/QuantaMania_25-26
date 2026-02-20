@@ -192,8 +192,8 @@ public class RedGateNear_Version3 extends LinearOpMode {
         Pose2d lastShootPose = new Pose2d(lastShootX, lastShootY, Math.toRadians(126));
 
         // FROM RED:  Pose2d classifierPose = new Pose2d(7.5+0.2+0.5, 64+2,  Math.toRadians(120)); //120-6 //120
-        Pose2d classifierPose = new Pose2d(7.7, 64+2,  Math.toRadians(120)); //235d //-120
-        double newClassifierX = 7.5+2,  newClassifierY = 64-0.5; //64-1-2
+        Pose2d classifierPose = new Pose2d(7.7, 64+1,  Math.toRadians(120)); //235d //-120
+        double newClassifierX = 7.7+3,  newClassifierY = 64-1.5; //64-1-2
         Pose2d newClassifierPose = new Pose2d(newClassifierX, newClassifierY, Math.toRadians(110-5)); //122
 
         double stage1power = 0.8;//1.0;
@@ -223,9 +223,10 @@ public class RedGateNear_Version3 extends LinearOpMode {
                 .afterDisp(999, new SequentialAction(shootAll(), startIntake(stage1power, stage3power)))
                 .build();
 
+        //middle row of balls
         Action traj2 = drive.actionBuilder(shootPose)//
-                .splineToSplineHeading(new Pose2d(14, 22, Math.toRadians(110)), Math.toRadians(45))
-                .splineToLinearHeading(new Pose2d(14, 55, Math.toRadians(90)), Math.toRadians(90))
+                .splineToSplineHeading(new Pose2d(14-3, 22, Math.toRadians(110)), Math.toRadians(45))
+                .splineToLinearHeading(new Pose2d(14-3, 55, Math.toRadians(90)), Math.toRadians(90))
                 .splineToSplineHeading(newShootPose, Math.toRadians(-170)) //-160, -200
                 .afterDisp(999, new SequentialAction(shootAll(), startIntake(stage1power, stage3power))) // FIX 4
                 .build();
