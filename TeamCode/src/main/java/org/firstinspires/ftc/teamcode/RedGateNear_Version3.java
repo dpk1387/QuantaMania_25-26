@@ -28,8 +28,8 @@ public class RedGateNear_Version3 extends LinearOpMode {
     // private DcMotor stage2 = null;
     private DcMotor stage3 = null;
     private Servo blockShooter = null;
-    final private double OPENSHOOTER_OPEN = 0.8; //0.19 //0.3;
-    final private double OPENSHOOTER_CLOSED = 1.0; // OPENSHOOTER_OPEN + 28//0.55
+    final private double OPENSHOOTER_OPEN = 0.3; //0.19 //0.3;
+    final private double OPENSHOOTER_CLOSED = 0.5; // OPENSHOOTER_OPEN + 28//0.55
     final private double SHOOTER_VELOCITY = 1975; //2000 //2100 //2200 //2150
 
     final private double SHOOTER_GEAR_RATIO = 17.0/18.0;
@@ -195,8 +195,8 @@ public class RedGateNear_Version3 extends LinearOpMode {
         double newClassifierY = 60+2.5-0.5; //64-1-2
         Pose2d newClassifierPose = new Pose2d(newClassifierX, newClassifierY, Math.toRadians(110-5)); //122
 
-        double stage1power = 0.8;
-        double stage3power = 0.1;
+        double stage1power = 1.0; //0.8
+        double stage3power = 0.3;
 
         // -------------------------------------------------------------------------
         // FIX 1 (continued): Pre-build all trajectories here, during init, so that
@@ -221,6 +221,7 @@ public class RedGateNear_Version3 extends LinearOpMode {
                 //.strafeTo(new Vector2d(newShootX, newShootY))
                 .strafeTo(new Vector2d(shootX, shootY))
                 //.splineToLinearHeading(newShootPose,Math.toRadians(45))
+                .afterDisp(999, new SequentialAction(shootAll(), startIntake(stage1power, stage3power)))
                 .build();
 
         // Traj 2: first shoot pose -> middle row intake -> back to shoot pose
@@ -239,12 +240,14 @@ public class RedGateNear_Version3 extends LinearOpMode {
                 .afterDisp(999, new SequentialAction(shootAll(), startIntake(stage1power, stage3power))) // FIX 4
                 .build();
 
+        /*****CYCLE 1*****/
         // Traj 3: shoot pose -> classifier (FIRST TIME)
-        Action traj3_toClassifier = drive.actionBuilder(newShootPose)
+        Action traj3_toClassifier1 = drive.actionBuilder(newShootPose)
                 .setTangent(Math.toRadians(-15))
                 //.setTangent(Math.toRadians(25)) //15
                 .splineToLinearHeading(classifierPose, Math.toRadians(95)) //80 //85 //95 //go into
                 .strafeTo(new Vector2d(newClassifierX, newClassifierY))
+                .afterDisp(999, new SequentialAction(intakeWait2()))
                 .build();
 
         // Traj 4: classifier -> shoot pose, with shootAll() overlapping arrival (FIRST TIME)
@@ -255,39 +258,76 @@ public class RedGateNear_Version3 extends LinearOpMode {
                 .afterDisp(999, new SequentialAction(shootAll(), startIntake(stage1power, stage3power))) // FIX 4
                 .build();
 
-        // Traj 5: shoot pose -> classifier (SECOND TIME)
-        Action traj5_toClassifier2 = drive.actionBuilder(newShootPose)
-                .setTangent(Math.toRadians(-15)) //25 //15
-                .splineToLinearHeading(classifierPose, Math.toRadians(95)) //85 //95 //go into
+        /*****CYCLE 2*****/
+        // Traj 3: shoot pose -> classifier (FIRST TIME)
+        Action traj3_toClassifier2 = drive.actionBuilder(newShootPose)
+                .setTangent(Math.toRadians(-15))
+                //.setTangent(Math.toRadians(25)) //15
+                .splineToLinearHeading(classifierPose, Math.toRadians(95)) //80 //85 //95 //go into
                 .strafeTo(new Vector2d(newClassifierX, newClassifierY))
+                .afterDisp(999, new SequentialAction(intakeWait2()))
                 .build();
 
-        // Traj 6: classifier -> shoot pose (SECOND TIME)
+        // Traj 4: classifier -> shoot pose, with shootAll() overlapping arrival (FIRST TIME)
         // FIX 4: afterDisp(999) fires shootAll() + startIntake as robot reaches newShootPose
-        Action traj6_toShoot2 = drive.actionBuilder(newClassifierPose)
-                .setTangent(Math.toRadians(-95)) //-95 //-90
-                .splineToLinearHeading(newShootPose, Math.toRadians(-175)) //-155 //200 //go into
+        Action traj4_toShoot2 = drive.actionBuilder(newClassifierPose)
+                .setTangent(Math.toRadians(-95)) //-100 //-90
+                .splineToLinearHeading(newShootPose, Math.toRadians(-175)) //-160 //-155 //200 //go into
                 .afterDisp(999, new SequentialAction(shootAll(), startIntake(stage1power, stage3power))) // FIX 4
                 .build();
 
-        // Traj 7: shoot pose -> classifier (THIRD TIME)
-        Action traj7_toClassifier3 = drive.actionBuilder(newShootPose)
-                .setTangent(Math.toRadians(-15)) //25 //15
-                .splineToLinearHeading(classifierPose, Math.toRadians(95)) //85 //95 //go into
+
+        /*****CYCLE 3*****/
+        // Traj 3: shoot pose -> classifier (FIRST TIME)
+        Action traj3_toClassifier3 = drive.actionBuilder(newShootPose)
+                .setTangent(Math.toRadians(-15))
+                //.setTangent(Math.toRadians(25)) //15
+                .splineToLinearHeading(classifierPose, Math.toRadians(95)) //80 //85 //95 //go into
                 .strafeTo(new Vector2d(newClassifierX, newClassifierY))
+                .afterDisp(999, new SequentialAction(intakeWait2()))
                 .build();
 
-        // Traj 8: classifier -> shoot pose (THIRD TIME)
+        // Traj 4: classifier -> shoot pose, with shootAll() overlapping arrival (FIRST TIME)
         // FIX 4: afterDisp(999) fires shootAll() + startIntake as robot reaches newShootPose
-        Action traj8_toShoot3 = drive.actionBuilder(newClassifierPose)
-                .setTangent(Math.toRadians(-95)) //-95 //-90
-                .splineToLinearHeading(newShootPose, Math.toRadians(-175)) //-155 //200 //go into
+        Action traj4_toShoot3 = drive.actionBuilder(newClassifierPose)
+                .setTangent(Math.toRadians(-95)) //-100 //-90
+                .splineToLinearHeading(newShootPose, Math.toRadians(-175)) //-160 //-155 //200 //go into
                 .afterDisp(999, new SequentialAction(shootAll(), startIntake(stage1power, stage3power))) // FIX 4
                 .build();
 
-        // Traj 9: shoot pose -> inner balls -> last shoot pose
+//        // Traj 5: shoot pose -> classifier (SECOND TIME)
+//        Action traj5_toClassifier2 = drive.actionBuilder(newShootPose)
+//                .setTangent(Math.toRadians(-15)) //25 //15
+//                .splineToLinearHeading(classifierPose, Math.toRadians(95)) //85 //95 //go into
+//                .strafeTo(new Vector2d(newClassifierX, newClassifierY))
+//                .build();
+//
+//        // Traj 6: classifier -> shoot pose (SECOND TIME)
+//        // FIX 4: afterDisp(999) fires shootAll() + startIntake as robot reaches newShootPose
+//        Action traj6_toShoot2 = drive.actionBuilder(newClassifierPose)
+//                .setTangent(Math.toRadians(-95)) //-95 //-90
+//                .splineToLinearHeading(newShootPose, Math.toRadians(-175)) //-155 //200 //go into
+//                .afterDisp(999, new SequentialAction(shootAll(), startIntake(stage1power, stage3power))) // FIX 4
+//                .build();
+//
+//        // Traj 7: shoot pose -> classifier (THIRD TIME)
+//        Action traj7_toClassifier3 = drive.actionBuilder(newShootPose)
+//                .setTangent(Math.toRadians(-15)) //25 //15
+//                .splineToLinearHeading(classifierPose, Math.toRadians(95)) //85 //95 //go into
+//                .strafeTo(new Vector2d(newClassifierX, newClassifierY))
+//                .build();
+//
+//        // Traj 8: classifier -> shoot pose (THIRD TIME)
+//        // FIX 4: afterDisp(999) fires shootAll() + startIntake as robot reaches newShootPose
+//        Action traj8_toShoot3 = drive.actionBuilder(newClassifierPose)
+//                .setTangent(Math.toRadians(-95)) //-95 //-90
+//                .splineToLinearHeading(newShootPose, Math.toRadians(-175)) //-155 //200 //go into
+//                .afterDisp(999, new SequentialAction(shootAll(), startIntake(stage1power, stage3power))) // FIX 4
+//                .build();
+
+        // Traj 5: shoot pose -> inner balls -> last shoot pose
         // FIX 4: afterDisp(999) fires shootAll() as robot arrives at lastShootPose
-        Action traj9_innerBalls = drive.actionBuilder(newShootPose)
+        Action traj5_innerBalls = drive.actionBuilder(newShootPose)
                 .setTangent(Math.toRadians(145))//-100)) //45 //60
                 //go into
                 .splineToSplineHeading(new Pose2d(-17, 30,  Math.toRadians(90)), Math.toRadians(90))
@@ -330,46 +370,30 @@ public class RedGateNear_Version3 extends LinearOpMode {
                                 startShooter(),
                                 startIntake(stage1power, stage3power),
 
-                                // --- Traj 1: go to shooting place ---
+                                //preloaded balls
+                                //move back and shoot
                                 traj1,
-                                //shooterWait(), //let shooter accelerate
-                                shootAll(), //shoot 3 balls
-                                startIntake(stage1power, stage3power), //start intake
 
-                                // --- Traj 2: get the middle row balls -> back to shoot ---
-                                // FIX 3+4: tangent fixed, shootAll()+startIntake fires via afterDisp
+                                //middle row
+                                //go to middle row, come back to shoot, and shoot
                                 traj2,
-                                // shootAll() and startIntake() are now inside traj2 via afterDisp
 
                                 //INTAKE FROM CLASSIFIER
                                 //----------FIRST TIME
-                                // --- Traj 3+4: get balls from classifier, go shoot ---
-                                // FIX 4: shootAll()+startIntake fires via afterDisp inside traj4
-                                traj3_toClassifier,
-                                intakeWait1(), //wait at the classifier to intake balls
-                                traj4_toShoot1,
-                                // shootAll() and startIntake() are now inside traj4 via afterDisp
+                                traj3_toClassifier1, //to classifier, wait
+                                traj4_toShoot1, //back to shooting position, shoot
 
                                 //--------SECOND TIME
-                                // --- Traj 5+6: get balls from classifier, go shoot ---
-                                // FIX 4: shootAll()+startIntake fires via afterDisp inside traj6
-                                traj5_toClassifier2,
-                                intakeWait2(), //wait at the classifier to intake balls
-                                traj6_toShoot2,
-                                // shootAll() and startIntake() are now inside traj6 via afterDisp
+                                traj3_toClassifier2,
+                                traj4_toShoot2,
 
                                 //--------THIRD TIME
-                                // --- Traj 7+8: get balls from classifier, go shoot ---
-                                // FIX 4: shootAll()+startIntake fires via afterDisp inside traj8
-                                traj7_toClassifier3,
-                                intakeWait2(), //wait at the classifier to intake balls
-                                traj8_toShoot3,
-                                // shootAll() and startIntake() are now inside traj8 via afterDisp
+                                traj3_toClassifier3,
+                                traj4_toShoot3,
 
-                                // --- Traj 9: get the inner most 3 balls -> last shoot ---
-                                // FIX 4: shootAll() fires via afterDisp at lastShootPose
-                                traj9_innerBalls
-                                // shootAll() is now inside traj9 via afterDisp
+                                //first row
+                                //go to first row, come back, and shoot
+                                traj5_innerBalls
 
                         )
                 );
@@ -377,7 +401,6 @@ public class RedGateNear_Version3 extends LinearOpMode {
             } catch (Exception e) {
                 telemetry.addData("Error", e.getMessage());
             }
-            //*/
            /*
             try {
                 Actions.runBlocking(
@@ -534,7 +557,7 @@ public class RedGateNear_Version3 extends LinearOpMode {
         // Stop / reset
         stage3.setPower(0);
         blockShooter.setPosition(GATE_HOLD);
-        startIntake(0.8, 0.3); //start intake
+        startIntake(1, 0.3); //start intake
 
         /*
         final double targetVel = SHOOTER_VELOCITY + 200; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
@@ -562,7 +585,6 @@ public class RedGateNear_Version3 extends LinearOpMode {
         // stage2.setPower(s2);
         stage3.setPower(s3);
     }
-
     public void shootVelocity(double base){
         shooter.setVelocity(base);
         shooter2.setVelocity((double) (base * SHOOTER_GEAR_RATIO));
