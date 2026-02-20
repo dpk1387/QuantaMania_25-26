@@ -18,7 +18,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name = "RED FAR - LZ FIRST", group = "Autonomous")
+@Autonomous(name = "RED FAR - BOTTOM FIRST", group = "Autonomous")
 @Config
 public class RedFar extends LinearOpMode {
     /* HARDWARE */
