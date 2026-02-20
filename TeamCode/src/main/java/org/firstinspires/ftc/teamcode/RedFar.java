@@ -158,7 +158,7 @@ public class RedFar extends LinearOpMode {
                 .afterDisp(999, new SequentialAction(shootAll()))
                 .build();
 
-        /*******CYCLE 1*******/
+        /***** CYCLE 1 *****/
         // Traj 2: shoot pose -> loading zone
         Action traj2_toLoadingZone1 = drive.actionBuilder(shootPose)
                 .setTangent(Math.toRadians(90))
@@ -174,7 +174,7 @@ public class RedFar extends LinearOpMode {
                 .afterDisp(999, new SequentialAction(shootAll()))
                 .build();
 
-        /*******CYCLE 2*******/
+        /***** CYCLE 2 *****/
         // Traj 2: shoot pose -> loading zone
         Action traj2_toLoadingZone2 = drive.actionBuilder(shootPose)
                 .setTangent(Math.toRadians(90))
@@ -190,7 +190,7 @@ public class RedFar extends LinearOpMode {
                 .afterDisp(999, new SequentialAction(shootAll()))
                 .build();
 
-        /*******CYCLE 3*******/
+        /***** CYCLE 3 *****/
         // Traj 2: shoot pose -> loading zone
         Action traj2_toLoadingZone3 = drive.actionBuilder(shootPose)
                 .setTangent(Math.toRadians(90))
@@ -238,7 +238,6 @@ public class RedFar extends LinearOpMode {
 //                .build();
 
         // Traj 4: shoot pose -> 3rd row -> shoot pose
-
         //get the artifacts from third row, go to shoot
         Action traj4_thirdRow = drive.actionBuilder(shootPose)
                 //go in front of row
@@ -290,26 +289,25 @@ public class RedFar extends LinearOpMode {
 
                                 //move up to shoot, go shoot, start intake
                                 traj1,
-                                //shootAll(), //shoot 3 balls
-                                //startIntake(stage1power, stage3power), //start intake
 
                                 //go to third row, intake, come back, and shoot
                                 traj4_thirdRow,
                                 //shootAll(),
 
-                                //go to the loading zone, wait, come back, and shoot
+                                //CYCLE 1
                                 traj2_toLoadingZone1,
                                 traj3_loadZoneToShoot1,
 
-                                //go to the loading zone, wait, come back, and shoot
+                                //CYCLE 2
                                 traj2_toLoadingZone2,
                                 traj3_loadZoneToShoot2,
 
-                                //go to the loading zone, wait, come back, and shoot
+                                //CYCLE 3
                                 traj2_toLoadingZone3,
                                 traj3_loadZoneToShoot3,
 
-                                traj5_leaveLaunchZone // leave launch zone for leave points
+                                //leave zone
+                                traj5_leaveLaunchZone
                         )
                 );
                 telemetry.addData("Trajectory", "Executed Successfully");
