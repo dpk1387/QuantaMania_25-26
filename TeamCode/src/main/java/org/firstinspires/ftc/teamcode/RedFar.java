@@ -142,10 +142,11 @@ public class RedFar extends LinearOpMode {
 
         initMotors();
 
-        double shootX = 54, shootY = 14;
-        Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(157));
+        double shootX = 54, shootY = 15;
+        Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(156));
 
         Pose2d loadZonePose = new Pose2d(64, 64, Math.toRadians(45));
+        Pose2d initialLoadZonePose = new Pose2d(44, 40, Math.toRadians(60));
 
         int approachingTangent = 90; //45; //0; //180
 
@@ -163,7 +164,7 @@ public class RedFar extends LinearOpMode {
         Action traj2_toLoadingZone1 = drive.actionBuilder(shootPose)
                 .setTangent(Math.toRadians(90))
                 //wiggle to intake more artifacts
-                .splineToSplineHeading(new Pose2d(55, 55, Math.toRadians(90)), Math.toRadians(90))
+                .splineToSplineHeading(initialLoadZonePose, Math.toRadians(170))
                 .splineToLinearHeading(loadZonePose, Math.toRadians(90))
                 .build();
 
@@ -179,7 +180,7 @@ public class RedFar extends LinearOpMode {
         Action traj2_toLoadingZone2 = drive.actionBuilder(shootPose)
                 .setTangent(Math.toRadians(90))
                 //wiggle to intake more artifacts
-                .splineToSplineHeading(new Pose2d(55, 55, Math.toRadians(90)), Math.toRadians(90))
+                .splineToSplineHeading(initialLoadZonePose, Math.toRadians(170)) //90
                 .splineToLinearHeading(loadZonePose, Math.toRadians(90))
                 .build();
 
@@ -195,7 +196,7 @@ public class RedFar extends LinearOpMode {
         Action traj2_toLoadingZone3 = drive.actionBuilder(shootPose)
                 .setTangent(Math.toRadians(90))
                 //wiggle to intake more artifacts
-                .splineToSplineHeading(new Pose2d(55, 55, Math.toRadians(90)), Math.toRadians(90))
+                .splineToSplineHeading(initialLoadZonePose, Math.toRadians(170))
                 .splineToLinearHeading(loadZonePose, Math.toRadians(90))
                 .build();
 
@@ -349,9 +350,9 @@ public class RedFar extends LinearOpMode {
         //*
         final double targetVel = SHOOTER_VELOCITY; //=2500.
         final double lowRecoverMargin = 100+150; //100;
-        final double stage3FeedPower = 0.3;    //tune down if multiple balls sneak
+        final double stage3FeedPower = 0.4;    //tune down if multiple balls sneak
 
-        startIntake(0.8, 0.3); //start intake to move thing up
+        startIntake(0.7, 0.4); //start intake to move thing up
 
         final int pulseMs = 250; //250 //180;//400;//130;
         final int loopSleepMs = 15;
