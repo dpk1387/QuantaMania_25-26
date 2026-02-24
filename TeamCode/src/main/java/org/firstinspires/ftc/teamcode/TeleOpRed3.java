@@ -40,6 +40,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.util.SortOrder;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -53,6 +54,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+import org.firstinspires.ftc.vision.opencv.Circle;
 import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
 import org.firstinspires.ftc.vision.opencv.ColorRange;
 
@@ -105,9 +107,9 @@ public class TeleOpRed3 extends LinearOpMode
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
     //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
-    final double SPEED_GAIN  =  0.4;//0.2;//0.10;//0.02  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-    final double STRAFE_GAIN = 0.06;//0.03; //0.03;//0.015 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
-    final double TURN_GAIN   = 0.06;// 0.03;//0.04;//0.02  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    final double SPEED_GAIN  =  0.10;//0.2;//0.4;//0.02  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    final double STRAFE_GAIN = 0.03;//0.06; //0.03;//0.015 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
+    final double TURN_GAIN   = 0.03;// 0.03;//0.04;//0.02  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
     final double MAX_AUTO_SPEED = 0.9;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_STRAFE= 0.9;   //  Clip the strafing speed to this max value (adjust for your robot)
@@ -168,7 +170,7 @@ public class TeleOpRed3 extends LinearOpMode
         if (DESIRED_TAG_ID == 24) {
             //desired_x = -30; desired_y =  30; desired_yaw =  45;
             //shoot close
-            desired_x = -23; desired_y =  23; desired_yaw =  135; //corresponding to DESIRED DISTANCE 50 -- NEED TO CHeck the yaw
+            desired_x = -23; desired_y = 23; desired_yaw =  135; //corresponding to DESIRED DISTANCE 50 -- NEED TO CHeck the yaw
             //clear classifier
             latch_x = 8; latch_y = 66; latch_yaw = 120; //0, 50, 90
             //parking position
@@ -252,7 +254,7 @@ public class TeleOpRed3 extends LinearOpMode
                         targetFound = true;                         // Yes, we want to use this tag.
                         desiredTag = detection;
                         break;  // don't look any further.
-                    }else{
+                    }else {
                         telemetry.addData("Skipping", "Tag ID %d is not desired", detection.id);
                         desiredTag = null;
                     }
@@ -325,9 +327,7 @@ public class TeleOpRed3 extends LinearOpMode
                     //stop driving if in range
                     if ((rangeError>distanceRange[0] && rangeError<distanceRange[1])) {
                         drive = 0;
-                    } else {
-                        drive   = Range.clip((rangeError - (distanceRange[0] + distanceRange[1])/2)*SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-                    }
+                    } else drive   = Range.clip((rangeError - (distanceRange[0] + distanceRange[1])/2)*SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
 
                     turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
 
@@ -358,7 +358,7 @@ public class TeleOpRed3 extends LinearOpMode
                 }
             } else if (!driverOverride && gamepad1.right_bumper) {
                 //if right bumper is pressed -> go to the location to release the latch
-                DriveCommand cmd = drivePinpoint( latch_x, latch_y, latch_yaw); //result always valid
+                DriveCommand cmd = drivePinpoint(latch_x, latch_y, latch_yaw); //result always valid
                 drive = cmd.drive;
                 strafe = cmd.strafe;
                 turn = cmd.turn;
@@ -423,6 +423,8 @@ public class TeleOpRed3 extends LinearOpMode
         }
     }
 
+    //Move robot according to desired axes motions: Positive X is forward,  Positive Y is strafe left, Positive Yaw is counter-clockwise
+
     //OLD SHOOTING FUNCTION
     public void shoot(int totalMs) {
         moveRobot(0, 0, 0); // stops robot in place
@@ -442,8 +444,7 @@ public class TeleOpRed3 extends LinearOpMode
 
         // Spin up
         blockShooter.setPosition(GATE_HOLD);
-//        shooter.setVelocity(targetVel); //target Velocity
-        shootVelocity(targetVel);
+        shooter.setVelocity(targetVel); //target Velocity
         stage3.setPower(stage3HoldPower);
 
         ElapsedTime time_pass = new ElapsedTime();
@@ -1080,6 +1081,5 @@ public class TeleOpRed3 extends LinearOpMode
     public void shootVelocity(double base){   //run shooters with gear ratio
         shooter.setVelocity(base);
         shooter2.setVelocity((double) (base * SHOOTER_GEAR_RATIO));
-
     }
 }
