@@ -315,7 +315,7 @@ public class TeleOpRed3 extends LinearOpMode
                 if (targetFound) {
                     //range of homing + AprilTag
                     final double[] yawRange = new double[] {0,15};// 0, 25degrees
-                    final double[] distanceRange = new double[] {60,65}; //50, 55 //45, 65 inches
+                    final double[] distanceRange = new double[] {60-3,70/*65*/}; //50, 55 //45, 65 inches
                     // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
                     rangeError   = (desiredTag.ftcPose.range);
                     headingError = desiredTag.ftcPose.bearing;
@@ -524,7 +524,7 @@ public class TeleOpRed3 extends LinearOpMode
         double    stage3FeedPower = 0.4;
         double    lowRecoverMargin = 100; //100;
         long      loopSleepMs = 15;
-        double    totalShootingTime = 1500;//1000 - 300; //1000-200
+        double    totalShootingTime = 1500 -600;//1000 - 300; //1000-200
         long      pulseMs = 250; //250
         // ADJUST THE Stage3 power manually
         //*
@@ -574,7 +574,7 @@ public class TeleOpRed3 extends LinearOpMode
      */
     //correction while shooting method
     public boolean quickTurnToTagBearing(int DESIRED_TAG_ID) {
-        final double TOLERANCE_DEG = 1.5;//3.0;   // within +/- 3 degrees
+        final double TOLERANCE_DEG = 2.5; //1.5;//3.0;   // within +/- 3 degrees
         final double kP = 0.02;             // tune
         final double MIN_POWER = 0.12;      // tune
         final double MAX_POWER = 0.6;      // tune
