@@ -497,7 +497,7 @@ public class TeleOpRed2 extends LinearOpMode
         double    stage3FeedPower = 0.6;
         double    lowRecoverMargin = 150; //100; //200
         long      loopSleepMs = 15;
-        double    totalShootingTime = 1500-600;//1000 - 300; //1000-200
+        double    totalShootingTime = 700; //1500-600;//1000 - 300; //1000-200
         long      pulseMs = 250; //250
         // ADJUST THE Stage3 powemanually
         //*

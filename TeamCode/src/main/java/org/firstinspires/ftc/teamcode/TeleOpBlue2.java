@@ -33,6 +33,7 @@ import android.graphics.Color;
 import android.util.Size;
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -98,7 +99,7 @@ import java.util.concurrent.TimeUnit;
  */
 
 @TeleOp(name="TeleOp Blue 2", group = "Concept")
-//@Disabled
+@Disabled
 public class TeleOpBlue2 extends LinearOpMode
 {
     // Adjust these numbers to suit your robot. Should be from 30 - 55 inches
