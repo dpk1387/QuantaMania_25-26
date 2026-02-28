@@ -34,7 +34,7 @@ public class RedGateNear_Version3 extends LinearOpMode {
     private Servo blockShooter = null;
     final private double OPENSHOOTER_OPEN = 0.3; //0.19 //0.3;
     final private double OPENSHOOTER_CLOSED = 0.5; // OPENSHOOTER_OPEN + 28//0.55
-    final private double SHOOTER_VELOCITY = 1925; //1950; //1900; //2100 //2200 //2150
+    final private double SHOOTER_VELOCITY = 1925+25; //1950; //1900; //2100 //2200 //2150
 
     final private double SHOOTER_GEAR_RATIO = 17.0/18.0;
     /* INIT */
@@ -193,8 +193,8 @@ public class RedGateNear_Version3 extends LinearOpMode {
 
         // FROM RED:  Pose2d classifierPose = new Pose2d(7.5+0.2+0.5, 64+2,  Math.toRadians(120)); //120-6 //120
         Pose2d classifierPose = new Pose2d(7.7, 64+1,  Math.toRadians(120)); //235d //-120
-        double newClassifierX = 7.7+2.5,  newClassifierY = 64-1.5; //64-1-2
-        Pose2d newClassifierPose = new Pose2d(newClassifierX, newClassifierY, Math.toRadians(105+5)); //122
+        double newClassifierX = 7.7+2.5+1,  newClassifierY = 64-1.5; //64-1-2
+        Pose2d newClassifierPose = new Pose2d(newClassifierX, newClassifierY, Math.toRadians(105+5+2)); //122
 
         double stage1power = 0.8;//1.0;
         double stage3power = 0.1; //0.3;

@@ -132,7 +132,6 @@ public class TeleOpRed2 extends LinearOpMode
     private double SHOOTER_VELOCITY = 2500;//4800;//5000;
 
     final private double SHOOTER_GEAR_RATIO = 17.0/18.0; //bottom / top
-
     boolean intakeMode = false;
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
     private static final int DESIRED_TAG_ID = 24;//20;//24;// -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
