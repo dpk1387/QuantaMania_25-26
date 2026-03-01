@@ -34,7 +34,7 @@ public class BlueGateNear_Version4 extends LinearOpMode {
     private Servo blockShooter = null;
     final private double OPENSHOOTER_OPEN = 0.3; //0.19 //0.3;
     final private double OPENSHOOTER_CLOSED = 0.5; // OPENSHOOTER_OPEN + 28//0.55
-    final private double SHOOTER_VELOCITY = 1950; //1950; //1900; //2100 //2200 //2150
+    final private double SHOOTER_VELOCITY = 1925+25; //1950; //1900; //2100 //2200 //2150
 
     final private double SHOOTER_GEAR_RATIO = 17.0/18.0;
     /* INIT */
@@ -150,7 +150,7 @@ public class BlueGateNear_Version4 extends LinearOpMode {
                 // Optionally log something
                 packet.put("intake Delay", "");
                 // Fire three balls in sequence (blocking, similar to SleepAction(3))
-                sleep(350-50); //1500
+                sleep(350);//300 //1500
 
                 initialized = true;
             }
@@ -183,21 +183,21 @@ public class BlueGateNear_Version4 extends LinearOpMode {
         //         can be pre-built during the init phase. This eliminates the per-segment
         //         build-time pause that occurred at every actionBuilder boundary.
         // -------------------------------------------------------------------------
-        double shootX = -14, shootY = -14; //-29, 29
+        double shootX = -14-3, shootY = -14-3; //-29, 29
         double newShootX = -11, newShootY = -20; // -20, -20//-19, -19 // -23, -23
         Pose2d shootPose = new Pose2d(shootX, shootY, Math.toRadians(-135));
         Pose2d newShootPose = new Pose2d(newShootX, newShootY, Math.toRadians(-143)); //-150 //-135
 
-        double lastShootX = -32, lastShootY = -13; //-30, -11
+        double lastShootX = -32-3, lastShootY = -13-3; //-30, -11
         Pose2d lastShootPose = new Pose2d(lastShootX, lastShootY, Math.toRadians(-126));
 
         // FROM RED:  Pose2d classifierPose = new Pose2d(7.5+0.2+0.5, 64+2,  Math.toRadians(120)); //120-6 //120
         Pose2d classifierPose = new Pose2d(7.7, -64-2,  Math.toRadians(240)); //235d //-120
-        double newClassifierX = 7.7+2, newClassifierY = -64+0.5;
-        Pose2d newClassifierPose = new Pose2d(newClassifierX, newClassifierY, Math.toRadians(235+12));
+        double newClassifierX = 7.7+2, newClassifierY = -64;
+        Pose2d newClassifierPose = new Pose2d(newClassifierX, newClassifierY, Math.toRadians(235+10+10)); //235 + 5 + 12
 
-        double stage1power = 0.8;
-        double stage3power = 0.1;
+        double stage1power = 1.0;
+        double stage3power = 0.4;
 
         // -------------------------------------------------------------------------
         // FIX 1 (continued): Pre-build all trajectories here, during init, so that
@@ -508,7 +508,7 @@ public class BlueGateNear_Version4 extends LinearOpMode {
         final double stage3FeedPower = 0.6; //tune down if multiple balls sneak
         final double stage3HoldPower = 0.0;
 
-        startIntake(0.8, 0.3); //start intake to move thing up
+        startIntake(1.0, 0.5); //start intake to move thing up
 
         final int pulseMs = 250; //180;//400;//130;
         final int loopSleepMs = 15;
@@ -522,7 +522,7 @@ public class BlueGateNear_Version4 extends LinearOpMode {
         ElapsedTime time_pass = new ElapsedTime();
         time_pass.reset();
 
-        while(time_pass.milliseconds() <= 1000-300){ //1000-200
+        while(time_pass.milliseconds() <= 1000-200){ //1000-300
             // 4) Wait for recovery enough to avoid weak/overpowered 2nd/3rd shots.getVelocity()
             while (opModeIsActive() && shooter.getVelocity() < targetVel - lowRecoverMargin) { //shooter.getVelocity() < targetVel - lowRecoverMargin && shooter.getVelocity() > targetVel + highRecoverMargin
                 sleep(loopSleepMs);
@@ -539,7 +539,7 @@ public class BlueGateNear_Version4 extends LinearOpMode {
 
         // Stop / reset
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
-        startIntake(0.8, 0.3); //start intake
+        startIntake(1.0, 0.5); //start intake
         /*
         final double targetVel = SHOOTER_VELOCITY + 200; //close = 2200. far = 2500.   // same units you use in setVelocity/getVelocity
         final double stage3FeedPower = 0.8;    //tune down if multiple balls sneak

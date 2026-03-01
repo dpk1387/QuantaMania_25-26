@@ -242,9 +242,9 @@ public class RedFar extends LinearOpMode {
         //get the artifacts from third row, go to shoot
         Action traj4_thirdRow = drive.actionBuilder(shootPose)
                 //go in front of row
-                .splineToSplineHeading(new Pose2d(40-2, 28-8, Math.toRadians(90)), Math.toRadians(90))
+                .splineToSplineHeading(new Pose2d(40-4, 28-8, Math.toRadians(90)), Math.toRadians(90))
                 //intake row
-                .splineToLinearHeading(new Pose2d(40-2, 52 /*56*/, Math.toRadians(90)), Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(40-4, 52 /*56*/, Math.toRadians(90)), Math.toRadians(90))
                 //go back to shoot
                 .splineToSplineHeading(shootPose, Math.toRadians(110))
                 //shoot
@@ -368,7 +368,7 @@ public class RedFar extends LinearOpMode {
         while(time_pass.milliseconds() <=1800 /*2200*/){
             // 4) Wait for recovery enough to avoid weak/overpowered 2nd/3rd shots.getVelocity()
             while (opModeIsActive() && shooter.getVelocity() < targetVel - lowRecoverMargin) {
-                stage3.setPower(0.3); //0.2
+                stage3.setPower(0.5); //0.2
                 sleep(loopSleepMs);
                 idle();
             }

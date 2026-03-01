@@ -255,7 +255,7 @@ public class TeleOpRed2 extends LinearOpMode
             }
 
             // Tell the driver what we see, and what to do.
-            if (targetFound) { //if AprilTag visible
+            if (targetFound) {
                 telemetry.addData("\n>","HOLD Left-Bumper to Drive to Target\n");
                 telemetry.addData("Found", "ID %d (%s)", desiredTag.id, desiredTag.metadata.name);
                 telemetry.addData("Range",  "%5.1f inches", desiredTag.ftcPose.range);
@@ -275,7 +275,7 @@ public class TeleOpRed2 extends LinearOpMode
                 if (targetFound) {
                     //range of homing + AprilTag
                     final double[] yawRange = new double[] {0,15};// 0, 25degrees
-                    final double[] distanceRange = new double[] {60-3,70/*65*/}; //50, 55 //45, 65 inches
+                    final double[] distanceRange = new double[] {55,70/*65*/}; //50, 55 //45, 65 inches
                     // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
                     rangeError   = (desiredTag.ftcPose.range);
                     headingError = desiredTag.ftcPose.bearing;
@@ -506,7 +506,7 @@ public class TeleOpRed2 extends LinearOpMode
         if (cur_left < -23){
             stage3FeedPower = 0.2;
             lowRecoverMargin = 200;
-            runIntake(1.0, 0.2);
+            runIntake(1.0, 0.3); //1.0, 0.2
             totalShootingTime = 2200;
             targetVel = 2500;
         }
@@ -536,7 +536,7 @@ public class TeleOpRed2 extends LinearOpMode
         }
 
         blockShooter.setPosition(OPENSHOOTER_CLOSED);
-        runIntake(0.8, 0.6);
+        runIntake(0.9, 0.5); //0.8, 0.6
     }
     /**
      * Quick turn-to-yaw using AprilTag. Assumes tag is usually visible.

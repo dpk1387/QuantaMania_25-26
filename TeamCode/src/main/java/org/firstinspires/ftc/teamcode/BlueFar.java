@@ -367,7 +367,7 @@ public class BlueFar extends LinearOpMode {
         while(time_pass.milliseconds() <=1800 /*2200*/){
             // 4) Wait for recovery enough to avoid weak/overpowered 2nd/3rd shots.getVelocity()
             while (opModeIsActive() && shooter.getVelocity() < targetVel - lowRecoverMargin) {
-                stage3.setPower(0.3); //0.2
+                stage3.setPower(0.5); //0.2
                 sleep(loopSleepMs);
                 idle();
             }
